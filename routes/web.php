@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 | Pages marked with a phase number are routed placeholders, not finished pages.
 */
 
+// Redirect the bare root to the visitor's preferred supported locale.
 Route::get('/', function (Request $request) {
     $locale = $request->getPreferredLanguage(Locales::supported()) ?? Locales::default();
 
