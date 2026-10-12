@@ -127,6 +127,14 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - **Audit:** `patient.created`, `patient.updated` (names of changed fields, never values), `patient.archived`, `patient.restored`, and `patient.viewed` each time someone opens a record.
 - Form ids that pick the record to save come from the component's locked model, never from the browser-editable form (`form.patientId`, `form.userId`).
 
+## Medical and dental history
+
+`/clinic/patients/{patient}/history` (`viewClinical` to read, `writeClinical` to record: care-team dentists and admins; receptionists never).
+- Each review inserts a new `medical_histories` / `dental_histories` row; both models are append-only, so earlier versions stay as they were. `Patient::latestMedicalHistory()` / `latestDentalHistory()` give the current version, and the page lists earlier ones.
+- `no_known_allergies` records "patient was asked, has none", distinct from an empty (unknown) allergies field; the form refuses both at once.
+- The patient overview shows recorded allergies in red, or a warning when allergies were never recorded, only to users who may see clinical data.
+- Text fields are encrypted at rest. Audit entries (`clinical.history_viewed`, `clinical.medical_history_recorded`, `clinical.dental_history_recorded`) never contain the clinical text.
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -180,7 +188,7 @@ Rules the code enforces:
 
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
-3. **In progress:** staff management (done), patient directory and search (done), medical and dental history, clinic settings.
+3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
 4. Interactive SVG odontogram and treatment workflow actions.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.

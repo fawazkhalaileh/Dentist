@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AppendOnly;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['patient_id', 'recorded_by', 'chief_complaint', 'previous_treatments', 'notes'])]
 class DentalHistory extends Model
 {
+    use AppendOnly;
+
     protected function casts(): array
     {
         return [
