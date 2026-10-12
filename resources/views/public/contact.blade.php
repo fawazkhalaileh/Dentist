@@ -10,7 +10,7 @@
     $field = 'mt-1 block w-full rounded-md border border-line bg-surface px-3 py-2';
 @endphp
 
-<x-layouts::public :title="__('Contact')" :description="__('Contact details and opening hours for :clinic.', ['clinic' => config('clinic.name')])" :schema="$schema">
+<x-layouts::public :title="__('Contact')" :description="__('Contact details and opening hours for :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])" :schema="$schema">
     <x-ui.page-header :title="__('Contact us')" />
 
     <div class="grid gap-10 md:grid-cols-2">

@@ -186,4 +186,25 @@ class ContentScreensTest extends TestCase
 
         $component->set('showHandled', true)->assertSee('Synthetic question');
     }
+
+    public function test_the_clinic_name_is_edited_per_language_with_fallbacks(): void
+    {
+        $this->get('/en')->assertSee('<title>'.config('clinic.name').'</title>', escape: false);
+
+        Livewire::test('pages::clinic.content.clinic-details')
+            ->set('form.name.en', 'Smile Dental')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        // Arabic falls back to the default-language name until it is filled in.
+        $this->get('/ar')->assertSee('<title>Smile Dental</title>', escape: false);
+
+        Livewire::test('pages::clinic.content.clinic-details')
+            ->set('form.name.ar', 'عيادة الابتسامة')
+            ->call('save');
+
+        $this->get('/en')->assertSee('<title>Smile Dental</title>', escape: false)->assertSee('"name":"Smile Dental"', escape: false);
+        $this->get('/ar')->assertSee('<title>عيادة الابتسامة</title>', escape: false);
+        $this->get('/en/services')->assertSee('Our services | Smile Dental');
+    }
 }

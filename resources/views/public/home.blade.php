@@ -1,6 +1,6 @@
-<x-layouts::public :title="null" :description="__('Dental care in :clinic. Request an appointment online.', ['clinic' => config('clinic.name')])" :schema="$schema">
+<x-layouts::public :title="null" :description="__('Dental care in :clinic. Request an appointment online.', ['clinic' => \App\Support\ClinicDetails::name()])" :schema="$schema">
     <section aria-labelledby="home-heading" class="max-w-2xl">
-        <h1 id="home-heading" class="text-3xl font-semibold md:text-4xl">{{ config('clinic.name') }}</h1>
+        <h1 id="home-heading" class="text-3xl font-semibold md:text-4xl">{{ \App\Support\ClinicDetails::name() }}</h1>
         <p class="mt-4 text-lg text-ink-muted">{{ __('Dental care for the whole family.') }}</p>
 
         <div class="mt-8 flex flex-wrap gap-3">

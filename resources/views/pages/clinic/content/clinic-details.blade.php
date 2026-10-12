@@ -25,7 +25,7 @@ new #[Title('Clinic contact details')] class extends ContentComponent {
 }; ?>
 
 <section class="w-full max-w-3xl">
-    <x-ui.page-header :title="__('Clinic contact details')" :description="__('Shown on the contact page, in the footer and to search engines.')" />
+    <x-ui.page-header :title="__('Clinic name and contact details')" :description="__('Shown in the website header, on the contact page, in the footer and to search engines.')" />
 
     <form wire:submit="save" class="space-y-6">
         <flux:card class="grid gap-4 sm:grid-cols-2">
@@ -36,9 +36,10 @@ new #[Title('Clinic contact details')] class extends ContentComponent {
         </flux:card>
 
         <flux:card>
-            <x-cms.locale-tabs :error-keys="['form.address.{locale}', 'form.opening_hours.{locale}']">
+            <x-cms.locale-tabs :error-keys="['form.name.{locale}', 'form.address.{locale}', 'form.opening_hours.{locale}']">
                 @foreach (\App\Support\Locales::supported() as $locale)
                     <div x-show="tab === @js($locale)" x-cloak role="tabpanel" dir="{{ \App\Support\Locales::dir($locale) }}" lang="{{ $locale }}" class="space-y-4">
+                        <flux:input wire:model="form.name.{{ $locale }}" :label="__('Clinic name')" :placeholder="config('clinic.name')" :description="__('Leave empty to use the name from the server configuration.')" />
                         <flux:textarea wire:model="form.address.{{ $locale }}" :label="__('Address')" rows="3" />
                         <flux:textarea wire:model="form.opening_hours.{{ $locale }}" :label="__('Opening hours')" rows="4" :description="__('One line per day or group of days.')" />
                     </div>

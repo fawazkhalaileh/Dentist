@@ -158,7 +158,7 @@ Staff with the `content.manage` permission (admin, receptionist) edit the websit
 | Testimonials | one locale per row | Cannot be published without recorded consent |
 | FAQs | one locale per row | General FAQ page; service FAQs live on the service |
 | Media library | alt text per locale | Images in use cannot be deleted |
-| Contact details | per-locale address and hours | Stored in `settings`, cached (`ClinicDetails`) |
+| Clinic details | per-locale name, address and hours | Stored in `settings`, cached (`ClinicDetails`). `ClinicDetails::name()` falls back to the default language, then to `config('clinic.name')` (`APP_NAME`) |
 | Website messages | - | Contact form inbox; mark as handled |
 
 Rules the code enforces:

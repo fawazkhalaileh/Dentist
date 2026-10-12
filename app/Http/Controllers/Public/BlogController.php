@@ -7,6 +7,7 @@ use App\Models\BlogCategory;
 use App\Models\BlogCategoryTranslation;
 use App\Models\BlogPost;
 use App\Models\BlogPostTranslation;
+use App\Support\ClinicDetails;
 use App\Support\Seo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -58,7 +59,7 @@ class BlogController extends Controller
             'inLanguage' => $translation->locale,
             'image' => $post->featuredMedia?->url(),
             'author' => ['@type' => 'Person', 'name' => $post->author->name],
-            'publisher' => ['@type' => 'Organization', 'name' => config('clinic.name')],
+            'publisher' => ['@type' => 'Organization', 'name' => ClinicDetails::name()],
         ]);
 
         return view('public.blog.show', [

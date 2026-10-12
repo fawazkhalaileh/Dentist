@@ -73,7 +73,7 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 | Clinic name, locales, patient number format, staff MFA, clinical file disk | `config/clinic.php` / `.env` (`CLINIC_*`) |
 | Colours, status colours, brand tokens | `resources/css/theme.css` |
 | Role → permission mapping | `app/Enums/Role.php` (synced automatically by `php artisan migrate`) |
-| Clinic phone, email, address, opening hours, map link | CMS → Contact details (stored in the `settings` table) |
+| Clinic name (per language), phone, email, address, opening hours, map link | CMS → Clinic details (stored in the `settings` table; the name falls back to `APP_NAME`) |
 | Interface translations | `lang/ar.json`, `lang/ar/validation.php` (draft: needs native-speaker review) |
 
 ## Deploying

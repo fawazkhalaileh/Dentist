@@ -49,7 +49,7 @@ final class Seo
         return array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Dentist',
-            'name' => config('clinic.name'),
+            'name' => ClinicDetails::name(),
             'url' => route('public.home'),
             'telephone' => ClinicDetails::get('phone'),
             'email' => ClinicDetails::get('email'),
