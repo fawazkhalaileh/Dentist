@@ -1,4 +1,4 @@
-<x-layouts::public :title="__('Testimonials')">
+<x-layouts::public :title="__('Testimonials')" :description="__('What patients say about their visits to :clinic.', ['clinic' => config('clinic.name')])">
     <x-ui.page-header :title="__('What our patients say')" />
 
     @if ($testimonials->isEmpty())

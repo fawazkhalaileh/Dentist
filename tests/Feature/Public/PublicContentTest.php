@@ -167,4 +167,17 @@ class PublicContentTest extends TestCase
             ->assertSee(route('public.blog.show', ['locale' => 'ar', 'slug' => 'مقال-عربي']), escape: false)
             ->assertDontSee('hidden-service', escape: false);
     }
+
+    public function test_listing_pages_have_a_meta_description_in_each_language(): void
+    {
+        foreach (['public.blog.index', 'public.testimonials', 'public.faq'] as $route) {
+            foreach (['en', 'ar'] as $locale) {
+                $this->get(route($route, ['locale' => $locale]))
+                    ->assertOk()
+                    ->assertSee('<meta name="description"', escape: false);
+            }
+        }
+
+        $this->get(route('public.faq', ['locale' => 'ar']))->assertSee('إجابات عن الأسئلة الشائعة');
+    }
 }

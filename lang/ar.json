@@ -210,5 +210,9 @@
     "Withdrawn": "مسحوب",
     "You will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.": "سيُطلب منك رمز آمن وعشوائي عند تسجيل الدخول، تحصل عليه من تطبيق مصادقة يدعم TOTP على هاتفك.",
     "Your account is not linked to a patient record yet": "حسابك غير مرتبط بملف مريض بعد",
-    "Your email address is unverified.": "بريدك الإلكتروني غير مؤكد."
+    "Your email address is unverified.": "بريدك الإلكتروني غير مؤكد.",
+    "News and dental health articles from :clinic.": "أخبار ومقالات عن صحة الأسنان من :clinic.",
+    "Articles about :category from :clinic.": "مقالات حول :category من :clinic.",
+    "What patients say about their visits to :clinic.": "آراء المرضى حول زياراتهم إلى :clinic.",
+    "Answers to common questions about visiting :clinic.": "إجابات عن الأسئلة الشائعة حول زيارة :clinic."
 }

@@ -1,6 +1,11 @@
-@php $title = $currentCategory ? $currentCategory->name : __('Blog'); @endphp
+@php
+    $title = $currentCategory ? $currentCategory->name : __('Blog');
+    $description = $currentCategory
+        ? __('Articles about :category from :clinic.', ['category' => $currentCategory->name, 'clinic' => config('clinic.name')])
+        : __('News and dental health articles from :clinic.', ['clinic' => config('clinic.name')]);
+@endphp
 
-<x-layouts::public :title="$title" :alternates="$alternates ?? null">
+<x-layouts::public :title="$title" :description="$description" :alternates="$alternates ?? null">
     <x-ui.page-header :title="$title" />
 
     @if ($categories->isNotEmpty())
