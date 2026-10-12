@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
             ->middleware('can:viewAny,'.Appointment::class)->name('appointments.index');
         Route::view('appointment-requests', 'clinic.placeholder', $placeholder('Appointment requests', 5))
             ->middleware($can(Permission::AppointmentRequestsManage))->name('appointment-requests.index');
-        Route::view('schedules', 'clinic.placeholder', $placeholder('Working hours and closures', 5))
+        Route::livewire('schedules', 'pages::clinic.schedules.index')
             ->middleware($can(Permission::SchedulesManage))->name('schedules.index');
 
         // Catalogue and content
