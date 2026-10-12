@@ -6,11 +6,15 @@ use App\Http\Middleware\EnsureStaffHasTwoFactor;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SetLocale;
 use App\Models\Patient;
+use App\Support\RolesAndPermissions;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Events\MigrationsEnded;
+use Illuminate\Database\Events\NoPendingMigrations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +37,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        // Roles and permissions are reference data the app cannot run without, so every
+        // `migrate` (including one with nothing to migrate) brings them up to date.
+        Event::listen(function (MigrationsEnded|NoPendingMigrations $event) {
+            $pretend = $event instanceof MigrationsEnded && ($event->options['pretend'] ?? false);
+
+            if ($event->method === 'up' && ! $pretend) {
+                RolesAndPermissions::sync();
+            }
+        });
 
         // Explicit binding so {patient} resolves on Route::view routes too.
         // Archived (soft-deleted) patients resolve to 404.

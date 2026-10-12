@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -87,6 +88,17 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->belongsToMany(Patient::class, 'patient_dentist', 'dentist_id', 'patient_id')
             ->withPivot('is_primary')
             ->withTimestamps();
+    }
+
+    /**
+     * Users with the role. Unlike spatie's role() scope this matches nothing,
+     * instead of throwing RoleDoesNotExist, when the role has not been created.
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeHavingRole(Builder $query, Role $role): void
+    {
+        $query->whereHas('roles', fn (Builder $roles) => $roles->where('name', $role->value)->where('guard_name', 'web'));
     }
 
     public function hasRoleEnum(Role $role): bool
