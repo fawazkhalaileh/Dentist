@@ -248,6 +248,18 @@ class StaffManagementTest extends TestCase
             ->assertHasErrors(['form.email', 'form.slug']);
     }
 
+    public function test_a_tampered_form_id_cannot_bypass_the_unique_email_check(): void
+    {
+        $receptionist = User::factory()->receptionist()->create();
+        $other = User::factory()->receptionist()->create(['email' => 'other@example.test']);
+
+        Livewire::test('pages::clinic.staff.edit', ['user' => $receptionist])
+            ->set('form.userId', $other->id)
+            ->set('form.email', 'other@example.test')
+            ->call('save')
+            ->assertHasErrors(['form.email']);
+    }
+
     private function makeDentist(): User
     {
         $dentist = User::factory()->dentist()->create(['name' => 'Dr. Public']);
