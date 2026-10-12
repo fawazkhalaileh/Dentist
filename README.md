@@ -4,7 +4,7 @@ Public website, patient portal and clinic practice-management dashboard in one L
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, data model, roles and phase plan.
 
 **Status: Phase 2 (public website and CMS) done.** The public site works in English and Arabic, and content staff edit it under `/clinic/content`.
-Patient, clinical and scheduling pages marked "Not built yet" are routed placeholders with their access rules in place (Phases 3 to 5).
+Administrators manage staff accounts and dentist profiles (Phase 3, in progress). Patient, clinical and scheduling pages marked "Not built yet" are routed placeholders with their access rules in place.
 
 ## Requirements
 
@@ -94,7 +94,7 @@ Production never runs seeders, so it starts with no staff accounts. Create the f
 php artisan clinic:create-admin you@example.com --name="Your Name"   # asks for the password
 ```
 
-The administrator sets up two-factor authentication at first sign-in. Staff management (adding dentists and receptionists) arrives in Phase 3.
+The administrator sets up two-factor authentication at first sign-in, then adds dentists and receptionists under **Dentists and staff** and sends each a setup link.
 
 ## Production notes (Phase 6 checklist)
 

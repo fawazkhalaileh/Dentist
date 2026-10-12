@@ -118,6 +118,16 @@ Clinical safety rules built into the schema and models:
 
 Migrations: never edit a migration that has already run anywhere. Phase 2 edited the `staff_profiles` and `services` create migrations in place; `2026_10_12_100700_upgrade_phase_1_staff_and_service_columns` brings databases migrated in Phase 1 to the same shape (and copies existing profile text into a default-locale translation). It does nothing on a fresh install. New schema changes go in new migrations.
 
+## Staff management
+
+Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
+- New staff accounts are marked verified and get a random password nobody knows. The administrator creates a **setup link** (`CreateSetupLink`, a normal password-reset link that expires per `config/auth.php`) and hands it over directly, so onboarding works without outgoing email. Staff then set up two-factor authentication at first sign-in.
+- Deactivating an account deletes its database sessions and rotates its remember token, so the person is signed out at once. Records they created are kept.
+- Administrators cannot demote or deactivate themselves, and the action refuses to remove the last active administrator.
+- `ResetTwoFactor` clears someone else's authenticator (lost phone); they must enrol again.
+- Dentists have a public profile (`staff_profiles` + translations): shown only when public, active and still a dentist. Changing a dentist's role hides the profile but keeps its text.
+- Every change writes an audit entry (`staff.created`, `staff.updated`, `staff.setup_link_created`, `staff.two_factor_reset`).
+
 ## Website content (CMS)
 
 Staff with the `content.manage` permission (admin, receptionist) edit the website under `/clinic/content`. Every CMS screen extends `App\Livewire\ContentComponent`, which re-checks the permission in `boot()`, so each save and delete is authorised again on the server, not just the first page load. Screens validate through a form object (`app/Livewire/Forms`) and save through an Action (`app/Actions/Content`); the demo seeder uses the same Actions.
@@ -161,7 +171,7 @@ Rules the code enforces:
 
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
-3. Patient directory and search, staff management, clinic settings.
+3. **In progress:** staff management (done), patient directory and search, clinic settings.
 4. Interactive SVG odontogram and treatment workflow actions.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
