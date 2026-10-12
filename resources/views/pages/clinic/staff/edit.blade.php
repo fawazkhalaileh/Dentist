@@ -57,6 +57,9 @@ new #[Title('Staff member')] class extends StaffComponent {
 
     public function save(SaveStaffMember $save, StoreMedia $storeMedia): void
     {
+        // Form properties can be changed by the browser; the locked model is the source of truth.
+        $this->form->userId = $this->member?->id;
+
         if ($this->form->isDentist()) {
             $this->validate(['photoUpload' => ['nullable', ...StoreMedia::rules()]]);
 
