@@ -81,6 +81,14 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 Run `php artisan migrate --force` as usual. It also creates or updates the roles and permissions, so no seeder is needed in production. The migration `upgrade_phase_1_staff_and_service_columns` updates the Phase 1 staff and service tables in place.
 Also run `php artisan storage:link` once on the server, and rebuild assets (`npm ci && npm run build`).
 
+Production never runs seeders, so it starts with no staff accounts. Create the first administrator on the server:
+
+```bash
+php artisan clinic:create-admin you@example.com --name="Your Name"   # asks for the password
+```
+
+The administrator sets up two-factor authentication at first sign-in, then creates the other staff accounts (Phase 3).
+
 ## Production notes (Phase 6 checklist)
 
 - HTTPS only: `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`.
