@@ -65,7 +65,7 @@
 
         @if ($service->is_bookable)
             <div class="mt-12">
-                <a href="{{ route('public.booking') }}" class="rounded-md bg-brand px-5 py-2.5 font-medium text-brand-contrast">
+                <a href="{{ route('public.booking', ['service' => $service->id]) }}" class="rounded-md bg-brand px-5 py-2.5 font-medium text-brand-contrast">
                     {{ __('Request an appointment') }}
                 </a>
             </div>
