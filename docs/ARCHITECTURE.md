@@ -142,6 +142,14 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - `ClinicalNotePolicy::amend`: only the author or an administrator, only the latest version (no forks), and the text must change.
 - Note text is encrypted at rest; audit entries (`clinical.notes_viewed`, `clinical.note_created`, `clinical.note_amended`) never contain it.
 
+## Treatment plans and items
+
+`/clinic/patients/{patient}/treatment-plans` (`viewClinical` to read; `TreatmentItemPolicy::create` / `changeStatus` to act: care-team dentists and admins).
+- `Actions\Treatments\AddTreatmentItem` inserts a `planned` item, its surfaces and a `created` event in one transaction. Whole-mouth procedures store no tooth; tooth and surface procedures need a valid FDI tooth, and surfaces must exist on that tooth (`Fdi::surfaces()`: incisal on incisors and canines, occlusal on premolars and molars).
+- `Actions\Treatments\ChangeTreatmentStatus` locks the item row (`SELECT ... FOR UPDATE`), re-checks `TreatmentStatus::canTransitionTo()` against the stored status, sets the matching timestamp and writes a `status_changed` event, all in one transaction. Cancelling requires a reason (stored, encrypted, on the event). Completed and cancelled are final.
+- A plan's status follows its items: active once any item moves, completed when every item is finished and at least one was completed (cancelled if all were cancelled).
+- Audit: `clinical.treatments_viewed`, `treatment.plan_created`, `treatment.item_created`, `treatment.status_changed` (statuses and codes only).
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -196,6 +204,6 @@ Rules the code enforces:
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
-4. **In progress:** clinical notes, procedure catalogue (done); treatment plans and items with their lifecycle, interactive SVG odontogram, documents.
+4. **In progress:** clinical notes, procedure catalogue, treatment plans and lifecycle (done); interactive SVG odontogram, documents.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
