@@ -24,6 +24,29 @@ enum AppointmentStatus: string
     }
 
     /**
+     * @return list<AppointmentStatus>
+     */
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Scheduled => [self::Confirmed, self::CheckedIn, self::Cancelled, self::NoShow],
+            self::Confirmed => [self::CheckedIn, self::Cancelled, self::NoShow],
+            self::CheckedIn => [self::Completed],
+            self::Completed, self::Cancelled, self::NoShow => [],
+        };
+    }
+
+    public function canTransitionTo(self $next): bool
+    {
+        return in_array($next, $this->allowedTransitions(), true);
+    }
+
+    public function isFinal(): bool
+    {
+        return $this->allowedTransitions() === [];
+    }
+
+    /**
      * Statuses that occupy the dentist's time slot (used for conflict checks).
      *
      * @return list<AppointmentStatus>

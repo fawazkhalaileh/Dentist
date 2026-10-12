@@ -171,6 +171,10 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 Time: the clinic works in `config('clinic.timezone')` (production `Asia/Amman`); timestamps are stored in UTC. `Support\ClinicTime` converts clinic-local date + time to UTC and back. Weekly hours and breaks are clinic-local times of day; weekday 0 = Sunday.
 
 - **Working hours and closures** (`/clinic/schedules`, `schedules.manage`: receptionists and admins): per dentist, several working ranges and breaks per weekday (`Actions\Scheduling\SaveWeeklySchedule` replaces the week in one transaction and refuses overlaps). Closures (`blocked_periods`) apply to one dentist or, with no dentist, the whole clinic.
+- **Availability** (`Support\Availability`): working ranges minus breaks, minus closures and appointments whose status occupies time (`AppointmentStatus::blocking()`), in 15-minute steps; past times today are not offered.
+- **Booking** (`Actions\Scheduling\BookAppointment`, also used to move an appointment): locks the dentist's `users` row (`SELECT ... FOR UPDATE`) to serialise bookings, re-checks overlaps with appointments and closures, then writes, all in one transaction. Outside working hours is allowed only with an explicit flag. Times must be UTC (Laravel writes Carbon values without converting zones).
+- **Status** (`Actions\Scheduling\ChangeAppointmentStatus`): scheduled → confirmed → checked in → completed, or cancelled (reason required) / no-show; each change is an append-only `appointment_status_changes` row. Appointments are never deleted.
+- **Calendar** (`/clinic/appointments`): one column per dentist; dentists see only their own and cannot book (`appointments.manage` is reception and admins).
 
 ## Staff management
 
@@ -227,5 +231,5 @@ Rules the code enforces:
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
 4. **Clinical records (done):** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart, documents.
-5. **In progress:** working hours and closures (done); availability and appointments, booking requests, patient self-service.
+5. **In progress:** working hours and closures, availability and the appointment calendar (done); booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
