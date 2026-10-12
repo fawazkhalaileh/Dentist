@@ -59,7 +59,12 @@ Permissions say **what** a role may do (`App\Enums\Role::permissions()`); polici
 
 **Care team:** a dentist assigned in `patient_dentist`, or one with an appointment or treatment item for the patient (`Patient::hasCareTeamMember`, `Patient::scopeInCareTeamOf`).
 
-Roles are synced from the enums by `RolesAndPermissionsSeeder` (idempotent; run on every deploy).
+Roles and permissions are synced from the enums by `App\Support\RolesAndPermissions::sync()` after every `php artisan migrate`, including a run with nothing to migrate (listener in `AppServiceProvider`). It is idempotent and creates no users, so production never depends on running a seeder. Changing `Role::permissions()` takes effect on the next deploy.
+
+Production runs migrations only, never seeders, so code must not assume seeded rows exist:
+- Query users by role with `User::havingRole(Role::X)`, which matches nothing if the role is missing. Spatie's `User::role('x')` throws `RoleDoesNotExist` and turns a missing role into a 500.
+- Reference data the app needs (roles, FDI teeth) comes from migrations. The procedure catalogue (`ProcedureSeeder`) is a starter list and is not loaded in production; nothing uses it until Phase 4.
+- Tests do not seed either: every test runs on a database built by migrations alone, and `ReferenceDataTest` covers the missing-role case.
 
 ## Data model
 

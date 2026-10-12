@@ -72,13 +72,13 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 |---|---|
 | Clinic name, locales, patient number format, staff MFA, clinical file disk | `config/clinic.php` / `.env` (`CLINIC_*`) |
 | Colours, status colours, brand tokens | `resources/css/theme.css` |
-| Role → permission mapping | `app/Enums/Role.php` (synced by `RolesAndPermissionsSeeder`) |
+| Role → permission mapping | `app/Enums/Role.php` (synced automatically by `php artisan migrate`) |
 | Clinic phone, email, address, opening hours, map link | CMS → Contact details (stored in the `settings` table) |
 | Interface translations | `lang/ar.json`, `lang/ar/validation.php` (draft: needs native-speaker review) |
 
 ## Deploying Phase 2 over Phase 1
 
-Run `php artisan migrate --force` as usual. The migration `upgrade_phase_1_staff_and_service_columns` updates the Phase 1 staff and service tables in place.
+Run `php artisan migrate --force` as usual. It also creates or updates the roles and permissions, so no seeder is needed in production. The migration `upgrade_phase_1_staff_and_service_columns` updates the Phase 1 staff and service tables in place.
 Also run `php artisan storage:link` once on the server, and rebuild assets (`npm ci && npm run build`).
 
 ## Production notes (Phase 6 checklist)
