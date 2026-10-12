@@ -54,7 +54,7 @@
         ['label' => 'Terms of use', 'route' => 'public.legal.terms'],
     ];
 
-    $pageTitle = filled($title) ? $title.' | '.config('clinic.name') : config('clinic.name');
+    $pageTitle = filled($title) ? $title.' | '.ClinicDetails::name() : ClinicDetails::name();
     $phone = ClinicDetails::get('phone');
     $address = ClinicDetails::get('address');
 @endphp
@@ -74,8 +74,8 @@
         @endforeach
         <link rel="alternate" hreflang="x-default" href="{{ route('home') }}" />
 
-        <meta property="og:site_name" content="{{ config('clinic.name') }}" />
-        <meta property="og:title" content="{{ $title ?? config('clinic.name') }}" />
+        <meta property="og:site_name" content="{{ ClinicDetails::name() }}" />
+        <meta property="og:title" content="{{ $title ?? ClinicDetails::name() }}" />
         <meta property="og:type" content="{{ $type }}" />
         <meta property="og:url" content="{{ $canonical }}" />
         <meta property="og:locale" content="{{ $locale }}" />
@@ -101,7 +101,7 @@
 
         <header class="border-b border-line">
             <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-                <a href="{{ route('public.home') }}" class="text-lg font-semibold">{{ config('clinic.name') }}</a>
+                <a href="{{ route('public.home') }}" class="text-lg font-semibold">{{ ClinicDetails::name() }}</a>
 
                 {{-- Desktop navigation --}}
                 <nav aria-label="{{ __('Main navigation') }}" class="hidden md:block">
@@ -150,7 +150,7 @@
         <footer class="border-t border-line bg-surface-muted">
             <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm text-ink-muted md:grid-cols-3">
                 <div>
-                    <p class="font-medium text-ink">{{ config('clinic.name') }}</p>
+                    <p class="font-medium text-ink">{{ ClinicDetails::name() }}</p>
                     @if ($address)
                         <p class="mt-1 whitespace-pre-line">{{ $address }}</p>
                     @endif
@@ -164,7 +164,7 @@
                             <li><a href="{{ route($item['route']) }}" class="hover:underline">{{ __($item['label']) }}</a></li>
                         @endforeach
                     </ul>
-                    <p class="mt-4 md:text-end">&copy; {{ now()->year }} {{ config('clinic.name') }}</p>
+                    <p class="mt-4 md:text-end">&copy; {{ now()->year }} {{ ClinicDetails::name() }}</p>
                 </nav>
             </div>
         </footer>

@@ -22,7 +22,7 @@
         <header class="border-b border-line dark:border-zinc-700">
             <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-3">
                 <a href="{{ route('portal.dashboard') }}" class="font-semibold">
-                    {{ config('clinic.name') }} <span class="font-normal text-ink-muted">· {{ __('Patient portal') }}</span>
+                    {{ \App\Support\ClinicDetails::name() }} <span class="font-normal text-ink-muted">· {{ __('Patient portal') }}</span>
                 </a>
 
                 <form method="POST" action="{{ route('logout') }}">

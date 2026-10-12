@@ -17,6 +17,9 @@ class ClinicDetailsForm extends Form
     public string $map_url = '';
 
     /** @var array<string, string> */
+    public array $name = [];
+
+    /** @var array<string, string> */
     public array $address = [];
 
     /** @var array<string, string> */
@@ -32,6 +35,7 @@ class ClinicDetailsForm extends Form
         $this->map_url = $details['map_url'] ?? '';
 
         foreach (Locales::supported() as $l) {
+            $this->name[$l] = $details['name'][$l] ?? '';
             $this->address[$l] = $details['address'][$l] ?? '';
             $this->opening_hours[$l] = $details['opening_hours'][$l] ?? '';
         }
@@ -50,6 +54,7 @@ class ClinicDetailsForm extends Form
         ];
 
         foreach (Locales::supported() as $l) {
+            $rules["name.{$l}"] = ['nullable', 'string', 'max:150'];
             $rules["address.{$l}"] = ['nullable', 'string', 'max:500'];
             $rules["opening_hours.{$l}"] = ['nullable', 'string', 'max:500'];
         }
@@ -69,6 +74,7 @@ class ClinicDetailsForm extends Form
             'email' => $clean($this->email),
             'whatsapp' => $clean($this->whatsapp),
             'map_url' => $clean($this->map_url),
+            'name' => array_map($clean, $this->name),
             'address' => array_map($clean, $this->address),
             'opening_hours' => array_map($clean, $this->opening_hours),
         ];

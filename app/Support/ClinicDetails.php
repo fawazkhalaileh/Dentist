@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Editable clinic contact details shown on the public site (cached).
+ * Editable clinic name and contact details shown on the public site (cached).
  */
 final class ClinicDetails
 {
@@ -21,6 +21,7 @@ final class ClinicDetails
      * @var array<string, bool>
      */
     public const FIELDS = [
+        'name' => true,
         'phone' => false,
         'email' => false,
         'whatsapp' => false,
@@ -30,7 +31,7 @@ final class ClinicDetails
     ];
 
     /**
-     * @return array{phone: ?string, email: ?string, whatsapp: ?string, map_url: ?string, address: array<string, ?string>, opening_hours: array<string, ?string>}
+     * @return array{name: array<string, ?string>, phone: ?string, email: ?string, whatsapp: ?string, map_url: ?string, address: array<string, ?string>, opening_hours: array<string, ?string>}
      */
     public static function all(): array
     {
@@ -49,6 +50,7 @@ final class ClinicDetails
         };
 
         return [
+            'name' => $localized('name'),
             'phone' => $text($stored['phone'] ?? null),
             'email' => $text($stored['email'] ?? null),
             'whatsapp' => $text($stored['whatsapp'] ?? null),
@@ -56,6 +58,17 @@ final class ClinicDetails
             'address' => $localized('address'),
             'opening_hours' => $localized('opening_hours'),
         ];
+    }
+
+    /**
+     * The clinic's name in the locale (current by default), falling back to the
+     * default language and then to config('clinic.name').
+     */
+    public static function name(?string $locale = null): string
+    {
+        return self::get('name', $locale)
+            ?? self::get('name', Locales::default())
+            ?? (string) config('clinic.name');
     }
 
     public static function get(string $field, ?string $locale = null): ?string

@@ -1,4 +1,4 @@
-<x-layouts::public :title="__('Frequently asked questions')" :description="__('Answers to common questions about visiting :clinic.', ['clinic' => config('clinic.name')])" :schema="$schema">
+<x-layouts::public :title="__('Frequently asked questions')" :description="__('Answers to common questions about visiting :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])" :schema="$schema">
     <x-ui.page-header :title="__('Frequently asked questions')" />
 
     @if ($faqs->isEmpty())

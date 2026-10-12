@@ -52,7 +52,7 @@ final class ClinicNavigation
                     self::item('Testimonials', 'clinic.content.testimonials.index', 'chat-bubble-left-right', $content),
                     self::item('FAQs', 'clinic.content.faqs.index', 'question-mark-circle', $content),
                     self::item('Media library', 'clinic.content.media.index', 'rectangle-stack', $content),
-                    self::item('Contact details', 'clinic.content.clinic-details', 'map-pin', $content),
+                    self::item('Clinic details', 'clinic.content.clinic-details', 'map-pin', $content),
                     self::item('Website messages', 'clinic.content.messages.index', 'envelope', $content),
                 ],
             ],
