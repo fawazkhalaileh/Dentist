@@ -135,6 +135,13 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - The patient overview shows recorded allergies in red, or a warning when allergies were never recorded, only to users who may see clinical data.
 - Text fields are encrypted at rest. Audit entries (`clinical.history_viewed`, `clinical.medical_history_recorded`, `clinical.dental_history_recorded`) never contain the clinical text.
 
+## Clinical notes
+
+`/clinic/patients/{patient}/notes` (`viewClinical` to read; `ClinicalNotePolicy::create` to write).
+- `ClinicalNote` is append-only. A correction (`Actions\Patients\RecordClinicalNote` with `amends`) is a new note whose `amends_id` points at the note it replaces; the timeline shows the latest version of each note, marked "Corrected", with earlier versions available on request.
+- `ClinicalNotePolicy::amend`: only the author or an administrator, only the latest version (no forks), and the text must change.
+- Note text is encrypted at rest; audit entries (`clinical.notes_viewed`, `clinical.note_created`, `clinical.note_amended`) never contain it.
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -189,6 +196,6 @@ Rules the code enforces:
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
-4. Interactive SVG odontogram and treatment workflow actions.
+4. **In progress:** clinical notes (done); procedure catalogue, treatment plans and items with their lifecycle, interactive SVG odontogram, documents.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
