@@ -150,6 +150,14 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - A plan's status follows its items: active once any item moves, completed when every item is finished and at least one was completed (cancelled if all were cancelled).
 - Audit: `clinical.treatments_viewed`, `treatment.plan_created`, `treatment.item_created`, `treatment.status_changed` (statuses and codes only).
 
+## Dental chart
+
+`/clinic/patients/{patient}/chart` (`viewClinical`). An inline SVG drawn in Blade (no JavaScript library):
+- FDI layout as the dentist faces the patient: upper 18-11 | 21-28, lower 48-41 | 31-38 (primary: 55-51 | 61-65, 85-81 | 71-75). The SVG is `dir="ltr"` so it is never mirrored in Arabic.
+- Each tooth has five regions; buccal faces outward (top on the upper arch, bottom on the lower), mesial faces the midline, and the centre is occlusal or incisal.
+- Colour comes from the `--status-*` tokens in `theme.css`: per surface the most pressing status (in progress > planned > completed); treatments without surfaces tint and outline the whole tooth. Cancelled items are not drawn.
+- Each tooth is a link to the treatments page filtered to that tooth, with an `aria-label` summary; a text list below repeats everything without colour.
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -204,6 +212,6 @@ Rules the code enforces:
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
-4. **In progress:** clinical notes, procedure catalogue, treatment plans and lifecycle (done); interactive SVG odontogram, documents.
+4. **In progress:** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart (done); documents.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.

@@ -396,7 +396,7 @@ new #[Title('Treatment plans')] class extends Component {
                                         <td class="px-4 py-2" dir="ltr">
                                             {{ $treatment->tooth_number ?? __('Whole mouth') }}
                                             @if ($treatment->surfaces->isNotEmpty())
-                                                <span class="text-xs text-zinc-500">{{ $treatment->surfaces->map(fn ($s) => $s->surface->value)->implode('') }}</span>
+                                                <span class="text-xs text-zinc-500">{{ $treatment->surfaceCodes() }}</span>
                                             @endif
                                         </td>
                                         <td class="px-4 py-2">
