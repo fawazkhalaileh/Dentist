@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * One-off unavailability. dentist_id NULL means the whole clinic is closed.
  *
  * @property int $id
  * @property int|null $dentist_id
- * @property Carbon $starts_at
- * @property Carbon $ends_at
+ * @property CarbonImmutable $starts_at
+ * @property CarbonImmutable $ends_at
  * @property string|null $reason
  */
 #[Fillable(['dentist_id', 'starts_at', 'ends_at', 'reason', 'created_by'])]

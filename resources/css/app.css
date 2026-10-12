@@ -65,3 +65,20 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Rendered Markdown (x-ui.prose). Logical properties so lists and quotes mirror in RTL. */
+@layer components {
+    .prose { line-height: 1.7; }
+    .prose > * + * { margin-top: 1em; }
+    .prose h2 { font-size: 1.375rem; font-weight: 600; margin-top: 1.5em; }
+    .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.25em; }
+    .prose ul { list-style: disc; padding-inline-start: 1.5em; }
+    .prose ol { list-style: decimal; padding-inline-start: 1.5em; }
+    .prose li + li { margin-top: 0.25em; }
+    .prose a { text-decoration: underline; text-underline-offset: 3px; }
+    .prose blockquote { border-inline-start: 3px solid var(--line); padding-inline-start: 1em; color: var(--ink-muted); }
+    .prose strong { font-weight: 600; }
+    .prose hr { border-color: var(--line); }
+}
+
+[x-cloak] { display: none !important; }

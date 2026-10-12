@@ -43,10 +43,15 @@ class DemoSeeder extends Seeder
         $dentistTwo = User::factory()->dentist()->create($user('Dr. Demo Two', 'dentist.two@example.test'));
 
         foreach ([$dentistOne, $dentistTwo] as $i => $dentist) {
-            StaffProfile::factory()->create([
+            $n = $i + 1;
+            $profile = StaffProfile::factory()->create([
                 'user_id' => $dentist->id,
-                'slug' => 'demo-dentist-'.($i + 1),
+                'slug' => "demo-dentist-{$n}",
                 'sort_order' => $i,
+            ]);
+            $profile->translations()->createMany([
+                ['locale' => 'en', 'display_name' => "Dr. Demo {$n}", 'specialty' => 'General dentistry', 'bio' => 'Demo profile. Replace with the dentist\'s own biography.'],
+                ['locale' => 'ar', 'display_name' => "د. تجريبي {$n}", 'specialty' => 'طب الأسنان العام', 'bio' => 'ملف تجريبي. يُستبدل بالسيرة الذاتية الفعلية للطبيب.'],
             ]);
         }
 

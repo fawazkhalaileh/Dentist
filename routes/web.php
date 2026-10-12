@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\Public\BlogController;
+use App\Http\Controllers\Public\ContactController;
+use App\Http\Controllers\Public\DentistController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\PageController;
+use App\Http\Controllers\Public\PublicContentController;
+use App\Http\Controllers\Public\ServiceController;
 use App\Http\Controllers\Public\SitemapController;
 use App\Models\User;
 use App\Support\Locales;
@@ -11,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 | Public website
 |--------------------------------------------------------------------------
 | Every public page lives under a locale prefix (/en/..., /ar/...).
-| Pages marked with a phase number are routed placeholders, not finished pages.
+| Content is read only from published records; nothing clinical is exposed here.
 */
 
 Route::get('/', function (Request $request) {
@@ -26,25 +33,29 @@ Route::prefix('{locale}')
     ->where(['locale' => Locales::routePattern()])
     ->name('public.')
     ->group(function () {
-        Route::view('/', 'public.home')->name('home');
+        Route::get('/', HomeController::class)->name('home');
 
-        $placeholder = fn (string $title, int $phase) => ['title' => $title, 'phase' => $phase];
+        Route::get('about', PageController::class)->defaults('page', 'about')->name('about');
+        Route::get('privacy', PageController::class)->defaults('page', 'privacy')->name('legal.privacy');
+        Route::get('terms', PageController::class)->defaults('page', 'terms')->name('legal.terms');
 
-        Route::view('about', 'public.placeholder', $placeholder('About the clinic', 2))->name('about');
-        Route::view('dentists', 'public.placeholder', $placeholder('Meet the dentists', 2))->name('dentists.index');
-        Route::view('dentists/{slug}', 'public.placeholder', $placeholder('Dentist profile', 2))->name('dentists.show');
-        Route::view('services', 'public.placeholder', $placeholder('Services', 2))->name('services.index');
-        Route::view('services/{slug}', 'public.placeholder', $placeholder('Service', 2))->name('services.show');
-        Route::view('blog', 'public.placeholder', $placeholder('Blog', 2))->name('blog.index');
-        Route::view('blog/category/{slug}', 'public.placeholder', $placeholder('Blog category', 2))->name('blog.category');
-        Route::view('blog/{slug}', 'public.placeholder', $placeholder('Article', 2))->name('blog.show');
-        Route::view('gallery', 'public.placeholder', $placeholder('Before and after gallery', 2))->name('gallery');
-        Route::view('testimonials', 'public.placeholder', $placeholder('Testimonials', 2))->name('testimonials');
-        Route::view('faq', 'public.placeholder', $placeholder('Frequently asked questions', 2))->name('faq');
-        Route::view('contact', 'public.placeholder', $placeholder('Contact', 2))->name('contact');
-        Route::view('book', 'public.placeholder', $placeholder('Request an appointment', 5))->name('booking');
-        Route::view('privacy', 'public.placeholder', $placeholder('Privacy policy', 2))->name('legal.privacy');
-        Route::view('terms', 'public.placeholder', $placeholder('Terms of use', 2))->name('legal.terms');
+        Route::get('dentists', [DentistController::class, 'index'])->name('dentists.index');
+        Route::get('dentists/{slug}', [DentistController::class, 'show'])->name('dentists.show');
+        Route::get('services', [ServiceController::class, 'index'])->name('services.index');
+        Route::get('services/{slug}', [ServiceController::class, 'show'])->name('services.show');
+        Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
+        Route::get('blog/category/{slug}', [BlogController::class, 'category'])->name('blog.category');
+        Route::get('blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
+        Route::get('gallery', [PublicContentController::class, 'gallery'])->name('gallery');
+        Route::get('testimonials', [PublicContentController::class, 'testimonials'])->name('testimonials');
+        Route::get('faq', [PublicContentController::class, 'faq'])->name('faq');
+
+        Route::get('contact', [ContactController::class, 'show'])->name('contact');
+        Route::post('contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
+
+        // Booking requests arrive with the scheduling engine.
+        Route::view('book', 'public.placeholder', ['title' => 'Request an appointment', 'phase' => 5])->name('booking');
     });
 
 /*

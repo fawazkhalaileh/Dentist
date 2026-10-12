@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Enums\TreatmentStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\TreatmentItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 
 /**
  * One procedure for a patient, optionally on one tooth. Its full lifecycle is
@@ -25,10 +25,10 @@ use Illuminate\Support\Carbon;
  * @property int $dentist_id
  * @property int|null $appointment_id
  * @property TreatmentStatus $status
- * @property Carbon|null $planned_for
- * @property Carbon|null $started_at
- * @property Carbon|null $completed_at
- * @property Carbon|null $cancelled_at
+ * @property CarbonImmutable|null $planned_for
+ * @property CarbonImmutable|null $started_at
+ * @property CarbonImmutable|null $completed_at
+ * @property CarbonImmutable|null $cancelled_at
  * @property string|null $notes
  * @property int $created_by
  * @property-read Patient $patient

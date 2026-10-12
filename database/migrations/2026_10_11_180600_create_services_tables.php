@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Public website services. Language-neutral fields live on `services`;
  * per-locale text and SEO slugs live on `service_translations`.
- * Content sections and FAQs are added in Phase 2 with the services CMS.
+ * Content sections and FAQs: see the Phase 2 service content migration.
  */
 return new class extends Migration
 {
@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('status', 20)->default('draft')->index();
-            $table->string('featured_image_path')->nullable();
+            $table->foreignId('featured_media_id')->nullable()->constrained('media')->nullOnDelete();
             $table->boolean('is_bookable')->default(true);
             $table->unsignedSmallInteger('duration_minutes')->default(30);
             $table->unsignedSmallInteger('sort_order')->default(0);
