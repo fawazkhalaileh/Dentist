@@ -86,8 +86,12 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
         });
 
         // Administration
-        Route::view('staff', 'clinic.placeholder', $placeholder('Dentists and staff', 3))
-            ->middleware($can(Permission::StaffManage))->name('staff.index');
+        // Staff accounts and dentist profiles. Components also re-check the permission on every action.
+        Route::prefix('staff')->name('staff.')->middleware($can(Permission::StaffManage))->group(function () {
+            Route::livewire('/', 'pages::clinic.staff.index')->name('index');
+            Route::livewire('create', 'pages::clinic.staff.edit')->name('create');
+            Route::livewire('{user}/edit', 'pages::clinic.staff.edit')->name('edit');
+        });
         Route::view('settings', 'clinic.placeholder', $placeholder('Clinic settings', 3))
             ->middleware($can(Permission::SettingsManage))->name('settings.index');
         Route::view('audit', 'clinic.placeholder', $placeholder('Audit log', 6))
