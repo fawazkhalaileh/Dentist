@@ -4,7 +4,7 @@ Public website, patient portal and clinic practice-management dashboard in one L
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, data model, roles and phase plan.
 
 **Status: Phase 2 (public website and CMS) done.** The public site works in English and Arabic, and content staff edit it under `/clinic/content`.
-Administrators manage staff accounts and dentist profiles (Phase 3, in progress). Patient, clinical and scheduling pages marked "Not built yet" are routed placeholders with their access rules in place.
+Administrators manage staff accounts and dentist profiles, and reception registers and finds patients (Phase 3, in progress). Patient, clinical and scheduling pages marked "Not built yet" are routed placeholders with their access rules in place.
 
 ## Requirements
 

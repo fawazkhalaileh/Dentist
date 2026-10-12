@@ -118,6 +118,15 @@ Clinical safety rules built into the schema and models:
 
 Migrations: never edit a migration that has already run anywhere. Phase 2 edited the `staff_profiles` and `services` create migrations in place; `2026_10_12_100700_upgrade_phase_1_staff_and_service_columns` brings databases migrated in Phase 1 to the same shape (and copies existing profile text into a default-locale translation). It does nothing on a fresh install. New schema changes go in new migrations.
 
+## Patient directory
+
+`/clinic/patients` (Livewire pages in `resources/views/pages/clinic/patients`). Every screen authorises through `PatientPolicy` on load and again in each action.
+- **List and search:** staff with `patients.view.all` see everyone; dentists only their care team (`Patient::scopeInCareTeamOf`). Search covers name in either order, patient number, email and phone. Phone matching compares digits without the leading 0 (MySQL `REGEXP_REPLACE`), so a local `079...` finds `+962 79...`. Search input is escaped, so `%` and `_` match literally.
+- **Register and edit** (`patients.create` / `patients.update`, i.e. receptionists and admins) through `Actions\Patients\SavePatient`. A phone number or an email is required. Before creating a record the form lists possible duplicates (same phone, or same name and date of birth) and asks staff to confirm it is a different person. Care-team choices are limited to active dentists (plus anyone already on the team).
+- **Archive and restore** (`patients.archive`, admins) through `Actions\Patients\ArchivePatient`: a soft delete, so nothing is lost and archived patients drop out of lists, search and URLs (404).
+- **Audit:** `patient.created`, `patient.updated` (names of changed fields, never values), `patient.archived`, `patient.restored`, and `patient.viewed` each time someone opens a record.
+- Form ids that pick the record to save come from the component's locked model, never from the browser-editable form (`form.patientId`, `form.userId`).
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -171,7 +180,7 @@ Rules the code enforces:
 
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
-3. **In progress:** staff management (done), patient directory and search, clinic settings.
+3. **In progress:** staff management (done), patient directory and search (done), medical and dental history, clinic settings.
 4. Interactive SVG odontogram and treatment workflow actions.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
