@@ -1,0 +1,41 @@
+/*
+|--------------------------------------------------------------------------
+| Theme tokens
+|--------------------------------------------------------------------------
+| The final brand identity is applied here. Templates use these tokens via
+| Tailwind utilities (bg-brand, text-status-planned, ...) and never hard-code
+| brand colours. Values below are intentionally neutral.
+*/
+
+:root {
+    --brand: #1f2937;            /* primary actions, links */
+    --brand-contrast: #ffffff;   /* text on --brand */
+    --surface: #ffffff;          /* page background */
+    --surface-muted: #f5f5f5;    /* panels, table headers */
+    --ink: #171717;              /* body text */
+    --ink-muted: #525252;        /* secondary text */
+    --line: #e5e5e5;             /* borders */
+
+    /* Treatment workflow status. Always shown together with a text label. */
+    --status-planned: #15803d;     /* green */
+    --status-in-progress: #b45309; /* amber */
+    --status-completed: #1d4ed8;   /* blue */
+    --status-cancelled: #6b7280;   /* neutral gray */
+
+    --radius: 0.5rem;
+}
+
+@theme inline {
+    --color-brand: var(--brand);
+    --color-brand-contrast: var(--brand-contrast);
+    --color-surface: var(--surface);
+    --color-surface-muted: var(--surface-muted);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-line: var(--line);
+
+    --color-status-planned: var(--status-planned);
+    --color-status-in-progress: var(--status-in-progress);
+    --color-status-completed: var(--status-completed);
+    --color-status-cancelled: var(--status-cancelled);
+}
