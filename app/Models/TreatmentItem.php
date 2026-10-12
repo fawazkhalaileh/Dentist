@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ToothSurface;
 use App\Enums\TreatmentStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\TreatmentItemFactory;
@@ -60,6 +61,18 @@ class TreatmentItem extends Model
         static::deleting(function () {
             throw new \LogicException('Treatment items are cancelled, never deleted.');
         });
+    }
+
+    /**
+     * Surface letters in the conventional order (M O D B L I), e.g. "MOD".
+     */
+    public function surfaceCodes(): string
+    {
+        $order = array_map(fn (ToothSurface $s) => $s->value, ToothSurface::cases());
+        $codes = $this->surfaces->map(fn (TreatmentItemSurface $s) => $s->surface->value)->all();
+        usort($codes, fn (string $a, string $b) => array_search($a, $order, true) <=> array_search($b, $order, true));
+
+        return implode('', $codes);
     }
 
     /**
