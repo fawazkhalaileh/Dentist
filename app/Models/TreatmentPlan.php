@@ -24,6 +24,8 @@ class TreatmentPlan extends Model
     {
         return [
             'status' => TreatmentPlanStatus::class,
+            // Free clinical text is encrypted at rest like other clinical fields.
+            'notes' => 'encrypted',
         ];
     }
 

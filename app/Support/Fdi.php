@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Enums\Dentition;
+use App\Enums\ToothSurface;
 
 /**
  * FDI two-digit tooth notation.
@@ -43,6 +44,26 @@ final class Fdi
     public static function position(int $number): int
     {
         return $number % 10;
+    }
+
+    /**
+     * Incisors and canines (positions 1-3 in both dentitions).
+     */
+    public static function isAnterior(int $number): bool
+    {
+        return self::position($number) <= 3;
+    }
+
+    /**
+     * Surfaces a tooth has: incisal edge for front teeth, occlusal for back teeth.
+     *
+     * @return list<ToothSurface>
+     */
+    public static function surfaces(int $number): array
+    {
+        return self::isAnterior($number)
+            ? [ToothSurface::Mesial, ToothSurface::Distal, ToothSurface::Buccal, ToothSurface::Lingual, ToothSurface::Incisal]
+            : [ToothSurface::Mesial, ToothSurface::Occlusal, ToothSurface::Distal, ToothSurface::Buccal, ToothSurface::Lingual];
     }
 
     public static function dentition(int $number): Dentition

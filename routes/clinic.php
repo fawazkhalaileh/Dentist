@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
                 ->middleware('can:viewClinical,patient')->name('history');
             Route::view('chart', 'clinic.placeholder', $placeholder('Dental chart', 4))
                 ->middleware('can:viewClinical,patient')->name('chart');
-            Route::view('treatment-plans', 'clinic.placeholder', $placeholder('Treatment plans', 4))
+            Route::livewire('treatment-plans', 'pages::clinic.patients.treatments')
                 ->middleware('can:viewClinical,patient')->name('treatment-plans');
             Route::livewire('notes', 'pages::clinic.patients.notes')
                 ->middleware('can:viewClinical,patient')->name('notes');
