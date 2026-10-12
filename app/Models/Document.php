@@ -27,6 +27,41 @@ class Document extends Model
 {
     use SoftDeletes;
 
+    public const CATEGORIES = ['xray', 'photo', 'consent', 'referral', 'lab', 'other'];
+
+    /** File types accepted for upload (checked against the file's content). */
+    public const MIMES = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
+
+    public const MAX_KILOBYTES = 10240;
+
+    public static function categoryLabel(?string $category): string
+    {
+        return match ($category) {
+            'xray' => __('X-ray'),
+            'photo' => __('Clinical photo'),
+            'consent' => __('Consent form'),
+            'referral' => __('Referral letter'),
+            'lab' => __('Lab report'),
+            default => __('Other'),
+        };
+    }
+
+    /**
+     * PDFs and images can be shown in the browser; anything else downloads.
+     */
+    public function isViewableInline(): bool
+    {
+        return in_array($this->mime_type, ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'], true);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function uploader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
     /**
      * @return BelongsTo<Patient, $this>
      */
