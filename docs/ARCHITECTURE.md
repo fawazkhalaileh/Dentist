@@ -158,6 +158,14 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - Colour comes from the `--status-*` tokens in `theme.css`: per surface the most pressing status (in progress > planned > completed); treatments without surfaces tint and outline the whole tooth. Cancelled items are not drawn.
 - Each tooth is a link to the treatments page filtered to that tooth, with an `aria-label` summary; a text list below repeats everything without colour.
 
+## Patient documents
+
+`/clinic/patients/{patient}/documents` (`viewClinical` to list and download, `writeClinical` to upload).
+- `Actions\Patients\StoreDocument` stores the file on `config('clinic.storage.clinical_disk')` (default `local`, i.e. `storage/app/private`) under `patients/{id}/` with a random name. Accepted: PDF, JPG, PNG, WebP up to 10 MB, validated by content; the stored MIME type is detected server-side.
+- `DocumentDownloadController` re-authorises, finds the document only within the patient in the URL, and responds with `X-Content-Type-Options: nosniff`, `Cache-Control: private, no-store` and a `sandbox` CSP. Only PDFs and images are served inline; everything else is an attachment.
+- Removing is admin-only and a soft delete; the file stays on disk. Audit: `clinical.documents_viewed`, `clinical.document_uploaded`, `clinical.document_downloaded`, `clinical.document_removed`.
+- Production note: PHP's `upload_max_filesize` must be at least 10M for the 10 MB limit to work (see README).
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -212,6 +220,6 @@ Rules the code enforces:
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
-4. **In progress:** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart (done); documents.
+4. **Clinical records (done):** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart, documents.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
