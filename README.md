@@ -76,10 +76,17 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 | Clinic phone, email, address, opening hours, map link | CMS → Contact details (stored in the `settings` table) |
 | Interface translations | `lang/ar.json`, `lang/ar/validation.php` (draft: needs native-speaker review) |
 
-## Deploying Phase 2 over Phase 1
+## Deploying
 
-Run `php artisan migrate --force` as usual. It also creates or updates the roles and permissions, so no seeder is needed in production. The migration `upgrade_phase_1_staff_and_service_columns` updates the Phase 1 staff and service tables in place.
-Also run `php artisan storage:link` once on the server, and rebuild assets (`npm ci && npm run build`).
+Every deploy runs `php artisan migrate --force`, which also creates or updates the roles and permissions, so production never needs a seeder.
+A deploy pulls `main`, installs Composer and npm dependencies, builds assets, migrates and rebuilds the config, route and view caches.
+Back up the database first (`mysqldump dentist | gzip > ~/backups/dentist-$(date +%F-%H%M).sql.gz`; credentials come from `~/.my.cnf`).
+
+One-time server setup:
+- `php artisan storage:link` (serves uploaded website images).
+- `storage/` and `bootstrap/cache/` owned by the deploy user with group `www-data`, group-writable, with default ACLs for both users. Log files are created `0664` (`config/logging.php`), so deploys and Apache can both write them.
+- PHP for Apache: `upload_max_filesize` of at least 10M and `post_max_size` of at least 12M (website images may be up to 8 MB), and `memory_limit` of 256M for resizing them.
+- Mail: set `MAIL_*` in `.env` to a real SMTP service. With the default `log` mailer, password-reset and verification emails are only written to the log.
 
 Production never runs seeders, so it starts with no staff accounts. Create the first administrator on the server:
 
@@ -87,11 +94,12 @@ Production never runs seeders, so it starts with no staff accounts. Create the f
 php artisan clinic:create-admin you@example.com --name="Your Name"   # asks for the password
 ```
 
-The administrator sets up two-factor authentication at first sign-in, then creates the other staff accounts (Phase 3).
+The administrator sets up two-factor authentication at first sign-in. Staff management (adding dentists and receptionists) arrives in Phase 3.
 
 ## Production notes (Phase 6 checklist)
 
-- HTTPS only: `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`.
+- `APP_ENV=production` and `APP_DEBUG=false` (debug mode shows stack traces to visitors).
+- HTTPS only, then `SESSION_SECURE_COOKIE=true`.
 - Back up the database **and** `APP_KEY`. Clinical text fields are encrypted with it.
 - Clinical uploads stay on a private disk (`CLINIC_CLINICAL_DISK`) and are served only through authorised routes.
 - Never seed real patient data. `DemoSeeder` only runs in the `local` environment.
