@@ -166,6 +166,12 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 - Removing is admin-only and a soft delete; the file stays on disk. Audit: `clinical.documents_viewed`, `clinical.document_uploaded`, `clinical.document_downloaded`, `clinical.document_removed`.
 - Production note: PHP's `upload_max_filesize` must be at least 10M for the 10 MB limit to work (see README).
 
+## Scheduling
+
+Time: the clinic works in `config('clinic.timezone')` (production `Asia/Amman`); timestamps are stored in UTC. `Support\ClinicTime` converts clinic-local date + time to UTC and back. Weekly hours and breaks are clinic-local times of day; weekday 0 = Sunday.
+
+- **Working hours and closures** (`/clinic/schedules`, `schedules.manage`: receptionists and admins): per dentist, several working ranges and breaks per weekday (`Actions\Scheduling\SaveWeeklySchedule` replaces the week in one transaction and refuses overlaps). Closures (`blocked_periods`) apply to one dentist or, with no dentist, the whole clinic.
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -221,5 +227,5 @@ Rules the code enforces:
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
 4. **Clinical records (done):** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart, documents.
-5. Scheduling, availability, booking requests, patient self-service.
+5. **In progress:** working hours and closures (done); availability and appointments, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
