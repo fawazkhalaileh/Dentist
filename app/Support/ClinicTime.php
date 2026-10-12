@@ -59,7 +59,8 @@ final class ClinicTime
     {
         $names = [];
         foreach (range(0, 6) as $day) {
-            $names[$day] = CarbonImmutable::now()->startOfWeek(CarbonInterface::SUNDAY)->addDays($day)->locale(app()->getLocale())->dayName;
+            // translatedFormat() uses the app locale, so Arabic staff see Arabic day names.
+            $names[$day] = CarbonImmutable::now()->startOfWeek(CarbonInterface::SUNDAY)->addDays($day)->translatedFormat('l');
         }
 
         return $names;
