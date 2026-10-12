@@ -63,7 +63,7 @@ Roles and permissions are synced from the enums by `App\Support\RolesAndPermissi
 
 Production runs migrations only, never seeders, so code must not assume seeded rows exist:
 - Query users by role with `User::havingRole(Role::X)`, which matches nothing if the role is missing. Spatie's `User::role('x')` throws `RoleDoesNotExist` and turns a missing role into a 500.
-- Reference data the app needs (roles, FDI teeth) comes from migrations. The procedure catalogue (`ProcedureSeeder`) is a starter list and is not loaded in production; nothing uses it until Phase 4.
+- Reference data the app needs (roles, FDI teeth) comes from migrations. The procedure catalogue is clinic data: production starts empty and an administrator fills it under **Procedure catalogue** ("Add starter procedures" adds only missing codes from `Actions\Procedures\AddStarterProcedures`; the local seeder uses the same action). Procedures used by treatment items can only be deactivated.
 - Tests do not seed either: every test runs on a database built by migrations alone, and `ReferenceDataTest` covers the missing-role case.
 
 ## Data model
@@ -196,6 +196,6 @@ Rules the code enforces:
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
-4. **In progress:** clinical notes (done); procedure catalogue, treatment plans and items with their lifecycle, interactive SVG odontogram, documents.
+4. **In progress:** clinical notes, procedure catalogue (done); treatment plans and items with their lifecycle, interactive SVG odontogram, documents.
 5. Scheduling, availability, booking requests, patient self-service.
 6. Security hardening, audit log UI, backups, production readiness.
