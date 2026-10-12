@@ -2,6 +2,7 @@
 
 use App\Enums\Permission;
 use App\Http\Controllers\Clinic\ClinicDashboardController;
+use App\Http\Controllers\Clinic\DocumentDownloadController;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
@@ -46,8 +47,11 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
                 ->middleware('can:viewClinical,patient')->name('treatment-plans');
             Route::livewire('notes', 'pages::clinic.patients.notes')
                 ->middleware('can:viewClinical,patient')->name('notes');
-            Route::view('documents', 'clinic.placeholder', $placeholder('Documents', 4))
+            Route::livewire('documents', 'pages::clinic.patients.documents')
                 ->middleware('can:viewClinical,patient')->name('documents');
+            Route::get('documents/{document}', DocumentDownloadController::class)
+                ->whereNumber('document')
+                ->middleware('can:viewClinical,patient')->name('documents.download');
         });
 
         // Scheduling
