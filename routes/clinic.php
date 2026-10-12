@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
             ->middleware($can(Permission::SchedulesManage))->name('schedules.index');
 
         // Catalogue and content
-        Route::view('procedures', 'clinic.placeholder', $placeholder('Procedure catalogue', 4))
+        Route::livewire('procedures', 'pages::clinic.procedures.index')
             ->middleware($can(Permission::ProceduresManage))->name('procedures.index');
 
         // Website content (CMS). Components also re-check the permission on every action.

@@ -15,7 +15,7 @@ class ProcedureFactory extends Factory
         return [
             'code' => strtoupper(fake()->unique()->bothify('PRC-###??')),
             'name' => fake()->words(2, true),
-            'category' => 'general',
+            'category' => 'other',
             'default_duration_minutes' => 30,
             'scope' => 'tooth',
             'is_active' => true,
