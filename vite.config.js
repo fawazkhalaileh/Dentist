@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import { fontsource } from 'laravel-vite-plugin/fonts';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
 export default defineConfig({
@@ -13,7 +13,8 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
+                // Served from the @fontsource npm package, so builds do not download fonts.
+                fontsource('Instrument Sans', {
                     weights: [400, 500, 600],
                 }),
             ],
