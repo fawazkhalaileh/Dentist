@@ -2,6 +2,7 @@
 
 use App\Actions\Content\SaveService;
 use App\Actions\Media\StoreMedia;
+use App\Enums\Role;
 use App\Livewire\ContentComponent;
 use App\Livewire\Forms\ServiceForm;
 use App\Models\Media;
@@ -36,7 +37,7 @@ new #[Title('Service')] class extends ContentComponent {
     #[Computed]
     public function dentists(): Collection
     {
-        return User::role('dentist')->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return User::havingRole(Role::Dentist)->where('is_active', true)->orderBy('name')->get(['id', 'name']);
     }
 
     #[Computed]

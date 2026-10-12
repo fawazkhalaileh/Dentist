@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
 use App\Models\Concerns\HasTranslations;
 use Database\Factories\StaffProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -45,7 +46,7 @@ class StaffProfile extends Model
     public function scopeShownPublicly(Builder $query): void
     {
         $query->where('is_public', true)
-            ->whereHas('user', fn (Builder $u) => $u->where('is_active', true)->role('dentist'));
+            ->whereHas('user', fn (Builder $u) => $u->where('is_active', true)->havingRole(Role::Dentist));
     }
 
     /**
