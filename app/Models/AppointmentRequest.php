@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\AppointmentRequestStatus;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Unconfirmed booking request from the public site or the portal.
@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $email
  * @property int|null $preferred_dentist_id
  * @property int|null $service_id
- * @property Carbon|null $preferred_date
+ * @property CarbonImmutable|null $preferred_date
  * @property string|null $preferred_time
  * @property string|null $message
  * @property string $locale

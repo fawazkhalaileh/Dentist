@@ -17,10 +17,22 @@ class StaffProfileFactory extends Factory
         return [
             'user_id' => User::factory()->dentist(),
             'slug' => Str::slug(fake()->unique()->name()),
-            'title' => 'Dr.',
-            'specialty' => 'General dentistry',
             'is_public' => true,
             'sort_order' => 0,
         ];
+    }
+
+    /**
+     * Adds an English translation using the user's name.
+     */
+    public function withEnglish(?string $specialty = 'General dentistry'): static
+    {
+        return $this->afterCreating(function (StaffProfile $profile) use ($specialty) {
+            $profile->translations()->create([
+                'locale' => 'en',
+                'display_name' => $profile->user->name,
+                'specialty' => $specialty,
+            ]);
+        });
     }
 }

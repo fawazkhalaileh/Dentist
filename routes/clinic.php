@@ -60,11 +60,29 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
         Route::view('procedures', 'clinic.placeholder', $placeholder('Procedure catalogue', 4))
             ->middleware($can(Permission::ProceduresManage))->name('procedures.index');
 
-        Route::prefix('content')->name('content.')->middleware($can(Permission::ContentManage))->group(function () use ($placeholder) {
-            Route::view('services', 'clinic.placeholder', $placeholder('Website services', 2))->name('services.index');
-            Route::view('blog', 'clinic.placeholder', $placeholder('Blog', 2))->name('blog.index');
-            Route::view('pages', 'clinic.placeholder', $placeholder('Website pages', 2))->name('pages.index');
-            Route::view('media', 'clinic.placeholder', $placeholder('Media library', 2))->name('media.index');
+        // Website content (CMS). Components also re-check the permission on every action.
+        Route::prefix('content')->name('content.')->middleware($can(Permission::ContentManage))->group(function () {
+            Route::livewire('services', 'pages::clinic.content.services.index')->name('services.index');
+            Route::livewire('services/create', 'pages::clinic.content.services.edit')->name('services.create');
+            Route::livewire('services/{service}/edit', 'pages::clinic.content.services.edit')->name('services.edit');
+
+            Route::livewire('blog', 'pages::clinic.content.blog.index')->name('blog.index');
+            Route::livewire('blog/create', 'pages::clinic.content.blog.edit')->name('blog.create');
+            Route::livewire('blog/categories', 'pages::clinic.content.blog.categories')->name('blog.categories');
+            Route::livewire('blog/{post}/edit', 'pages::clinic.content.blog.edit')->name('blog.edit');
+
+            Route::livewire('pages', 'pages::clinic.content.pages.index')->name('pages.index');
+            Route::livewire('pages/{key}/edit', 'pages::clinic.content.pages.edit')->name('pages.edit');
+
+            Route::livewire('gallery', 'pages::clinic.content.gallery.index')->name('gallery.index');
+            Route::livewire('gallery/create', 'pages::clinic.content.gallery.edit')->name('gallery.create');
+            Route::livewire('gallery/{item}/edit', 'pages::clinic.content.gallery.edit')->name('gallery.edit');
+
+            Route::livewire('testimonials', 'pages::clinic.content.testimonials')->name('testimonials.index');
+            Route::livewire('faqs', 'pages::clinic.content.faqs')->name('faqs.index');
+            Route::livewire('media', 'pages::clinic.content.media')->name('media.index');
+            Route::livewire('clinic-details', 'pages::clinic.content.clinic-details')->name('clinic-details');
+            Route::livewire('messages', 'pages::clinic.content.messages')->name('messages.index');
         });
 
         // Administration

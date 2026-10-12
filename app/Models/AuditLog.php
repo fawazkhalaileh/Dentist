@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Models\Concerns\AppendOnly;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property array<string, mixed>|null $metadata
- * @property Carbon $created_at
+ * @property CarbonImmutable $created_at
  */
 #[Fillable(['user_id', 'action', 'auditable_type', 'auditable_id', 'patient_id', 'ip_address', 'user_agent', 'metadata'])]
 class AuditLog extends Model

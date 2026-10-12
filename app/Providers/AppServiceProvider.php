@@ -2,11 +2,16 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureStaffHasTwoFactor;
+use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SetLocale;
 use App\Models\Patient;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -33,8 +38,18 @@ class AppServiceProvider extends ServiceProvider
         // Archived (soft-deleted) patients resolve to 404.
         Route::model('patient', Patient::class);
 
-        // Re-apply the request locale on Livewire update requests.
-        Livewire::addPersistentMiddleware([SetLocale::class]);
+        // Livewire update requests re-run these from the original route, so
+        // staff MFA, deactivation and locale also apply to component actions.
+        Livewire::addPersistentMiddleware([
+            SetLocale::class,
+            EnsureUserIsActive::class,
+            EnsureStaffHasTwoFactor::class,
+        ]);
+
+        RateLimiter::for('contact', fn (Request $request) => [
+            Limit::perMinute(3)->by($request->ip()),
+            Limit::perDay(20)->by($request->ip()),
+        ]);
     }
 
     /**

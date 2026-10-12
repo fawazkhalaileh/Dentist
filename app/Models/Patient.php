@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -21,7 +21,7 @@ use Illuminate\Support\Str;
  * @property int|null $user_id
  * @property string $first_name
  * @property string $last_name
- * @property Carbon|null $date_of_birth
+ * @property CarbonImmutable|null $date_of_birth
  * @property string|null $sex
  * @property string|null $phone
  * @property string|null $email

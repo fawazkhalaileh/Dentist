@@ -3,11 +3,12 @@
 Public website, patient portal and clinic practice-management dashboard in one Laravel 13 application.
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, data model, roles and phase plan.
 
-**Status: Phase 1 (foundation).** Pages marked "Not built yet" are routed placeholders with their access rules in place.
+**Status: Phase 2 (public website and CMS) done.** The public site works in English and Arabic, and content staff edit it under `/clinic/content`.
+Patient, clinical and scheduling pages marked "Not built yet" are routed placeholders with their access rules in place (Phases 3 to 5).
 
 ## Requirements
 
-- PHP 8.3+ with `pdo_mysql`, `mbstring`, `openssl`, `intl`, `fileinfo`, `gd`, `zip`, `curl`, `sodium`, `exif`, `bcmath`
+- PHP 8.3+ with `pdo_mysql`, `mbstring`, `openssl`, `intl`, `fileinfo`, `gd` (with WebP support), `zip`, `curl`, `sodium`, `exif`, `bcmath`
 - Composer 2
 - MySQL 8.4 (8.0+ works)
 - Node.js 20+
@@ -31,6 +32,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, data model, rol
    cp .env.example .env        # then set DB_PASSWORD
    php artisan key:generate
    php artisan migrate --seed
+   php artisan storage:link    # serves uploaded website images
    npm install
    npm run build
    ```
@@ -44,6 +46,17 @@ The emails and shared password are listed at the top of `database/seeders/DemoSe
 
 Staff must enable two-factor authentication (Settings → Security) before the clinic dashboard opens.
 To skip this locally, set `CLINIC_REQUIRE_STAFF_MFA=false` in `.env`. Never do this in production.
+
+The demo seeder also adds placeholder website content in both languages (services, a blog post, pages, FAQs).
+It is marked as demo text: replace it through the CMS before launch.
+
+## Editing the website
+
+Sign in as an admin or receptionist and open **Website** in the clinic sidebar (`/clinic/content`):
+services, blog, pages (about, privacy, terms), gallery, testimonials, FAQs, media library, contact details and website messages.
+Each item has a tab per language. Content stays hidden until it is published, and it only shows in the languages it has been written in.
+Gallery items and testimonials need the patient's recorded consent before they can be published.
+See the CMS section of [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#website-content-cms) for the rules.
 
 ## Checks
 
@@ -60,6 +73,13 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 | Clinic name, locales, patient number format, staff MFA, clinical file disk | `config/clinic.php` / `.env` (`CLINIC_*`) |
 | Colours, status colours, brand tokens | `resources/css/theme.css` |
 | Role → permission mapping | `app/Enums/Role.php` (synced by `RolesAndPermissionsSeeder`) |
+| Clinic phone, email, address, opening hours, map link | CMS → Contact details (stored in the `settings` table) |
+| Interface translations | `lang/ar.json`, `lang/ar/validation.php` (draft: needs native-speaker review) |
+
+## Deploying Phase 2 over Phase 1
+
+Run `php artisan migrate --force` as usual. The migration `upgrade_phase_1_staff_and_service_columns` updates the Phase 1 staff and service tables in place.
+Also run `php artisan storage:link` once on the server, and rebuild assets (`npm ci && npm run build`).
 
 ## Production notes (Phase 6 checklist)
 
@@ -67,3 +87,5 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 - Back up the database **and** `APP_KEY`. Clinical text fields are encrypted with it.
 - Clinical uploads stay on a private disk (`CLINIC_CLINICAL_DISK`) and are served only through authorised routes.
 - Never seed real patient data. `DemoSeeder` only runs in the `local` environment.
+- Website messages (contact form) are encrypted with `APP_KEY` and may contain health information.
+- Security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy) are not set yet.

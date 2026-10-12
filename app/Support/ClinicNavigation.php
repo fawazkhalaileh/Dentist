@@ -19,6 +19,8 @@ final class ClinicNavigation
      */
     public static function for(User $user): array
     {
+        $content = $user->can(Permission::ContentManage->value);
+
         $groups = [
             [
                 'heading' => 'Overview',
@@ -43,10 +45,15 @@ final class ClinicNavigation
             [
                 'heading' => 'Website',
                 'items' => [
-                    self::item('Services', 'clinic.content.services.index', 'squares-2x2', $user->can(Permission::ContentManage->value)),
-                    self::item('Blog', 'clinic.content.blog.index', 'newspaper', $user->can(Permission::ContentManage->value)),
-                    self::item('Pages', 'clinic.content.pages.index', 'document-text', $user->can(Permission::ContentManage->value)),
-                    self::item('Media', 'clinic.content.media.index', 'photo', $user->can(Permission::ContentManage->value)),
+                    self::item('Services', 'clinic.content.services.index', 'squares-2x2', $content, 'clinic.content.services.*'),
+                    self::item('Blog', 'clinic.content.blog.index', 'newspaper', $content, 'clinic.content.blog.*'),
+                    self::item('Pages', 'clinic.content.pages.index', 'document-text', $content, 'clinic.content.pages.*'),
+                    self::item('Gallery', 'clinic.content.gallery.index', 'photo', $content, 'clinic.content.gallery.*'),
+                    self::item('Testimonials', 'clinic.content.testimonials.index', 'chat-bubble-left-right', $content),
+                    self::item('FAQs', 'clinic.content.faqs.index', 'question-mark-circle', $content),
+                    self::item('Media library', 'clinic.content.media.index', 'rectangle-stack', $content),
+                    self::item('Contact details', 'clinic.content.clinic-details', 'map-pin', $content),
+                    self::item('Website messages', 'clinic.content.messages.index', 'envelope', $content),
                 ],
             ],
             [

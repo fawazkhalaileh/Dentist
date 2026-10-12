@@ -3,26 +3,26 @@
 namespace App\Models;
 
 use App\Enums\AppointmentStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\AppointmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $patient_id
  * @property int $dentist_id
  * @property int|null $service_id
- * @property Carbon $starts_at
- * @property Carbon $ends_at
+ * @property CarbonImmutable $starts_at
+ * @property CarbonImmutable $ends_at
  * @property AppointmentStatus $status
  * @property string $source staff|portal|public_request
  * @property string|null $notes
  * @property int|null $created_by
- * @property Carbon|null $cancelled_at
+ * @property CarbonImmutable|null $cancelled_at
  * @property string|null $cancellation_reason
  * @property-read Patient $patient
  * @property-read User $dentist

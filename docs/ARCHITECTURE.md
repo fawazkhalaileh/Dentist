@@ -8,27 +8,35 @@ One Laravel 13 application with three areas that share models, policies and Blad
 | Patient portal | `/portal/...` | Role `patient` | `layouts/portal.blade.php` |
 | Clinic dashboard | `/clinic/...` | Staff with confirmed 2FA | `layouts/clinic.blade.php` |
 
-Stack: PHP 8.4, Laravel 13, Livewire 4 + Flux (official Livewire starter kit), Fortify (login, 2FA, passkeys, password reset), Tailwind 4, MySQL 8.4. One added package: `spatie/laravel-permission`.
+Stack: PHP 8.4, Laravel 13, Livewire 4 + Flux (official Livewire starter kit), Fortify (login, 2FA, passkeys, password reset), Tailwind 4, MySQL 8.4. Added packages: `spatie/laravel-permission` (roles) and `intervention/image` (website image processing, GD driver).
 
 ## Where things live
 
 ```
 app/
   Enums/            Role, Permission, TreatmentStatus, ToothSurface, AppointmentStatus, ...
-  Models/           Eloquent models; Concerns/AppendOnly blocks updates/deletes on history rows
+  Models/           Eloquent models. Concerns/: AppendOnly (blocks updates/deletes on history rows),
+                    HasTranslations (*_translations rows per locale), Publishable (draft/published/scheduled)
   Policies/         PatientPolicy, TreatmentItemPolicy, ClinicalNotePolicy, AppointmentPolicy
   Http/Middleware/  SetLocale, EnsureStaffHasTwoFactor (staff.mfa), EnsureUserIsActive (active)
-  Http/Controllers/ Public/, Portal/, Clinic/
-  Support/          Fdi (tooth numbering), Locales, Audit, ClinicNavigation
+  Http/Controllers/ Public/ (read-only website), Portal/, Clinic/
+  Http/Requests/    StoreContactMessageRequest
+  Livewire/         ContentComponent (CMS base class), Forms/ (one form object per content type)
+  Support/          Fdi, Locales, Audit, ClinicNavigation, ClinicDetails (editable contact details),
+                    Seo (hreflang + JSON-LD), Slug (Unicode slugs), Markdown (safe rendering)
   Listeners/        Login/logout auditing (auto-discovered)
-  Actions/          Business operations (booking, treatment lifecycle) - Phase 4/5
+  Actions/          Business operations. Content/ (Save* per content type), Media/StoreMedia (image pipeline);
+                    booking and treatment lifecycle arrive in Phase 4/5
 config/clinic.php   Clinic settings: locales, patient number format, staff MFA, clinical disk
 resources/css/theme.css   All brand and status colour tokens
 resources/views/
   layouts/          public, portal, clinic, app (picks clinic/portal for settings pages), auth/*
-  components/ui/    page-header, not-built, status-badge, empty-state, language-switcher, skip-link
+  components/ui/    page-header, not-built, status-badge, empty-state, language-switcher, skip-link, picture, prose
+  components/public/  section, service-card, dentist-card, post-card
+  components/cms/   locale-tabs, image-upload, publication-badge, markdown-help
+  pages/clinic/content/   CMS screens (Livewire single-file components)
   public/ portal/ clinic/   Area pages
-routes/  web.php (public + /dashboard redirect), portal.php, clinic.php, settings.php
+routes/  web.php (public + /dashboard redirect), portal.php, clinic.php (incl. /clinic/content), settings.php
 ```
 
 Rules of thumb:
@@ -71,10 +79,28 @@ patients ─┬─ patient_dentist (care team) ── users
           ├─ clinical_notes (append-only, amends_id for corrections, encrypted)
           └─ documents (private disk, soft-deleted)
 
-services ── service_translations (per-locale slug/SEO) ── service_dentist
 working_hours, schedule_breaks, blocked_periods (dentist_id NULL = clinic-wide)
 appointment_requests (public/portal requests, approved into appointments)
 audit_logs (append-only; who/what/which record, never clinical content)
+```
+
+Website content (Phase 2). Language-neutral fields sit on the parent row; text, slugs and SEO fields sit on a `*_translations` row per locale.
+
+```
+media (WebP full + thumbnail, alt text per locale) ◄── *_media_id on services, staff_profiles,
+                                                        blog_posts, gallery_items
+staff_profiles ── staff_profile_translations (display name, specialty, bio)
+services ─┬─ service_translations (slug, summary, SEO) ── service_dentist
+          ├─ service_sections (per locale, ordered)
+          └─ service_faqs (per locale, ordered)
+pages (key: about | privacy | terms) ── page_translations
+blog_categories ── blog_category_translations
+blog_posts (author, category, published_at) ── blog_post_translations
+gallery_items (before/after media, consent who/when) ── gallery_item_translations
+testimonials (one locale per row, consent who/when)
+faqs (one locale per row)
+settings (key → JSON; clinic contact details)
+contact_messages (message encrypted, handled_at/by)
 ```
 
 Clinical safety rules built into the schema and models:
@@ -85,7 +111,37 @@ Clinical safety rules built into the schema and models:
 - Free-text clinical fields use Laravel's `encrypted` cast (encrypted with `APP_KEY`). Back up the key with the database.
 - Double booking: MySQL has no exclusion constraints, so the booking action locks the dentist row (`SELECT ... FOR UPDATE`), re-checks overlaps, then inserts (Phase 5).
 
-Content still to come in Phase 2: service sections/FAQs, blog posts and categories, gallery, testimonials, FAQs, pages, media.
+Migrations: never edit a migration that has already run anywhere. Phase 2 edited the `staff_profiles` and `services` create migrations in place; `2026_10_12_100700_upgrade_phase_1_staff_and_service_columns` brings databases migrated in Phase 1 to the same shape (and copies existing profile text into a default-locale translation). It does nothing on a fresh install. New schema changes go in new migrations.
+
+## Website content (CMS)
+
+Staff with the `content.manage` permission (admin, receptionist) edit the website under `/clinic/content`. Every CMS screen extends `App\Livewire\ContentComponent`, which re-checks the permission in `boot()`, so each save and delete is authorised again on the server, not just the first page load. Screens validate through a form object (`app/Livewire/Forms`) and save through an Action (`app/Actions/Content`); the demo seeder uses the same Actions.
+
+| Content | Languages | Notes |
+|---|---|---|
+| Services | translations per locale, plus sections and FAQs per locale | Assigned dentists; cannot be deleted while appointments reference them |
+| Blog posts, categories | translations per locale | `published_at` in the future = scheduled; deleting a category keeps its posts (uncategorised) |
+| Pages (about, privacy, terms) | translations per locale | Fixed keys (`Page::KEYS`); routes are fixed, only content is editable |
+| Gallery | translations per locale | Before/after images; cannot be published without recorded consent |
+| Testimonials | one locale per row | Cannot be published without recorded consent |
+| FAQs | one locale per row | General FAQ page; service FAQs live on the service |
+| Media library | alt text per locale | Images in use cannot be deleted |
+| Contact details | per-locale address and hours | Stored in `settings`, cached (`ClinicDetails`) |
+| Website messages | - | Contact form inbox; mark as handled |
+
+Rules the code enforces:
+- **Published** means `status = published` and `published_at` is not in the future (`Publishable::scopePublished`). Public controllers only query published rows, and a record with no translation in the current language is hidden in that language (404 on its URL).
+- **Slugs** are made from the title in each language and kept as typed, so Arabic pages get Arabic URLs (`/ar/services/الحشوات`). They are unique per locale and do not change when the title is edited, so links keep working. Slugs and `hreflang` alternates are per translation.
+- **Markdown** (service sections, posts, pages, FAQ answers) is rendered by `Support\Markdown` with raw HTML stripped and `javascript:`/`data:` links dropped.
+- **Consent:** `GalleryItem` and `Testimonial` throw on save if they would be published without `consent_confirmed_at`, whatever code path saves them; the forms record who confirmed it and when.
+- **Images** (`Actions\Media\StoreMedia`): JPG/PNG/WebP up to 8 MB, at least 200×200. EXIF orientation is applied and the image is re-encoded as WebP (1600px full and 480px thumbnail), which strips EXIF/GPS metadata. The original upload is not kept. Files live on the `public` disk (`php artisan storage:link`) and are rendered with `srcset` by `<x-ui.picture>`.
+- **Contact form:** validation messages in both languages, a hidden honeypot field, and rate limits of 3 per minute and 20 per day per IP. The message body is encrypted at rest. It may contain health information, so only content staff can read it.
+
+## SEO
+
+- Each public page sets title, meta description, canonical URL, `hreflang` alternates (with `x-default`) and Open Graph tags through `layouts/public.blade.php`. Pages, posts and services have per-language SEO title and meta description fields.
+- `/sitemap.xml` lists every published page in each language it exists in, with alternates.
+- JSON-LD: `Dentist` (home, contact) built from the contact details, and `FAQPage` (FAQ page, service pages with FAQs).
 
 ## Localisation
 
@@ -93,12 +149,13 @@ Content still to come in Phase 2: service sections/FAQs, blog posts and categori
 - `/` redirects using the browser's `Accept-Language`.
 - Portal and clinic use `users.locale`.
 - `<html dir>` comes from `config/clinic.php` (`ar` = `rtl`). Templates use logical Tailwind utilities (`ms-`, `me-`, `start-`, `end-`) so layouts mirror automatically.
-- Interface strings use `__()`. Arabic translations (`lang/ar.json`) are not written yet.
+- Content is translated per record (see above). Services need a title in the default locale; blog posts need at least one language and can exist in Arabic only.
+- Interface strings use `__()`. `lang/ar.json` and `lang/ar/validation.php` cover the public site and contact form. They are a first draft and need review by a native Arabic speaker before launch. Demo content (both languages) is placeholder text to be replaced.
 
 ## Phase plan
 
 1. **Foundation (done):** auth, roles/policies, migrations, layouts, routes, seeds, tests.
-2. Public pages, services CMS, blog CMS, SEO.
+2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. Patient directory and search, staff management, clinic settings.
 4. Interactive SVG odontogram and treatment workflow actions.
 5. Scheduling, availability, booking requests, patient self-service.
