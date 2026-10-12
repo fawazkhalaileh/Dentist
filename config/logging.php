@@ -63,6 +63,8 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            // Group-writable so deploys (fawaz) and the web server (www-data) can both append.
+            'permission' => 0664,
         ],
 
         'daily' => [
@@ -71,6 +73,8 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'max_files' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+            // Group-writable so deploys (fawaz) and the web server (www-data) can both append.
+            'permission' => 0664,
         ],
 
         'monthly' => [
