@@ -182,6 +182,19 @@ class AppointmentsTest extends TestCase
         $this->assertNotNull($other->cancelled_at);
     }
 
+    public function test_keep_it_closes_the_cancel_form_without_cancelling(): void
+    {
+        $appointment = $this->book('09:00', 30);
+
+        Livewire::test('pages::clinic.appointments.index')
+            ->set('date', self::DAY)
+            ->call('startCancel', $appointment->id)
+            ->call('keepAppointment')
+            ->assertSet('cancellingId', null);
+
+        $this->assertSame(AppointmentStatus::Scheduled, $appointment->fresh()?->status);
+    }
+
     public function test_dentists_see_only_their_own_calendar_and_cannot_book(): void
     {
         $colleague = User::factory()->dentist()->create(['name' => 'Dr. Colleague']);
