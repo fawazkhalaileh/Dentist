@@ -233,6 +233,14 @@ new #[Title('Treatment plans')] class extends Component {
         Flux::toast(variant: 'success', text: __('Treatment cancelled. It stays in the record.'));
     }
 
+    /**
+     * Close the cancel form. (The id is locked, so it cannot be cleared with $set from the browser.)
+     */
+    public function keepTreatment(): void
+    {
+        $this->cancellingId = null;
+    }
+
     public function toggleHistory(int $id): void
     {
         $this->ownItem($id);
@@ -424,7 +432,7 @@ new #[Title('Treatment plans')] class extends Component {
                                                 <form wire:submit="confirmCancel" class="flex flex-wrap items-end gap-2">
                                                     <flux:input wire:model="cancelReason" :label="__('Reason for cancelling')" class="min-w-64 flex-1" />
                                                     <flux:button type="submit" variant="danger">{{ __('Cancel treatment') }}</flux:button>
-                                                    <flux:button wire:click="$set('cancellingId', null)">{{ __('Keep it') }}</flux:button>
+                                                    <flux:button wire:click="keepTreatment">{{ __('Keep it') }}</flux:button>
                                                 </form>
                                             </td>
                                         </tr>

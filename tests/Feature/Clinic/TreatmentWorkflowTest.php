@@ -137,6 +137,19 @@ class TreatmentWorkflowTest extends TestCase
         $this->assertModelExists($item);
     }
 
+    public function test_keep_it_closes_the_cancel_form_without_cancelling(): void
+    {
+        $item = $this->plannedItem();
+
+        Livewire::test('pages::clinic.patients.treatments', ['patient' => $this->patient])
+            ->call('startCancel', $item->id)
+            ->assertSet('cancellingId', $item->id)
+            ->call('keepTreatment')
+            ->assertSet('cancellingId', null);
+
+        $this->assertSame(TreatmentStatus::Planned, $item->fresh()?->status);
+    }
+
     public function test_the_action_rechecks_the_stored_status(): void
     {
         $item = $this->plannedItem();

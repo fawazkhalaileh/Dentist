@@ -276,6 +276,14 @@ new #[Title('Appointments')] class extends Component {
         $this->resetValidation();
     }
 
+    /**
+     * Close the cancel form. (The id is locked, so it cannot be cleared with $set from the browser.)
+     */
+    public function keepAppointment(): void
+    {
+        $this->cancellingId = null;
+    }
+
     public function confirmCancel(ChangeAppointmentStatus $change): void
     {
         abort_if($this->cancellingId === null, 422);
@@ -455,7 +463,7 @@ new #[Title('Appointments')] class extends Component {
                                             <flux:input size="sm" wire:model="cancelReason" :label="__('Reason for cancelling')" />
                                             <div class="flex gap-1">
                                                 <flux:button size="xs" type="submit" variant="danger">{{ __('Cancel appointment') }}</flux:button>
-                                                <flux:button size="xs" wire:click="$set('cancellingId', null)">{{ __('Keep it') }}</flux:button>
+                                                <flux:button size="xs" wire:click="keepAppointment">{{ __('Keep it') }}</flux:button>
                                             </div>
                                         </form>
                                     @endif

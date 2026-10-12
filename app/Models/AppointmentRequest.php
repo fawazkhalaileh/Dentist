@@ -41,7 +41,37 @@ class AppointmentRequest extends Model
             'preferred_date' => 'date',
             'handled_at' => 'datetime',
             'status' => AppointmentRequestStatus::class,
+            // Visitors may describe symptoms: encrypted at rest like other health text.
+            'message' => 'encrypted',
         ];
+    }
+
+    public const PREFERRED_TIMES = ['any', 'morning', 'afternoon', 'evening'];
+
+    public static function preferredTimeLabel(?string $time): string
+    {
+        return match ($time) {
+            'morning' => __('Morning'),
+            'afternoon' => __('Afternoon'),
+            'evening' => __('Evening'),
+            default => __('Any time'),
+        };
+    }
+
+    /**
+     * @return BelongsTo<Service, $this>
+     */
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function preferredDentist(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'preferred_dentist_id');
     }
 
     /**

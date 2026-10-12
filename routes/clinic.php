@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
         // Scheduling
         Route::livewire('appointments', 'pages::clinic.appointments.index')
             ->middleware('can:viewAny,'.Appointment::class)->name('appointments.index');
-        Route::view('appointment-requests', 'clinic.placeholder', $placeholder('Appointment requests', 5))
+        Route::livewire('appointment-requests', 'pages::clinic.appointment-requests.index')
             ->middleware($can(Permission::AppointmentRequestsManage))->name('appointment-requests.index');
         Route::livewire('schedules', 'pages::clinic.schedules.index')
             ->middleware($can(Permission::SchedulesManage))->name('schedules.index');

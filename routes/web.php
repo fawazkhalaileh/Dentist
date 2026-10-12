@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Public\BlogController;
+use App\Http\Controllers\Public\BookingController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\DentistController;
 use App\Http\Controllers\Public\HomeController;
@@ -55,8 +56,8 @@ Route::prefix('{locale}')
         Route::get('contact', [ContactController::class, 'show'])->name('contact');
         Route::post('contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
 
-        // Booking requests arrive with the scheduling engine.
-        Route::view('book', 'public.placeholder', ['title' => 'Request an appointment', 'phase' => 5])->name('booking');
+        Route::get('book', [BookingController::class, 'show'])->name('booking');
+        Route::post('book', [BookingController::class, 'store'])->middleware('throttle:contact')->name('booking.store');
     });
 
 /*

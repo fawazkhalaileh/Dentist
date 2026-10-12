@@ -78,9 +78,13 @@ class PublicPagesTest extends TestCase
         $this->get(route('public.dentists.show', ['locale' => 'en', 'slug' => 'missing']))->assertNotFound();
     }
 
-    public function test_booking_page_is_still_a_labelled_placeholder(): void
+    public function test_booking_page_is_a_request_form_that_never_shows_the_calendar(): void
     {
-        $this->get(route('public.booking', ['locale' => 'en']))->assertSee('Not built yet');
+        $this->get(route('public.booking', ['locale' => 'en']))
+            ->assertOk()
+            ->assertSee('This is a request, not a confirmed booking')
+            ->assertSee('name="phone"', escape: false)
+            ->assertDontSee('Not built yet');
     }
 
     public function test_public_routes_expose_no_patient_endpoints(): void
