@@ -8,6 +8,7 @@ use App\Models\StaffProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Laravel\Fortify\Features;
 use Spatie\Permission\Models\Permission as PermissionModel;
 use Spatie\Permission\Models\Role as RoleModel;
 use Spatie\Permission\PermissionRegistrar;
@@ -66,6 +67,21 @@ class ReferenceDataTest extends TestCase
         $this->get('/en/dentists/dr-test')->assertNotFound();
         $this->get('/en/services/cleaning')->assertOk();
         $this->get(route('sitemap'))->assertOk();
+    }
+
+    public function test_a_failed_registration_leaves_no_account_without_a_role(): void
+    {
+        $this->skipUnlessFortifyHas(Features::registration());
+        $this->deleteRolesAndPermissions();
+
+        $this->post(route('register.store'), [
+            'name' => 'Test Patient',
+            'email' => 'patient@example.test',
+            'password' => 'New-Passw0rd!',
+            'password_confirmation' => 'New-Passw0rd!',
+        ])->assertServerError();
+
+        $this->assertSame(0, User::count());
     }
 
     private function deleteRolesAndPermissions(): void

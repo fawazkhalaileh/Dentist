@@ -6,6 +6,7 @@ use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Enums\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -28,15 +29,18 @@ class CreateNewUser implements CreatesNewUsers
         // Self-registration creates a patient portal account only. Linking it to a
         // clinic patient record is done by staff, so no clinical data is exposed
         // just by registering with someone else's details.
-        $user = User::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => $input['password'],
-            'locale' => app()->getLocale(),
-        ]);
+        // One transaction, so a failed role assignment cannot leave a role-less account behind.
+        return DB::transaction(function () use ($input) {
+            $user = User::create([
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'password' => $input['password'],
+                'locale' => app()->getLocale(),
+            ]);
 
-        $user->assignRole(Role::Patient->value);
+            $user->assignRole(Role::Patient->value);
 
-        return $user;
+            return $user;
+        });
     }
 }
