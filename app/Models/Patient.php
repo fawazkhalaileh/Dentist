@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -134,6 +135,24 @@ class Patient extends Model
     public function dentalHistories(): HasMany
     {
         return $this->hasMany(DentalHistory::class);
+    }
+
+    /**
+     * The current medical history: the most recently recorded version.
+     *
+     * @return HasOne<MedicalHistory, $this>
+     */
+    public function latestMedicalHistory(): HasOne
+    {
+        return $this->hasOne(MedicalHistory::class)->latestOfMany();
+    }
+
+    /**
+     * @return HasOne<DentalHistory, $this>
+     */
+    public function latestDentalHistory(): HasOne
+    {
+        return $this->hasOne(DentalHistory::class)->latestOfMany();
     }
 
     /**

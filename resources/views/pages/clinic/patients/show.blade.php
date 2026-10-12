@@ -49,6 +49,23 @@ new #[Title('Patient')] class extends Component {
         </flux:callout>
     @endif
 
+    @can('viewClinical', $patient)
+        @php $medical = $patient->latestMedicalHistory; @endphp
+        @if ($medical?->allergies)
+            <flux:callout variant="danger" icon="exclamation-triangle" class="mb-6">
+                <flux:callout.heading>{{ __('Allergies') }}</flux:callout.heading>
+                <flux:callout.text><span class="whitespace-pre-line" dir="auto">{{ $medical->allergies }}</span></flux:callout.text>
+            </flux:callout>
+        @elseif (! $medical?->no_known_allergies)
+            <flux:callout variant="warning" icon="exclamation-triangle" class="mb-6">
+                <flux:callout.text>
+                    {{ __('Allergies have not been recorded for this patient.') }}
+                    <a href="{{ route('clinic.patients.history', $patient) }}" wire:navigate class="underline">{{ __('Medical history') }}</a>
+                </flux:callout.text>
+            </flux:callout>
+        @endif
+    @endcan
+
     @php
         $sections = [
             ['label' => __('Appointments'), 'route' => 'clinic.patients.appointments', 'ability' => 'view'],
