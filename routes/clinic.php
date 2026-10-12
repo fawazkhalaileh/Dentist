@@ -26,14 +26,16 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
         $placeholder = fn (string $title, int $phase) => ['title' => $title, 'phase' => $phase];
 
         // Patients
-        Route::view('patients', 'clinic.placeholder', $placeholder('Patients', 3))
+        Route::livewire('patients', 'pages::clinic.patients.index')
             ->middleware('can:viewAny,'.Patient::class)->name('patients.index');
-        Route::view('patients/create', 'clinic.placeholder', $placeholder('New patient', 3))
+        Route::livewire('patients/create', 'pages::clinic.patients.edit')
             ->middleware('can:create,'.Patient::class)->name('patients.create');
 
         Route::prefix('patients/{patient}')->name('patients.')->group(function () use ($placeholder) {
-            Route::view('/', 'clinic.placeholder', $placeholder('Patient overview', 3))
+            Route::livewire('/', 'pages::clinic.patients.show')
                 ->middleware('can:view,patient')->name('show');
+            Route::livewire('edit', 'pages::clinic.patients.edit')
+                ->middleware('can:update,patient')->name('edit');
             Route::view('appointments', 'clinic.placeholder', $placeholder('Patient appointments', 5))
                 ->middleware('can:view,patient')->name('appointments');
             Route::view('history', 'clinic.placeholder', $placeholder('Medical and dental history', 3))
