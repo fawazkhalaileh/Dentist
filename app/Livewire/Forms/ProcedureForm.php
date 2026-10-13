@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Procedure;
+use App\Support\Money;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 
@@ -22,6 +23,8 @@ class ProcedureForm extends Form
 
     public int $default_duration_minutes = 30;
 
+    public string $price = '';
+
     public string $scope = 'tooth';
 
     public string $color = '';
@@ -40,6 +43,7 @@ class ProcedureForm extends Form
             $this->category = (string) $procedure->category;
             $this->description = (string) $procedure->description;
             $this->default_duration_minutes = $procedure->default_duration_minutes;
+            $this->price = Money::plain($procedure->price);
             $this->scope = $procedure->scope;
             $this->color = (string) $procedure->color;
             $this->is_active = $procedure->is_active;
@@ -58,6 +62,7 @@ class ProcedureForm extends Form
             'category' => ['nullable', Rule::in(Procedure::CATEGORIES)],
             'description' => ['nullable', 'string', 'max:2000'],
             'default_duration_minutes' => ['required', 'integer', 'min:5', 'max:480'],
+            'price' => ['nullable', Money::rule()],
             'scope' => ['required', Rule::in(Procedure::SCOPES)],
             'color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'is_active' => ['boolean'],
@@ -69,12 +74,16 @@ class ProcedureForm extends Form
      */
     protected function messages(): array
     {
-        return ['code.regex' => __('Use capital letters, digits, - and _ only, for example FILL-2.')];
+        return [
+            'code.regex' => __('Use capital letters, digits, - and _ only, for example FILL-2.'),
+            'price.regex' => __('Enter an amount like 25 or 25.500.'),
+        ];
     }
 
     public function prepare(): void
     {
         $this->code = strtoupper(trim($this->code));
+        $this->price = Money::normalise($this->price);
     }
 
     /**
@@ -91,6 +100,7 @@ class ProcedureForm extends Form
             'category' => $nullable($this->category),
             'description' => $nullable($this->description),
             'default_duration_minutes' => $this->default_duration_minutes,
+            'price' => $this->price === '' ? null : Money::parse($this->price),
             'scope' => $this->scope,
             'color' => $this->color !== '' ? strtolower($this->color) : null,
             'is_active' => $this->is_active,

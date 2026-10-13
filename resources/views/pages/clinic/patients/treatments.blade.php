@@ -37,8 +37,8 @@ new #[Title('Treatment plans')] class extends Component {
 
     public bool $addingPlan = false;
 
-    /** @var array{procedure_id: ?int, tooth_number: ?int, surfaces: list<string>, dentist_id: ?int, treatment_plan_id: ?int, planned_for: string, notes: string} */
-    public array $item = ['procedure_id' => null, 'tooth_number' => null, 'surfaces' => [], 'dentist_id' => null, 'treatment_plan_id' => null, 'planned_for' => '', 'notes' => ''];
+    /** @var array{procedure_id: ?int, tooth_number: ?int, surfaces: list<string>, dentist_id: ?int, treatment_plan_id: ?int, planned_for: string, notes: string, price: string} */
+    public array $item = ['procedure_id' => null, 'tooth_number' => null, 'surfaces' => [], 'dentist_id' => null, 'treatment_plan_id' => null, 'planned_for' => '', 'notes' => '', 'price' => ''];
 
     /** @var array{title: string, dentist_id: ?int} */
     public array $plan = ['title' => '', 'dentist_id' => null];
@@ -134,6 +134,12 @@ new #[Title('Treatment plans')] class extends Component {
         return $this->item['tooth_number'] ? Fdi::surfaces((int) $this->item['tooth_number']) : [];
     }
 
+    public function updatedItemProcedureId(): void
+    {
+        // Suggest the procedure's usual price; staff can change it.
+        $this->item['price'] = \App\Support\Money::plain($this->selectedProcedure?->price);
+    }
+
     public function updatedItemToothNumber(): void
     {
         // Surfaces depend on the tooth (incisal vs occlusal).
@@ -153,6 +159,7 @@ new #[Title('Treatment plans')] class extends Component {
             'treatment_plan_id' => null,
             'planned_for' => '',
             'notes' => '',
+            'price' => '',
         ];
         $this->addingItem = true;
     }
@@ -163,6 +170,7 @@ new #[Title('Treatment plans')] class extends Component {
 
         $scope = $this->selectedProcedure?->scope;
         $surfaces = array_map(fn ($s) => $s->value, $this->availableSurfaces);
+        $this->item['price'] = \App\Support\Money::normalise((string) $this->item['price']);
 
         $this->validate([
             'item.procedure_id' => ['required', 'integer', Rule::in($this->procedures->pluck('id')->all())],
@@ -173,7 +181,9 @@ new #[Title('Treatment plans')] class extends Component {
             'item.treatment_plan_id' => ['nullable', 'integer', Rule::in($this->plans->filter(fn ($p) => ! in_array($p->status->value, ['completed', 'cancelled'], true))->pluck('id')->all())],
             'item.planned_for' => ['nullable', 'date'],
             'item.notes' => ['nullable', 'string', 'max:2000'],
+            'item.price' => ['nullable', \App\Support\Money::rule()],
         ], [
+            'item.price.regex' => __('Enter an amount like 25 or 25.500.'),
             'item.tooth_number.required' => __('This procedure needs a tooth.'),
             'item.surfaces.required' => __('Choose at least one surface.'),
         ]);
@@ -186,6 +196,7 @@ new #[Title('Treatment plans')] class extends Component {
             'treatment_plan_id' => $this->item['treatment_plan_id'] ? (int) $this->item['treatment_plan_id'] : null,
             'planned_for' => $this->item['planned_for'] ?: null,
             'notes' => trim($this->item['notes']) ?: null,
+            'price' => $this->item['price'] === '' ? null : \App\Support\Money::parse($this->item['price']),
         ], $this->actor());
 
         $this->addingItem = false;
@@ -383,6 +394,7 @@ new #[Title('Treatment plans')] class extends Component {
                             @endforeach
                         </flux:select>
                         <flux:input type="date" wire:model="item.planned_for" :label="__('Planned for')" />
+                        <flux:input wire:model="item.price" inputmode="decimal" :label="__('Price (:currency)', ['currency' => config('clinic.currency.code')])" dir="ltr" />
                     </div>
                     <flux:textarea wire:model="item.notes" :label="__('Notes')" rows="2" dir="auto" />
                     <div class="flex gap-2">
@@ -417,6 +429,7 @@ new #[Title('Treatment plans')] class extends Component {
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Procedure') }}</th>
                                     <th scope="col" class="hidden px-4 py-2 text-start font-medium md:table-cell">{{ __('Dentist') }}</th>
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Status') }}</th>
+                                    <th scope="col" class="px-4 py-2 text-end font-medium">{{ __('Price') }}</th>
                                     <th scope="col" class="px-4 py-2"><span class="sr-only">{{ __('Actions') }}</span></th>
                                 </tr>
                             </thead>
@@ -435,6 +448,7 @@ new #[Title('Treatment plans')] class extends Component {
                                         </td>
                                         <td class="hidden px-4 py-2 md:table-cell">{{ $treatment->dentist?->name }}</td>
                                         <td class="px-4 py-2"><x-ui.status-badge :status="$treatment->status" /></td>
+                                        <td @class(['px-4 py-2 text-end whitespace-nowrap', 'text-zinc-400 line-through' => $treatment->status === \App\Enums\TreatmentStatus::Cancelled]) dir="ltr">{{ $treatment->price !== null ? \App\Support\Money::format($treatment->price) : '–' }}</td>
                                         <td class="px-4 py-2 text-end">
                                             <div class="flex flex-wrap justify-end gap-1">
                                                 @can('changeStatus', $treatment)
@@ -450,7 +464,7 @@ new #[Title('Treatment plans')] class extends Component {
                                     </tr>
                                     @if ($cancellingId === $treatment->id)
                                         <tr>
-                                            <td colspan="5" class="bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
+                                            <td colspan="6" class="bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
                                                 <form wire:submit="confirmCancel" class="flex flex-wrap items-end gap-2">
                                                     <flux:input wire:model="cancelReason" :label="__('Reason for cancelling')" class="min-w-64 flex-1" />
                                                     <flux:button type="submit" variant="danger">{{ __('Cancel treatment') }}</flux:button>
@@ -461,7 +475,7 @@ new #[Title('Treatment plans')] class extends Component {
                                     @endif
                                     @if ($historyId === $treatment->id)
                                         <tr>
-                                            <td colspan="5" class="bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
+                                            <td colspan="6" class="bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
                                                 @if ($treatment->notes) <p class="mb-2 whitespace-pre-line text-sm" dir="auto">{{ $treatment->notes }}</p> @endif
                                                 <ol class="space-y-1 text-xs">
                                                     @foreach ($treatment->events()->with('performedBy:id,name')->orderBy('occurred_at')->orderBy('id')->get() as $event)
@@ -482,6 +496,22 @@ new #[Title('Treatment plans')] class extends Component {
                                     @endif
                                 @endforeach
                             </tbody>
+                            @php
+                                $counted = $groupItems->where('status', '!=', \App\Enums\TreatmentStatus::Cancelled);
+                                $total = (int) $counted->sum('price');
+                            @endphp
+                            @if ($counted->whereNotNull('price')->isNotEmpty())
+                                <tfoot class="border-t border-zinc-200 text-sm dark:border-zinc-700">
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-2 text-end text-zinc-500">
+                                            {{ __('Total (not cancelled)') }}
+                                            @php $open = (int) $counted->whereIn('status', [\App\Enums\TreatmentStatus::Planned, \App\Enums\TreatmentStatus::InProgress])->sum('price'); @endphp
+                                            @if ($open > 0) <span class="block text-xs">{{ __('of which still to do: :amount', ['amount' => \App\Support\Money::format($open)]) }}</span> @endif
+                                        </td>
+                                        <td colspan="2" class="px-4 py-2 text-end font-semibold" dir="ltr">{{ \App\Support\Money::format($total) }}</td>
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>

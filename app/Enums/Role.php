@@ -63,6 +63,7 @@ enum Role: string
                 Permission::AppointmentRequestsManage,
                 Permission::SchedulesManage,
                 Permission::ContentManage,
+                Permission::BillingManage,
             ],
 
             self::Patient => [

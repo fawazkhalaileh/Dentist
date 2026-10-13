@@ -30,6 +30,16 @@ return [
 
     'default_locale' => env('APP_LOCALE', 'en'),
 
+    /*
+    | Money. Amounts are stored as whole minor units (fils for the Jordanian
+    | dinar, which has 3 decimals) so sums never suffer from rounding.
+    */
+    'currency' => [
+        'code' => env('CLINIC_CURRENCY', 'JOD'),
+        'decimals' => (int) env('CLINIC_CURRENCY_DECIMALS', 3),
+        'symbol' => ['en' => 'JD', 'ar' => 'د.أ'],
+    ],
+
     'patients' => [
         // Patient numbers look like P-000123.
         'number_prefix' => env('CLINIC_PATIENT_NUMBER_PREFIX', 'P-'),
