@@ -415,7 +415,7 @@ new #[Title('Treatment plans')] class extends Component {
                                 <tr>
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Tooth') }}</th>
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Procedure') }}</th>
-                                    <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Dentist') }}</th>
+                                    <th scope="col" class="hidden px-4 py-2 text-start font-medium md:table-cell">{{ __('Dentist') }}</th>
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Status') }}</th>
                                     <th scope="col" class="px-4 py-2"><span class="sr-only">{{ __('Actions') }}</span></th>
                                 </tr>
@@ -433,7 +433,7 @@ new #[Title('Treatment plans')] class extends Component {
                                             <span aria-hidden="true" class="me-1.5 inline-block size-2.5 rounded-sm align-middle" style="background-color: {{ $treatment->procedure->displayColor() }}"></span>{{ $treatment->procedure->localizedName() }}
                                             @if ($treatment->planned_for) <span class="block text-xs text-zinc-500">{{ __('Planned for :date', ['date' => $treatment->planned_for->format('Y-m-d')]) }}</span> @endif
                                         </td>
-                                        <td class="px-4 py-2">{{ $treatment->dentist?->name }}</td>
+                                        <td class="hidden px-4 py-2 md:table-cell">{{ $treatment->dentist?->name }}</td>
                                         <td class="px-4 py-2"><x-ui.status-badge :status="$treatment->status" /></td>
                                         <td class="px-4 py-2 text-end">
                                             <div class="flex flex-wrap justify-end gap-1">
