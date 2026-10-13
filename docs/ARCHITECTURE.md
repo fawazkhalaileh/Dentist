@@ -177,6 +177,15 @@ Time: the clinic works in `config('clinic.timezone')` (production `Asia/Amman`);
 - **Calendar** (`/clinic/appointments`): one column per dentist; dentists see only their own and cannot book (`appointments.manage` is reception and admins).
 - **Online requests**: the public `/{locale}/book` form stores an `appointment_requests` row (message encrypted, honeypot, `throttle:contact`). It never shows availability. Reception (`/clinic/appointment-requests`) matches an existing patient by phone or registers one, books a slot with `source = public_request` and links the request, in one transaction; or declines it.
 
+## Patient portal
+
+`/portal` (`portal.access`). Pages extend `App\Livewire\PortalComponent`, which takes the patient record from the signed-in account (`$user->patient`) and never from request input.
+- **Linking:** patients self-register (role `patient`, no record access). Reception links the account on the patient page by email after checking identity (`Actions\Patients\LinkPortalAccount`); one account per patient, staff accounts never qualify. Unlinking is possible. Both are audited.
+- **Dashboard:** next scheduled or confirmed appointment.
+- **My appointments:** upcoming and past; future ones can be cancelled online with a reason (`AppointmentPolicy::cancel`), recorded with the patient as the actor; requests go to the reception inbox linked to the record.
+- **My treatments:** procedure, tooth, surfaces, status and dates. Notes and cancelled items are not shown.
+- **My documents** is deliberately not open yet: the clinic should decide which documents patients may download.
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
@@ -232,5 +241,5 @@ Rules the code enforces:
 2. **Public website and CMS (done):** public pages in English and Arabic, services/blog/pages/gallery/testimonials/FAQ CMS, media pipeline, contact form, SEO.
 3. **In progress:** staff management, patient directory and search, medical and dental history (all done); clinic settings.
 4. **Clinical records (done):** clinical notes, procedure catalogue, treatment plans and lifecycle, dental chart, documents.
-5. **In progress:** working hours and closures, availability and the appointment calendar, online booking requests (done); patient self-service in the portal.
+5. **Scheduling and self-service (done):** working hours and closures, availability and the appointment calendar, online booking requests, patient portal (appointments, requests, treatments). Open: portal documents.
 6. Security hardening, audit log UI, backups, production readiness.
