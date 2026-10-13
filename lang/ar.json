@@ -255,5 +255,9 @@
     "Planned for :date": "مخطط له في :date",
     "Next appointment": "الموعد القادم",
     "You have no upcoming appointments.": "ليس لديك مواعيد قادمة.",
-    "See treatments planned or carried out at the clinic.": "اطّلع على العلاجات المخطط لها أو المنفذة في العيادة."
+    "See treatments planned or carried out at the clinic.": "اطّلع على العلاجات المخطط لها أو المنفذة في العيادة.",
+    "Request an appointment online and we will call you back to agree a time.": "اطلب موعداً عبر الإنترنت وسنتصل بك لتحديد الوقت المناسب.",
+    "Visit us": "زورونا",
+    "Call us": "اتصل بنا",
+    "Learn more": "اعرف المزيد"
 }
