@@ -32,6 +32,9 @@ enum Permission: string
     case AppointmentRequestsManage = 'appointment-requests.manage';
     case SchedulesManage = 'schedules.manage';
 
+    // Billing: prices, invoices, payments
+    case BillingManage = 'billing.manage';
+
     // Administration
     case ProceduresManage = 'procedures.manage';
     case ContentManage = 'content.manage';

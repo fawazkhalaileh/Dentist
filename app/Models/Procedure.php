@@ -18,11 +18,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $category
  * @property string|null $description
  * @property int $default_duration_minutes
+ * @property int|null $price usual price in minor units (fils)
  * @property string $scope tooth|surface|mouth
  * @property string|null $color #rrggbb used on the dental chart
  * @property bool $is_active
  */
-#[Fillable(['code', 'name', 'name_ar', 'category', 'description', 'default_duration_minutes', 'scope', 'color', 'is_active'])]
+#[Fillable(['code', 'name', 'name_ar', 'category', 'description', 'default_duration_minutes', 'price', 'scope', 'color', 'is_active'])]
 class Procedure extends Model
 {
     /** @use HasFactory<ProcedureFactory> */
@@ -101,6 +102,7 @@ class Procedure extends Model
     {
         return [
             'is_active' => 'boolean',
+            'price' => 'integer',
         ];
     }
 }

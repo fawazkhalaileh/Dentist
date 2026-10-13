@@ -127,6 +127,7 @@ new #[Title('Procedure catalogue')] class extends Component {
                         @endforeach
                     </flux:select>
                     <flux:input type="number" min="5" max="480" step="5" wire:model="form.default_duration_minutes" :label="__('Usual duration (minutes)')" />
+                    <flux:input wire:model="form.price" inputmode="decimal" :label="__('Usual price (:currency)', ['currency' => config('clinic.currency.code')])" :description="__('Optional. Copied to new treatments, where it can be changed.')" dir="ltr" />
                     <div>
                         <label for="procedure-color" class="mb-1 block text-sm font-medium">{{ __('Chart colour') }}</label>
                         <div class="flex items-center gap-2">
@@ -164,6 +165,7 @@ new #[Title('Procedure catalogue')] class extends Component {
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Category') }}</th>
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Applies to') }}</th>
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Duration') }}</th>
+                        <th scope="col" class="px-4 py-3 text-end font-medium">{{ __('Price') }}</th>
                         <th scope="col" class="px-4 py-3"><span class="sr-only">{{ __('Actions') }}</span></th>
                     </tr>
                 </thead>
@@ -181,6 +183,7 @@ new #[Title('Procedure catalogue')] class extends Component {
                             <td class="px-4 py-3">{{ \App\Models\Procedure::categoryLabel($procedure->category) }}</td>
                             <td class="px-4 py-3">{{ \App\Models\Procedure::scopeLabel($procedure->scope) }}</td>
                             <td class="px-4 py-3">{{ trans_choice(':count minute|:count minutes', $procedure->default_duration_minutes) }}</td>
+                            <td class="px-4 py-3 text-end" dir="ltr">{{ $procedure->price !== null ? \App\Support\Money::format($procedure->price) : '–' }}</td>
                             <td class="px-4 py-3 text-end">
                                 <div class="flex justify-end gap-2">
                                     <flux:button size="sm" wire:click="edit({{ $procedure->id }})">{{ __('Edit') }}</flux:button>

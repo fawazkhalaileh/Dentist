@@ -60,6 +60,45 @@ class TreatmentWorkflowTest extends TestCase
         $this->assertTrue(AuditLog::where('action', 'treatment.item_created')->where('patient_id', $this->patient->id)->exists());
     }
 
+    public function test_a_treatment_takes_the_procedures_price_which_can_be_changed(): void
+    {
+        $this->filling->update(['price' => 35000]);
+
+        Livewire::test('pages::clinic.patients.treatments', ['patient' => $this->patient])
+            ->call('openItemForm')
+            ->set('item.procedure_id', $this->filling->id)
+            ->assertSet('item.price', '35')
+            ->set('item.tooth_number', 36)
+            ->set('item.surfaces', ['O'])
+            ->set('item.price', '30,5')
+            ->call('addItem')
+            ->assertHasNoErrors()
+            ->assertSee('30.500 JD');
+
+        $this->assertSame(30500, TreatmentItem::sole()->price);
+    }
+
+    public function test_plan_totals_leave_out_cancelled_treatments(): void
+    {
+        $this->plannedItem(['price' => 20000]);
+        $this->plannedItem(['price' => 50000, 'status' => 'cancelled']);
+        $this->plannedItem(['price' => 15000, 'status' => 'completed']);
+
+        Livewire::test('pages::clinic.patients.treatments', ['patient' => $this->patient])
+            ->assertSee('Total (not cancelled)')
+            ->assertSeeInOrder(['of which still to do: 20 JD', '35 JD']);
+    }
+
+    public function test_an_invalid_price_is_rejected(): void
+    {
+        Livewire::test('pages::clinic.patients.treatments', ['patient' => $this->patient])
+            ->call('openItemForm')
+            ->set('item.procedure_id', $this->exam->id)
+            ->set('item.price', 'free')
+            ->call('addItem')
+            ->assertHasErrors(['item.price']);
+    }
+
     public function test_surfaces_must_exist_on_the_tooth(): void
     {
         // An incisor has an incisal edge, not an occlusal surface.

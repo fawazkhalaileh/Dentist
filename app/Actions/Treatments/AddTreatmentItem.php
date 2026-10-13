@@ -19,7 +19,7 @@ class AddTreatmentItem
 {
     /**
      * @param  array{procedure_id: int, tooth_number: ?int, surfaces: list<string>, dentist_id: int,
-     *     treatment_plan_id: ?int, planned_for: ?string, notes: ?string}  $data  validated
+     *     treatment_plan_id: ?int, planned_for: ?string, notes: ?string, price?: ?int}  $data  validated; price in fils (defaults to the procedure's price)
      */
     public function handle(Patient $patient, array $data, User $actor): TreatmentItem
     {
@@ -38,6 +38,7 @@ class AddTreatmentItem
                 'treatment_plan_id' => $data['treatment_plan_id'],
                 'tooth_number' => $procedure->scope === 'mouth' ? null : $tooth,
                 'procedure_id' => $procedure->id,
+                'price' => array_key_exists('price', $data) ? $data['price'] : $procedure->price,
                 'dentist_id' => $data['dentist_id'],
                 'status' => TreatmentStatus::Planned,
                 'planned_for' => $data['planned_for'],

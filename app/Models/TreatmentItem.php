@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Patient $patient
  */
 #[Fillable([
-    'patient_id', 'treatment_plan_id', 'tooth_number', 'procedure_id', 'dentist_id',
+    'patient_id', 'treatment_plan_id', 'tooth_number', 'procedure_id', 'price', 'dentist_id',
     'appointment_id', 'status', 'planned_for', 'started_at', 'completed_at', 'cancelled_at',
     'notes', 'created_by',
 ])]
@@ -48,6 +48,7 @@ class TreatmentItem extends Model
     {
         return [
             'status' => TreatmentStatus::class,
+            'price' => 'integer',
             'planned_for' => 'date',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',

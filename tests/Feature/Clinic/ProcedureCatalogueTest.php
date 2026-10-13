@@ -114,6 +114,20 @@ class ProcedureCatalogueTest extends TestCase
             ->assertHasErrors(['form.code']);
     }
 
+    public function test_a_usual_price_is_stored_in_fils(): void
+    {
+        Livewire::test('pages::clinic.procedures.index')
+            ->call('create')
+            ->set('form.code', 'RCT')
+            ->set('form.name', 'Root canal')
+            ->set('form.price', '120.5')
+            ->call('save')
+            ->assertHasNoErrors()
+            ->assertSee('120.500 JD');
+
+        $this->assertSame(120500, Procedure::sole()->price);
+    }
+
     public function test_invalid_codes_and_durations_are_rejected(): void
     {
         Livewire::test('pages::clinic.procedures.index')
