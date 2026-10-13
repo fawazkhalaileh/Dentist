@@ -430,7 +430,7 @@ new #[Title('Treatment plans')] class extends Component {
                                             @endif
                                         </td>
                                         <td class="px-4 py-2">
-                                            {{ $treatment->procedure->localizedName() }}
+                                            <span aria-hidden="true" class="me-1.5 inline-block size-2.5 rounded-sm align-middle" style="background-color: {{ $treatment->procedure->displayColor() }}"></span>{{ $treatment->procedure->localizedName() }}
                                             @if ($treatment->planned_for) <span class="block text-xs text-zinc-500">{{ __('Planned for :date', ['date' => $treatment->planned_for->format('Y-m-d')]) }}</span> @endif
                                         </td>
                                         <td class="px-4 py-2">{{ $treatment->dentist?->name }}</td>

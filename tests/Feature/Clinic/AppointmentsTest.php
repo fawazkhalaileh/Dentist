@@ -254,6 +254,15 @@ class AppointmentsTest extends TestCase
         $this->assertSame([[480, 540], [600, 630], [780, 1080]], $grid['columns'][$this->dentist->id]['off']);
     }
 
+    public function test_booking_from_a_patient_page_preselects_the_patient(): void
+    {
+        Livewire::withQueryParams(['patient' => $this->patient->id])
+            ->test('pages::clinic.appointments.index')
+            ->assertSet('booking', true)
+            ->assertSet('form.patient_id', $this->patient->id)
+            ->assertSee('Lina Booked');
+    }
+
     public function test_patients_cannot_open_the_calendar(): void
     {
         $this->actingAs(User::factory()->patient()->create());

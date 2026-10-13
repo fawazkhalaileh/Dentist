@@ -183,7 +183,11 @@ new #[Title('Working hours and closures')] class extends Component {
     <x-ui.page-header :title="__('Working hours and closures')" :description="__('Times are in the clinic\'s time zone (:zone).', ['zone' => \App\Support\ClinicTime::zone()])" />
 
     @if ($this->dentists->isEmpty())
-        <x-ui.empty-state :title="__('No dentists yet')" :description="__('An administrator adds dentists under “Dentists and staff”.')" />
+        <x-ui.empty-state :title="__('No dentists yet')" :description="__('Add your dentists first; then set their working hours here.')">
+            @can(\App\Enums\Permission::StaffManage->value)
+                <flux:button variant="primary" icon="user-plus" :href="route('clinic.staff.create')" wire:navigate>{{ __('Add a dentist') }}</flux:button>
+            @endcan
+        </x-ui.empty-state>
     @else
         <flux:card class="mb-6 space-y-4">
             <div class="flex flex-wrap items-end justify-between gap-4">
@@ -197,7 +201,7 @@ new #[Title('Working hours and closures')] class extends Component {
 
             <div class="divide-y divide-zinc-200 dark:divide-zinc-700">
                 @foreach (\App\Support\ClinicTime::weekdays() as $day => $dayName)
-                    <div class="grid gap-3 py-3 md:grid-cols-[8rem_1fr_1fr]" wire:key="day-{{ $day }}">
+                    <div class="grid gap-3 py-3 md:grid-cols-[9rem_1fr_1fr]" wire:key="day-{{ $day }}">
                         <div class="font-medium">
                             {{ $dayName }}
                             @if ($hours[$day] !== [])
@@ -208,12 +212,13 @@ new #[Title('Working hours and closures')] class extends Component {
                             <div class="space-y-2">
                                 <p class="text-xs text-zinc-500">{{ $typeLabel }}</p>
                                 @forelse ($this->{$type}[$day] as $i => $interval)
+                                    @php $field = 'h-8 rounded-md border border-zinc-200 bg-white px-2 text-sm dark:border-zinc-600 dark:bg-zinc-800'; @endphp
                                     <div class="flex flex-wrap items-center gap-2" wire:key="{{ $type }}-{{ $day }}-{{ $i }}">
-                                        <flux:input type="time" size="sm" wire:model="{{ $type }}.{{ $day }}.{{ $i }}.start" class="w-28" :aria-label="__('From')" />
-                                        <span aria-hidden="true">–</span>
-                                        <flux:input type="time" size="sm" wire:model="{{ $type }}.{{ $day }}.{{ $i }}.end" class="w-28" :aria-label="__('To')" />
+                                        <input type="time" step="900" wire:model="{{ $type }}.{{ $day }}.{{ $i }}.start" class="{{ $field }} w-32" aria-label="{{ __('From') }}" dir="ltr">
+                                        <span aria-hidden="true" class="text-zinc-400">–</span>
+                                        <input type="time" step="900" wire:model="{{ $type }}.{{ $day }}.{{ $i }}.end" class="{{ $field }} w-32" aria-label="{{ __('To') }}" dir="ltr">
                                         @if ($type === 'breaks')
-                                            <flux:input size="sm" wire:model="breaks.{{ $day }}.{{ $i }}.label" :placeholder="__('Label')" class="w-28" :aria-label="__('Label')" />
+                                            <input type="text" wire:model="breaks.{{ $day }}.{{ $i }}.label" placeholder="{{ __('Label') }}" class="{{ $field }} w-28" aria-label="{{ __('Label') }}">
                                         @endif
                                         <flux:button size="xs" variant="ghost" icon="x-mark" wire:click="removeInterval('{{ $type }}', {{ $day }}, {{ $i }})" :aria-label="__('Remove')" />
                                     </div>
@@ -226,6 +231,9 @@ new #[Title('Working hours and closures')] class extends Component {
                         @endforeach
                     </div>
                 @endforeach
+            </div>
+            <div class="flex justify-end">
+                <flux:button variant="primary" wire:click="saveSchedule">{{ __('Save working hours') }}</flux:button>
             </div>
         </flux:card>
 

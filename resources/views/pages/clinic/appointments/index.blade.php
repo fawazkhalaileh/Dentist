@@ -58,6 +58,13 @@ new #[Title('Appointments')] class extends Component
         if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date) || ! strtotime($this->date)) {
             $this->date = ClinicTime::today();
         }
+
+        // "Book appointment" from a patient's page: open booking with that patient chosen.
+        $patientId = request()->integer('patient');
+        if ($patientId > 0 && $this->canManage() && Patient::whereKey($patientId)->exists()) {
+            $this->openBooking();
+            $this->form['patient_id'] = $patientId;
+        }
     }
 
     public function canManage(): bool
@@ -444,7 +451,11 @@ new #[Title('Appointments')] class extends Component
     @endif
 
     @if ($this->dentists->isEmpty())
-        <x-ui.empty-state :title="__('No dentists yet')" :description="__('An administrator adds dentists under “Dentists and staff”, then sets their working hours.')" />
+        <x-ui.empty-state :title="__('No dentists yet')" :description="__('An administrator adds dentists under “Dentists and staff”, then sets their working hours.')">
+            @can(\App\Enums\Permission::StaffManage->value)
+                <flux:button variant="primary" icon="user-plus" :href="route('clinic.staff.create')" wire:navigate>{{ __('Add a dentist') }}</flux:button>
+            @endcan
+        </x-ui.empty-state>
     @else
         <div class="flex gap-4">
             {{-- Day grid --}}

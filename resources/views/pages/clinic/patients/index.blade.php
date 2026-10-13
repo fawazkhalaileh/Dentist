@@ -97,7 +97,9 @@ new #[Title('Patients')] class extends Component {
     @endif
 
     <div class="mb-4 flex flex-wrap items-end gap-4">
-        <flux:input wire:model.live.debounce.300ms="search" :label="__('Search')" :placeholder="__('Name, patient number, phone or email')" icon="magnifying-glass" class="w-full max-w-md" autofocus />
+        <div class="w-full max-w-lg">
+            <flux:input wire:model.live.debounce.300ms="search" :label="__('Search')" :placeholder="__('Name, patient number, phone or email')" icon="magnifying-glass" autofocus />
+        </div>
         @if ($this->canArchive())
             <flux:checkbox wire:model.live="showArchived" :label="__('Show archived patients')" />
         @endif
@@ -106,7 +108,17 @@ new #[Title('Patients')] class extends Component {
     @if ($this->patients->isEmpty())
         <x-ui.empty-state
             :title="$search !== '' ? __('No patients match your search') : ($showArchived ? __('No archived patients') : __('No patients yet'))"
-            :description="$search === '' && ! $showArchived && auth()->user()->can('create', \App\Models\Patient::class) ? __('Register the first patient with “New patient”.') : null" />
+            :description="$search !== '' ? __('Check the spelling, or search by phone number or patient number.') : null">
+            @if ($search === '' && ! $showArchived)
+                @can('create', \App\Models\Patient::class)
+                    <flux:button variant="primary" icon="user-plus" :href="route('clinic.patients.create')" wire:navigate>{{ __('Register the first patient') }}</flux:button>
+                @endcan
+            @elseif ($search !== '')
+                @can('create', \App\Models\Patient::class)
+                    <flux:button icon="user-plus" :href="route('clinic.patients.create')" wire:navigate>{{ __('Register a new patient') }}</flux:button>
+                @endcan
+            @endif
+        </x-ui.empty-state>
     @else
         <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
             <table class="w-full text-start text-sm">
@@ -114,29 +126,38 @@ new #[Title('Patients')] class extends Component {
                     <tr>
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Patient') }}</th>
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Number') }}</th>
-                        <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Date of birth') }}</th>
+                        <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Age') }}</th>
                         <th scope="col" class="px-4 py-3 text-start font-medium">{{ __('Phone') }}</th>
                         <th scope="col" class="px-4 py-3"><span class="sr-only">{{ __('Actions') }}</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @foreach ($this->patients as $patient)
-                        <tr wire:key="patient-{{ $patient->id }}">
-                            <td class="px-4 py-3 font-medium">
-                                @if ($patient->trashed())
-                                    {{ $patient->full_name }}
-                                @else
-                                    <a href="{{ route('clinic.patients.show', $patient) }}" wire:navigate class="hover:underline">{{ $patient->full_name }}</a>
+                        <tr wire:key="patient-{{ $patient->id }}" class="relative hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                            <td class="px-4 py-3">
+                                <span class="flex items-center gap-3">
+                                    <span aria-hidden="true" class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-semibold text-brand">{{ mb_strtoupper(mb_substr($patient->first_name, 0, 1).mb_substr($patient->last_name, 0, 1)) }}</span>
+                                    @if ($patient->trashed())
+                                        <span class="font-medium">{{ $patient->full_name }}</span>
+                                    @else
+                                        {{-- The link covers the whole row, so anywhere on it opens the patient. --}}
+                                        <a href="{{ route('clinic.patients.show', $patient) }}" wire:navigate class="font-medium after:absolute after:inset-0 hover:underline">{{ $patient->full_name }}</a>
+                                    @endif
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300" dir="ltr">{{ $patient->patient_number }}</td>
+                            <td class="px-4 py-3">
+                                @if ($patient->date_of_birth)
+                                    {{ trans_choice(':count year|:count years', (int) $patient->date_of_birth->diffInYears(now())) }}
+                                    <span class="block text-xs text-zinc-500">{{ $patient->date_of_birth->format('Y-m-d') }}</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3" dir="ltr">{{ $patient->patient_number }}</td>
-                            <td class="px-4 py-3">{{ $patient->date_of_birth?->format('Y-m-d') }}</td>
                             <td class="px-4 py-3" dir="ltr">{{ $patient->phone }}</td>
                             <td class="px-4 py-3 text-end">
                                 @if ($patient->trashed())
-                                    <flux:button size="sm" wire:click="restore({{ $patient->id }})">{{ __('Restore') }}</flux:button>
+                                    <flux:button size="sm" wire:click="restore({{ $patient->id }})" class="relative z-10">{{ __('Restore') }}</flux:button>
                                 @else
-                                    <flux:button size="sm" :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Open') }}</flux:button>
+                                    <flux:icon.chevron-right class="ms-auto size-4 text-zinc-400 rtl:rotate-180" />
                                 @endif
                             </td>
                         </tr>
