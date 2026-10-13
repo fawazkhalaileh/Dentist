@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Patients\ArchivePatient;
+use App\Actions\Patients\LinkPortalAccount;
 use App\Models\Patient;
 use App\Support\Audit;
 use Livewire\Attributes\Title;
@@ -9,6 +10,8 @@ use Livewire\Component;
 new #[Title('Patient')] class extends Component {
     public Patient $patient;
 
+    public string $portalEmail = '';
+
     public function mount(Patient $patient): void
     {
         $this->authorize('view', $patient);
@@ -16,6 +19,26 @@ new #[Title('Patient')] class extends Component {
 
         // Who opened which record matters for health data; logged once per page load.
         Audit::record('patient.viewed', $patient);
+    }
+
+    public function linkPortal(LinkPortalAccount $link): void
+    {
+        $this->authorize('update', $this->patient);
+        $this->validate(['portalEmail' => ['required', 'email', 'max:255']], [], ['portalEmail' => __('email')]);
+
+        $link->link($this->patient, $this->portalEmail);
+        $this->portalEmail = '';
+        $this->patient->load('user:id,email');
+        \Flux\Flux::toast(variant: 'success', text: __('Portal account linked.'));
+    }
+
+    public function unlinkPortal(LinkPortalAccount $link): void
+    {
+        $this->authorize('update', $this->patient);
+
+        $link->unlink($this->patient);
+        $this->patient->load('user:id,email');
+        \Flux\Flux::toast(variant: 'success', text: __('Portal account unlinked.'));
     }
 
     public function archive(ArchivePatient $archive): void
@@ -124,6 +147,24 @@ new #[Title('Patient')] class extends Component {
                 </dd>
             </dl>
         </flux:card>
+
+        @can('update', $patient)
+            <flux:card class="space-y-3 md:col-span-2">
+                <flux:heading size="lg">{{ __('Patient portal') }}</flux:heading>
+                @if ($patient->user)
+                    <div class="flex flex-wrap items-center gap-3 text-sm">
+                        <span>{{ __('Linked to :email.', ['email' => $patient->user->email]) }}</span>
+                        <flux:button size="xs" variant="ghost" wire:click="unlinkPortal" wire:confirm="{{ __('Unlink this portal account? The patient will no longer see their appointments online.') }}">{{ __('Unlink') }}</flux:button>
+                    </div>
+                @else
+                    <flux:text class="text-sm">{{ __('Patients register on the website, then reception links the account here after checking their identity (for example with an ID card).') }}</flux:text>
+                    <form wire:submit="linkPortal" class="flex flex-wrap items-end gap-2">
+                        <flux:input wire:model="portalEmail" type="email" :label="__('Portal account email')" dir="ltr" class="min-w-64" />
+                        <flux:button type="submit">{{ __('Link account') }}</flux:button>
+                    </form>
+                @endif
+            </flux:card>
+        @endcan
 
         <flux:card class="space-y-3 md:col-span-2">
             <flux:heading size="lg">{{ __('Care team') }}</flux:heading>

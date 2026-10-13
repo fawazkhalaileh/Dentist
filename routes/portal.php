@@ -20,7 +20,7 @@ Route::middleware(['auth', 'verified', 'active', 'can:'.Permission::PortalAccess
 
         $placeholder = fn (string $title, int $phase) => ['title' => $title, 'phase' => $phase];
 
-        Route::view('appointments', 'portal.placeholder', $placeholder('My appointments', 5))->name('appointments');
-        Route::view('treatments', 'portal.placeholder', $placeholder('My treatments', 5))->name('treatments');
+        Route::livewire('appointments', 'pages::portal.appointments')->name('appointments');
+        Route::livewire('treatments', 'pages::portal.treatments')->name('treatments');
         Route::view('documents', 'portal.placeholder', $placeholder('My documents', 5))->name('documents');
     });
