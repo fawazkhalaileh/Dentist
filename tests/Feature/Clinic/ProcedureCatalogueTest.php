@@ -32,7 +32,7 @@ class ProcedureCatalogueTest extends TestCase
             ->call('addStarter')
             ->assertSee('Root canal treatment');
 
-        $this->assertSame(count(AddStarterProcedures::PROCEDURES), Procedure::count());
+        $this->assertSame(count(AddStarterProcedures::procedures()), Procedure::count());
         $this->assertTrue(AuditLog::where('action', 'procedure.starter_added')->exists());
     }
 
@@ -44,6 +44,49 @@ class ProcedureCatalogueTest extends TestCase
         $this->assertSame(0, app(AddStarterProcedures::class)->handle());
         $this->assertSame('Composite filling', Procedure::where('code', 'FILL')->value('name'));
         $this->assertSame(60, Procedure::where('code', 'FILL')->value('default_duration_minutes'));
+    }
+
+    public function test_the_starter_catalogue_covers_general_dentistry_in_both_languages_with_colours(): void
+    {
+        app(AddStarterProcedures::class)->handle();
+
+        $this->assertGreaterThanOrEqual(40, Procedure::count());
+        foreach (['RCT', 'EXT', 'CROWN', 'IMPL', 'FILL-COMP', 'SCALE', 'WHITEN'] as $code) {
+            $procedure = Procedure::where('code', $code)->sole();
+            $this->assertNotEmpty($procedure->name_ar, "{$code} needs an Arabic name.");
+            $this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/', (string) $procedure->color);
+        }
+    }
+
+    public function test_the_starter_list_fills_empty_colours_but_keeps_chosen_ones(): void
+    {
+        Procedure::factory()->create(['code' => 'RCT', 'name' => 'Root canal', 'category' => 'endodontic', 'color' => null]);
+        Procedure::factory()->create(['code' => 'EXT', 'name' => 'Extraction', 'category' => 'surgical', 'color' => '#00ff00']);
+
+        app(AddStarterProcedures::class)->handle();
+
+        $this->assertSame('#dc2626', Procedure::where('code', 'RCT')->value('color'));
+        $this->assertSame('#00ff00', Procedure::where('code', 'EXT')->value('color'));
+        $this->assertSame('Root canal', Procedure::where('code', 'RCT')->value('name'));
+    }
+
+    public function test_a_chart_colour_can_be_chosen_and_falls_back_to_the_category(): void
+    {
+        $procedure = Procedure::factory()->create(['code' => 'RCT', 'category' => 'endodontic', 'color' => null]);
+        $this->assertSame(Procedure::CATEGORY_COLORS['endodontic'], $procedure->displayColor());
+
+        Livewire::test('pages::clinic.procedures.index')
+            ->call('edit', $procedure->id)
+            ->set('form.color', '#16A34A')
+            ->call('save')
+            ->assertHasNoErrors();
+        $this->assertSame('#16a34a', $procedure->fresh()?->displayColor());
+
+        Livewire::test('pages::clinic.procedures.index')
+            ->call('edit', $procedure->id)
+            ->set('form.color', 'green')
+            ->call('save')
+            ->assertHasErrors(['form.color']);
     }
 
     public function test_a_procedure_is_created_with_an_uppercase_unique_code(): void

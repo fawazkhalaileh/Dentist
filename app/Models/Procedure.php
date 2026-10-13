@@ -19,9 +19,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $description
  * @property int $default_duration_minutes
  * @property string $scope tooth|surface|mouth
+ * @property string|null $color #rrggbb used on the dental chart
  * @property bool $is_active
  */
-#[Fillable(['code', 'name', 'name_ar', 'category', 'description', 'default_duration_minutes', 'scope', 'is_active'])]
+#[Fillable(['code', 'name', 'name_ar', 'category', 'description', 'default_duration_minutes', 'scope', 'color', 'is_active'])]
 class Procedure extends Model
 {
     /** @use HasFactory<ProcedureFactory> */
@@ -30,6 +31,28 @@ class Procedure extends Model
     public const CATEGORIES = ['diagnostic', 'preventive', 'restorative', 'endodontic', 'periodontal', 'surgical', 'prosthodontic', 'orthodontic', 'cosmetic', 'other'];
 
     public const SCOPES = ['mouth', 'tooth', 'surface'];
+
+    /** Chart colour for procedures without their own colour. */
+    public const CATEGORY_COLORS = [
+        'diagnostic' => '#64748b',
+        'preventive' => '#0ea5e9',
+        'restorative' => '#2563eb',
+        'endodontic' => '#dc2626',
+        'periodontal' => '#db2777',
+        'surgical' => '#374151',
+        'prosthodontic' => '#d97706',
+        'orthodontic' => '#0d9488',
+        'cosmetic' => '#16a34a',
+        'other' => '#6b7280',
+    ];
+
+    /**
+     * The colour this procedure is drawn with on the dental chart.
+     */
+    public function displayColor(): string
+    {
+        return $this->color ?: (self::CATEGORY_COLORS[$this->category ?? 'other'] ?? self::CATEGORY_COLORS['other']);
+    }
 
     public static function categoryLabel(?string $category): string
     {
