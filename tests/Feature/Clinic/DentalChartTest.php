@@ -35,7 +35,7 @@ class DentalChartTest extends TestCase
 
         foreach ([18, 11, 21, 28, 48, 41, 31, 38] as $tooth) {
             $response->assertSee('aria-label="Tooth '.$tooth.',', escape: false)
-                ->assertSee(route('clinic.patients.treatment-plans', ['patient' => $this->patient, 'tooth' => $tooth]), escape: false);
+                ->assertSee(e(route('clinic.patients.show', ['patient' => $this->patient, 'tab' => 'treatments', 'tooth' => $tooth])), escape: false);
         }
         $response->assertSeeInOrder(['Tooth 18,', 'Tooth 11,', 'Tooth 21,', 'Tooth 28,', 'Tooth 48,', 'Tooth 41,', 'Tooth 31,', 'Tooth 38,'], escape: false);
     }
@@ -57,7 +57,7 @@ class DentalChartTest extends TestCase
 
         $this->get(route('clinic.patients.chart', $this->patient))
             ->assertOk()
-            ->assertSee('Tooth 36, Lower left first molar, 1 planned', escape: false)
+            ->assertSee('Tooth 36, Lower left first molar, Filling (MO) · Planned', escape: false)
             ->assertSee('Filling (MO) · Planned')
             ->assertSee('Crown · Completed')
             // Cancelled treatments are not drawn or listed on the chart.
