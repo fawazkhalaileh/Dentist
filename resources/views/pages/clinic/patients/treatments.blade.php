@@ -19,14 +19,18 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 new #[Title('Treatment plans')] class extends Component {
     public Patient $patient;
 
-    /** Tooth filter, e.g. from the dental chart. */
-    #[Url]
+    /** Inside the patient page: no page header. */
+    #[Locked]
+    public bool $embedded = false;
+
+    /** Tooth filter, set by a click on the dental chart. */
+    #[Locked]
     public ?int $tooth = null;
 
     public bool $addingItem = false;
@@ -49,15 +53,29 @@ new #[Title('Treatment plans')] class extends Component {
     #[Locked]
     public ?int $historyId = null;
 
-    public function mount(Patient $patient): void
+    public function mount(Patient $patient, bool $embedded = false, ?int $tooth = null): void
     {
         $this->authorize('viewClinical', $patient);
         $this->patient = $patient;
-        if ($this->tooth !== null && ! Fdi::isValid($this->tooth)) {
-            $this->tooth = null;
-        }
+        $this->embedded = $embedded;
+        $tooth ??= request()->integer('tooth') ?: null;
+        $this->tooth = $tooth !== null && Fdi::isValid($tooth) ? $tooth : null;
 
         Audit::record('clinical.treatments_viewed', $patient);
+    }
+
+    #[On('tooth-selected')]
+    public function filterTooth(?int $tooth = null): void
+    {
+        $this->tooth = $tooth !== null && Fdi::isValid($tooth) ? $tooth : null;
+        unset($this->items);
+    }
+
+    public function showAllTeeth(): void
+    {
+        $this->tooth = null;
+        unset($this->items);
+        $this->dispatch('tooth-cleared');
     }
 
     /**
@@ -172,6 +190,7 @@ new #[Title('Treatment plans')] class extends Component {
 
         $this->addingItem = false;
         unset($this->items, $this->plans);
+        $this->dispatch('treatments-changed');
         Flux::toast(variant: 'success', text: __('Treatment added.'));
     }
 
@@ -208,6 +227,7 @@ new #[Title('Treatment plans')] class extends Component {
 
         $change->handle($item, $to, $this->actor());
         unset($this->items, $this->plans);
+        $this->dispatch('treatments-changed');
         Flux::toast(variant: 'success', text: __('Treatment marked :status.', ['status' => strtolower($to->label())]));
     }
 
@@ -230,6 +250,7 @@ new #[Title('Treatment plans')] class extends Component {
 
         $this->cancellingId = null;
         unset($this->items, $this->plans);
+        $this->dispatch('treatments-changed');
         Flux::toast(variant: 'success', text: __('Treatment cancelled. It stays in the record.'));
     }
 
@@ -261,13 +282,14 @@ new #[Title('Treatment plans')] class extends Component {
     }
 }; ?>
 
-<section class="w-full max-w-6xl">
-    <x-ui.page-header :title="__('Treatment plans')" :description="$patient->full_name.' · '.$patient->patient_number">
-        <x-slot:actions>
-            <flux:button :href="route('clinic.patients.chart', $patient)" wire:navigate icon="squares-2x2">{{ __('Dental chart') }}</flux:button>
-            <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Back to patient') }}</flux:button>
-        </x-slot:actions>
-    </x-ui.page-header>
+<section @class(['w-full', 'max-w-6xl' => ! $embedded])>
+    @unless ($embedded)
+        <x-ui.page-header :title="__('Treatment plans')" :description="$patient->full_name.' · '.$patient->patient_number">
+            <x-slot:actions>
+                <flux:button :href="route('clinic.patients.show', ['patient' => $patient, 'tab' => 'treatments'])" wire:navigate>{{ __('Open patient record') }}</flux:button>
+            </x-slot:actions>
+        </x-ui.page-header>
+    @endunless
 
     @php $canManage = auth()->user()->can('create', [\App\Models\TreatmentItem::class, $patient]); @endphp
 
@@ -278,7 +300,7 @@ new #[Title('Treatment plans')] class extends Component {
         @endif
         @if ($tooth)
             <flux:badge>{{ __('Tooth :number', ['number' => $tooth]) }} · {{ __(\App\Support\Fdi::name($tooth)) }}</flux:badge>
-            <flux:button size="sm" variant="ghost" wire:click="$set('tooth', null)">{{ __('Show all teeth') }}</flux:button>
+            <flux:button size="sm" variant="ghost" wire:click="showAllTeeth">{{ __('Show all teeth') }}</flux:button>
         @endif
     </div>
 

@@ -6,14 +6,20 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Patient appointments')] class extends Component {
     public Patient $patient;
 
-    public function mount(Patient $patient): void
+    /** Inside the patient page: no page header. */
+    #[Locked]
+    public bool $embedded = false;
+
+    public function mount(Patient $patient, bool $embedded = false): void
     {
+        $this->embedded = $embedded;
         $this->authorize('view', $patient);
         $this->patient = $patient;
     }
@@ -38,15 +44,17 @@ new #[Title('Patient appointments')] class extends Component {
     }
 }; ?>
 
-<section class="w-full max-w-4xl">
-    <x-ui.page-header :title="__('Appointments')" :description="$patient->full_name.' · '.$patient->patient_number">
-        <x-slot:actions>
-            @can('create', \App\Models\Appointment::class)
-                <flux:button variant="primary" icon="plus" :href="route('clinic.appointments.index')" wire:navigate>{{ __('Book in the calendar') }}</flux:button>
-            @endcan
-            <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Back to patient') }}</flux:button>
-        </x-slot:actions>
-    </x-ui.page-header>
+<section @class(['w-full', 'max-w-4xl' => ! $embedded])>
+    @unless ($embedded)
+        <x-ui.page-header :title="__('Appointments')" :description="$patient->full_name.' · '.$patient->patient_number">
+            <x-slot:actions>
+                @can('create', \App\Models\Appointment::class)
+                    <flux:button variant="primary" icon="plus" :href="route('clinic.appointments.index')" wire:navigate>{{ __('Book in the calendar') }}</flux:button>
+                @endcan
+                <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Open patient record') }}</flux:button>
+            </x-slot:actions>
+        </x-ui.page-header>
+    @endunless
 
     @php $now = now(); @endphp
     @foreach (['upcoming' => __('Upcoming'), 'past' => __('Past')] as $group => $heading)
