@@ -21,18 +21,24 @@
 
             <flux:sidebar.nav aria-label="{{ __('Clinic navigation') }}">
                 @foreach ($navigation as $group)
-                    <flux:sidebar.group :heading="__($group['heading'])" class="grid">
-                        @foreach ($group['items'] as $item)
-                            <flux:sidebar.item
-                                :icon="$item['icon']"
-                                :href="route($item['route'])"
-                                :current="request()->routeIs($item['active'])"
-                                wire:navigate
-                            >
+                    @php
+                        $items = $group['items'];
+                    @endphp
+                    @if ($group['heading'] === null)
+                        @foreach ($items as $item)
+                            <flux:sidebar.item :icon="$item['icon']" :href="route($item['route'])" :current="request()->routeIs($item['active'])" :badge="$item['badge']" wire:navigate>
                                 {{ __($item['label']) }}
                             </flux:sidebar.item>
                         @endforeach
-                    </flux:sidebar.group>
+                    @else
+                        <flux:sidebar.group :heading="__($group['heading'])" :icon="$group['icon']" :expandable="$group['collapsible']" :expanded="! $group['collapsible'] || request()->routeIs($group['active'])" class="grid">
+                            @foreach ($items as $item)
+                                <flux:sidebar.item :icon="$item['icon']" :href="route($item['route'])" :current="request()->routeIs($item['active'])" :badge="$item['badge']" wire:navigate>
+                                    {{ __($item['label']) }}
+                                </flux:sidebar.item>
+                            @endforeach
+                        </flux:sidebar.group>
+                    @endif
                 @endforeach
             </flux:sidebar.nav>
 

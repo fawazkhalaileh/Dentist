@@ -57,33 +57,9 @@ new #[Title('Patients')] class extends Component {
         return Patient::query()
             ->when($this->showArchived && $this->canArchive(), fn (Builder $q) => $q->onlyTrashed())
             ->unless($user->can(Permission::PatientsViewAll->value), fn (Builder $q) => $q->inCareTeamOf($user))
-            ->when($search !== '', fn (Builder $q) => $this->applySearch($q, $search))
+            ->search($search)
             ->orderBy('last_name')->orderBy('first_name')
             ->paginate(25);
-    }
-
-    /**
-     * Matches patient number, name (either order), email, or phone digits.
-     *
-     * @param  Builder<Patient>  $query
-     */
-    private function applySearch(Builder $query, string $search): void
-    {
-        $like = '%'.addcslashes($search, '%_\\').'%';
-        $digits = preg_replace('/\D+/', '', $search) ?? '';
-
-        $query->where(function (Builder $q) use ($like, $digits) {
-            $q->where('patient_number', 'like', $like)
-                ->orWhere('email', 'like', $like)
-                ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$like])
-                ->orWhereRaw("CONCAT(last_name, ' ', first_name) LIKE ?", [$like]);
-
-            // A local number (079...) also finds the international form (+962 79...).
-            $significant = ltrim($digits, '0');
-            if (strlen($significant) >= 3) {
-                $q->orWhereRaw("REGEXP_REPLACE(phone, '[^0-9]', '') LIKE ?", ['%'.$significant.'%']);
-            }
-        });
     }
 
     public function restore(int $id, ArchivePatient $archive): void

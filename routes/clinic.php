@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\Permission;
-use App\Http\Controllers\Clinic\ClinicDashboardController;
 use App\Http\Controllers\Clinic\DocumentDownloadController;
 use App\Models\Appointment;
 use App\Models\Patient;
@@ -22,7 +21,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
     ->prefix('clinic')
     ->name('clinic.')
     ->group(function () use ($can) {
-        Route::get('/', ClinicDashboardController::class)->name('dashboard');
+        Route::livewire('/', 'pages::clinic.home')->name('dashboard');
 
         $placeholder = fn (string $title, int $phase) => ['title' => $title, 'phase' => $phase];
 
