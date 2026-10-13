@@ -214,6 +214,46 @@ class AppointmentsTest extends TestCase
         Livewire::test('pages::clinic.appointments.index')->call('startCancel', $theirs->id)->assertNotFound();
     }
 
+    public function test_clicking_an_empty_slot_opens_booking_for_that_dentist_and_time(): void
+    {
+        $this->book('09:00', 30);
+
+        Livewire::test('pages::clinic.appointments.index')
+            ->set('date', self::DAY)
+            ->assertSee('Book 09:30 with Dr. Slot')
+            ->call('bookAt', $this->dentist->id, '11:15')
+            ->assertSet('booking', true)
+            ->assertSet('form.dentist_id', $this->dentist->id)
+            ->assertSet('form.date', self::DAY)
+            ->assertSet('form.time', '11:15');
+    }
+
+    public function test_selecting_an_appointment_shows_its_details_and_actions(): void
+    {
+        $appointment = $this->book('09:00', 30);
+
+        Livewire::test('pages::clinic.appointments.index')
+            ->set('date', self::DAY)
+            ->call('selectAppointment', $appointment->id)
+            ->assertSet('selectedId', $appointment->id)
+            ->assertSee('Check in')
+            ->call('closeDetails')
+            ->assertSet('selectedId', null);
+    }
+
+    public function test_the_grid_spans_working_hours_and_marks_breaks_and_closures(): void
+    {
+        BlockedPeriod::create(['dentist_id' => $this->dentist->id, 'starts_at' => ClinicTime::toUtc(self::DAY, '12:00'), 'ends_at' => ClinicTime::toUtc(self::DAY, '13:00'), 'reason' => 'Training']);
+
+        $component = Livewire::test('pages::clinic.appointments.index')->set('date', self::DAY)->assertSee('Training');
+        $grid = $component->instance()->grid;
+
+        $this->assertSame(8 * 60, $grid['start']);
+        $this->assertSame(18 * 60, $grid['end']);
+        // Off: before 09:00, the 10:00-10:30 break, after 13:00.
+        $this->assertSame([[480, 540], [600, 630], [780, 1080]], $grid['columns'][$this->dentist->id]['off']);
+    }
+
     public function test_patients_cannot_open_the_calendar(): void
     {
         $this->actingAs(User::factory()->patient()->create());
