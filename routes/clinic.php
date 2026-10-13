@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
     ->name('clinic.')
     ->group(function () use ($can) {
         Route::livewire('/', 'pages::clinic.home')->name('dashboard');
+        Route::livewire('help', 'pages::clinic.help')->name('help');
 
         $placeholder = fn (string $title, int $phase) => ['title' => $title, 'phase' => $phase];
 

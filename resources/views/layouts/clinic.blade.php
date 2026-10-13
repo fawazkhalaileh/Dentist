@@ -45,6 +45,9 @@
             <flux:spacer />
 
             <flux:sidebar.nav>
+                <flux:sidebar.item icon="question-mark-circle" :href="route('clinic.help')" :current="request()->routeIs('clinic.help')" wire:navigate>
+                    {{ __('Help') }}
+                </flux:sidebar.item>
                 <flux:sidebar.item icon="globe-alt" :href="route('home')" target="_blank">
                     {{ __('View website') }}
                 </flux:sidebar.item>
