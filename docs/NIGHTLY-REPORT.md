@@ -2,7 +2,7 @@
 
 Production: http://20.216.17.199 (Web VM, `/var/www/dentist`). Every deploy below was preceded by a verified database backup (`~/backups/dentist-*.sql.gz`: gzip intact, all tables, "Dump completed"), and afterwards `/en` and `/ar` returned 200.
 
-**Status when this was written:** the four items you asked for are done. Phase 3 (staff, patients, clinic details) and Phase 4 (clinical records) are both live. Phase 5 (scheduling) is next. This file is updated as work continues.
+**Final status (13 Oct, ~04:35 UTC / 07:35 Amman):** the four items you asked for are done, and so are Phases 3, 4 and 5 of the plan: staff and patients, clinical records, scheduling, and the patient portal. All of it is live on `b5bb8f3`. Phase 6 (hardening) is next. Work paused between about 22:30 and 04:30 UTC (most likely the usage limit) and then continued.
 
 ## Needs you this morning
 
@@ -12,6 +12,7 @@ Production: http://20.216.17.199 (Web VM, `/var/www/dentist`). Every deploy belo
 2. **Website → Clinic details:** enter the clinic's real name in English and Arabic. The site still says "Dental Clinic".
 3. **Procedure catalogue → "Add starter procedures"**, then review the names and durations.
 4. **Dentists and staff:** add your dentists and receptionists, then send each person their setup link (the screen creates it).
+   Then, per dentist: **Working hours and closures** (weekly hours and breaks; add public holidays as closures). Without hours, the calendar has no free times to offer.
 5. **Approve one server change I was blocked from making** (auto mode refused it). Uploads over 2 MB currently fail: website images allow 8 MB and documents allow 10 MB.
    ```bash
    sudo tee /etc/php/8.4/apache2/conf.d/99-dentist.ini <<'INI'
@@ -43,13 +44,20 @@ Production: http://20.216.17.199 (Web VM, `/var/www/dentist`). Every deploy belo
 | 21:45 | `31d6086` | **Treatment plans and lifecycle:** planned → in progress → completed / cancelled (with a reason); row lock plus append-only events; surfaces validated per tooth |
 | 21:52 | `e613c28` | **Dental chart:** SVG odontogram, FDI layout, permanent and primary teeth, colour plus a text alternative; checked visually by rendering it |
 | 21:58 | `ffd68e8` | **Patient documents:** private disk, type checked by content, hardened downloads, admin-only removal |
+| 22:06 | `d7f1c29` | **Working hours, breaks and closures** (clinic time zone, stored in UTC) |
+| 22:15 | `40eecae` | **Appointment calendar:** free slots, no double booking (row lock), reschedule, status flow, cancellation reasons |
+| 22:27 | `88e87ab` | **Online appointment requests** (public `/book`, English and Arabic) plus a reception inbox that books them. Also fixes the "Keep it" buttons (see below) |
+| 04:33 | `b5bb8f3` | **Patient portal:** reception links accounts; next appointment, my appointments (cancel future ones), requests, my treatments. Staff get a patient Appointments tab |
 
-Tests went from 184 to 262; Pint and PHPStan (level 7) are clean on every merge.
+Tests went from 184 to 298; Pint and PHPStan (level 7) are clean on every deployed merge (one exception below).
 
 ## Incidents
 
 - **About 20:42 (before this session's work), ~3 min of 503.** A connection test over `ssh web` triggered the old forced-deploy command, and I cut its output short, which left maintenance mode on. I restored it by running the deploy to completion. You have since removed the forced command.
 - **21:11, ~2 min of 503.** `npm run build` timed out downloading the font from fonts.bunny.net, and `deploy.sh` (`set -e`) stopped with the site in maintenance mode. I restored it by retrying the build and running the remaining steps by hand. Root cause fixed in `e28d5a3`, and every deploy since has been clean.
+
+- **22:05, PHPStan error on main (not deployed).** Merge `94b8f6a` reached main with a PHPStan error, because my command chain hid PHPStan's exit code behind `tail`. It was fixed in the next commit (`d7f1c29`) before any deploy. Since then every merge runs a script that stops on any failed check.
+- **Bug I shipped, now fixed:** from 21:45 until 22:27, the "Keep it" button on the treatment and appointment cancel forms raised an error (it changed a locked Livewire property). Nothing could be cancelled by accident; the form just wouldn't close. Fixed in `742dd30`, with regression tests.
 
 ## Decisions for you to review
 
@@ -60,7 +68,10 @@ Tests went from 184 to 262; Pint and PHPStan (level 7) are clean on every merge.
 - **Clinical notes:** only the author or an admin can correct a note, and only its latest version.
 - **Treatments:** cancelling requires a reason. A plan's status follows its items. Plan notes are now encrypted (no production data existed).
 - **Documents:** 10 MB limit; only an admin can remove a document, as a soft delete that keeps the file. There is no restore screen yet.
-- **Clinic dashboard language:** English only, consistent with the existing translations.
+- **Clinic dashboard language:** English only, consistent with the existing translations. Public site, booking form and portal are in English and Arabic (the Arabic is a draft).
+- **Scheduling:** 15-minute slot grid; weekday 0 = Sunday; "copy to empty days" skips Friday. Booking outside working hours needs an explicit tick. Dentists see only their own calendar and can't book (reception and admins do).
+- **Online requests are not bookings:** the public form never shows free times. Reception calls the person back and books it from the inbox (matching an existing patient by phone, or registering a new one).
+- **Portal:** patients can cancel future appointments online (with a reason) but not change them. "My treatments" hides notes and cancelled items. **"My documents" is intentionally still closed**: tell me which document types patients may download (for example X-rays and consent forms) and I'll open it.
 - **Form tampering:** the editable form ids in the Phase 2 CMS forms (testimonials, FAQs, categories) were left as they are. Anyone able to change them can already edit all of those items, so there's nothing extra to reach.
 
 ## Recommendations (not applied: your files or infrastructure)
@@ -72,4 +83,10 @@ Tests went from 184 to 262; Pint and PHPStan (level 7) are clean on every merge.
 
 ## In progress / next
 
-- Phase 5: scheduling (working hours, appointments, booking requests).
+Nothing is half-done: every branch is merged and deployed. Suggested next steps (Phase 6 and loose ends):
+1. HTTPS (domain plus certificate), then secure cookies and security headers (CSP, HSTS, X-Frame-Options).
+2. An audit log screen for admins (every action is already being recorded).
+3. Portal documents, once you decide what to share.
+4. Email (once SMTP is configured): appointment confirmations and reminders.
+5. An Arabic translation of the clinic dashboard, and a native speaker's review of the existing Arabic.
+6. A restore screen for removed documents and archived patients (archived patients can already be restored from the patient list).
