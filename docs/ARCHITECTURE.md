@@ -63,7 +63,7 @@ Roles and permissions are synced from the enums by `App\Support\RolesAndPermissi
 
 Production runs migrations only, never seeders, so code must not assume seeded rows exist:
 - Query users by role with `User::havingRole(Role::X)`, which matches nothing if the role is missing. Spatie's `User::role('x')` throws `RoleDoesNotExist` and turns a missing role into a 500.
-- Reference data the app needs (roles, FDI teeth) comes from migrations. The procedure catalogue is clinic data: production starts empty and an administrator fills it under **Procedure catalogue** ("Add starter procedures" adds only missing codes from `Actions\Procedures\AddStarterProcedures`; the local seeder uses the same action). Procedures used by treatment items can only be deactivated.
+- Reference data the app needs (roles, FDI teeth) comes from migrations. The procedure catalogue is clinic data: production starts empty and an administrator fills it under **Procedure catalogue** ("Add starter procedures", or `php artisan db:seed --class=ProcedureSeeder --force`, adds the 41-procedure general-dentistry catalogue from `Actions\Procedures\AddStarterProcedures` (English, Arabic, chart colours). It only adds missing codes and fills empty colours, so it is safe to repeat). Procedures used by treatment items can only be deactivated.
 - Tests do not seed either: every test runs on a database built by migrations alone, and `ReferenceDataTest` covers the missing-role case.
 
 ## Data model
@@ -118,6 +118,13 @@ Clinical safety rules built into the schema and models:
 
 Migrations: never edit a migration that has already run anywhere. Phase 2 edited the `staff_profiles` and `services` create migrations in place; `2026_10_12_100700_upgrade_phase_1_staff_and_service_columns` brings databases migrated in Phase 1 to the same shape (and copies existing profile text into a default-locale translation). It does nothing on a fresh install. New schema changes go in new migrations.
 
+## Patient record (one page with tabs)
+
+`/clinic/patients/{patient}` is the whole record: tabs for Overview, Chart & treatments, Medical history, Notes, Documents and Appointments (`?tab=`; `?tooth=` keeps the selected tooth). Tabs follow the policy (`view` / `viewClinical`), so reception only sees Overview and Appointments. Each tab embeds the same Livewire component as the standalone section URL (still routed, for old links) with `embedded: true`, which hides its page header.
+- The Overview is a dashboard: treatments done, planned / in progress, last visit, next appointment, the dental chart, active and recent treatments, the latest note, then contact details, care team and portal access.
+- Components talk through Livewire events: the chart dispatches `tooth-selected` (the page switches to Chart & treatments and the list filters to that tooth); the treatments list dispatches `treatments-changed` (the chart redraws) and `tooth-cleared`.
+- The allergy banner is shown on every tab to clinical staff.
+
 ## Patient directory
 
 `/clinic/patients` (Livewire pages in `resources/views/pages/clinic/patients`). Every screen authorises through `PatientPolicy` on load and again in each action.
@@ -155,7 +162,7 @@ Migrations: never edit a migration that has already run anywhere. Phase 2 edited
 `/clinic/patients/{patient}/chart` (`viewClinical`). An inline SVG drawn in Blade (no JavaScript library):
 - FDI layout as the dentist faces the patient: upper 18-11 | 21-28, lower 48-41 | 31-38 (primary: 55-51 | 61-65, 85-81 | 71-75). The SVG is `dir="ltr"` so it is never mirrored in Arabic.
 - Each tooth has five regions; buccal faces outward (top on the upper arch, bottom on the lower), mesial faces the midline, and the centre is occlusal or incisal.
-- Colour comes from the `--status-*` tokens in `theme.css`: per surface the most pressing status (in progress > planned > completed); treatments without surfaces tint and outline the whole tooth. Cancelled items are not drawn.
+- Colour comes from the procedure (`procedures.color`, editable in the catalogue; empty = `Procedure::CATEGORY_COLORS`). Status is the fill strength: planned = light with a dashed outline, in progress = medium, completed = solid. Per surface the most pressing status wins (in progress > planned > completed); treatments without surfaces tint and outline the whole tooth. Cancelled items are not drawn. A legend lists the procedures on the chart.
 - Each tooth is a link to the treatments page filtered to that tooth, with an `aria-label` summary; a text list below repeats everything without colour.
 
 ## Patient documents
