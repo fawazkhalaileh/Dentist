@@ -151,7 +151,9 @@ new #[Title('Procedure catalogue')] class extends Component {
     @endif
 
     @if ($this->procedures->isEmpty())
-        <x-ui.empty-state :title="__('The catalogue is empty')" :description="__('Add the starter procedures, then adjust names and durations to the clinic\'s own.')" />
+        <x-ui.empty-state :title="__('The catalogue is empty')" :description="__('Add the starter procedures, then adjust names and durations to the clinic\'s own.')">
+            <flux:button variant="primary" icon="sparkles" wire:click="addStarter">{{ __('Add starter procedures') }}</flux:button>
+        </x-ui.empty-state>
     @else
         <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
             <table class="w-full text-start text-sm">

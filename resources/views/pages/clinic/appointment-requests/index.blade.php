@@ -197,7 +197,7 @@ new #[Title('Appointment requests')] class extends Component {
     <flux:checkbox wire:model.live="showHandled" :label="__('Show handled requests')" class="mb-4" />
 
     @if ($this->requests->isEmpty())
-        <x-ui.empty-state :title="__('No requests')" :description="$showHandled ? null : __('All requests have been handled.')" />
+        <x-ui.empty-state :title="__('No requests waiting')" :description="$showHandled ? null : __('Requests from the website’s “Request an appointment” page and from the patient portal appear here.')" />
     @else
         <ul class="space-y-3">
             @foreach ($this->requests as $request)

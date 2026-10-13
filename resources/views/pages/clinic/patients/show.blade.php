@@ -104,6 +104,11 @@ new #[Title('Patient')] class extends Component {
         $this->tooth = null;
     }
 
+    public function canManageAppointments(): bool
+    {
+        return $this->user()->can('create', Appointment::class);
+    }
+
     public function canSeeClinical(): bool
     {
         return $this->user()->can('viewClinical', $this->patient);
@@ -200,11 +205,19 @@ new #[Title('Patient')] class extends Component {
             @can('update', $patient)
                 <flux:button icon="pencil-square" :href="route('clinic.patients.edit', $patient)" wire:navigate>{{ __('Edit details') }}</flux:button>
             @endcan
+            @if ($this->canManageAppointments())
+                <flux:button icon="calendar-days" :href="route('clinic.appointments.index', ['patient' => $patient->id])" wire:navigate>{{ __('Book appointment') }}</flux:button>
+            @endif
             @can('delete', $patient)
-                <flux:button variant="danger" wire:click="archive"
-                             wire:confirm="{{ __('Archive this patient? They disappear from lists and search. Nothing is deleted and the record can be restored.') }}">
-                    {{ __('Archive') }}
-                </flux:button>
+                <flux:dropdown position="bottom" align="end">
+                    <flux:button icon="ellipsis-horizontal" :aria-label="__('More actions')" />
+                    <flux:menu>
+                        <flux:menu.item icon="archive-box" variant="danger" wire:click="archive"
+                                        wire:confirm="{{ __('Archive this patient? They disappear from lists and search. Nothing is deleted and the record can be restored.') }}">
+                            {{ __('Archive patient') }}
+                        </flux:menu.item>
+                    </flux:menu>
+                </flux:dropdown>
             @endcan
         </x-slot:actions>
     </x-ui.page-header>
@@ -239,7 +252,7 @@ new #[Title('Patient')] class extends Component {
                 <li role="presentation">
                     <button type="button" role="tab" aria-selected="{{ $tab === $key ? 'true' : 'false' }}" wire:click="$set('tab', '{{ $key }}')"
                             @class(['rounded-t-md border-b-2 px-4 py-2 text-sm font-medium',
-                                    'border-zinc-900 text-zinc-900 dark:border-white dark:text-white' => $tab === $key,
+                                    'border-brand text-brand' => $tab === $key,
                                     'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200' => $tab !== $key])>
                         {{ $label }}
                     </button>
