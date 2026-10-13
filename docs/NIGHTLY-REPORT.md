@@ -1,3 +1,33 @@
+# Night 2: 13–14 October 2026 (ease of use)
+
+**Goal:** make the system look good and easy for a first-time user, and give every role a proper home page. Everything below is live (`380372a`). Each deploy had a verified backup first, and `/en` and `/ar` returned 200 afterwards. Tests: 308 → 320, with Pint and PHPStan clean on every merge. No incidents tonight.
+
+I checked every screen in a real browser (headless Chromium) at desktop and phone sizes, as admin, receptionist and dentist, and fixed what looked wrong.
+
+| Merge | What changed |
+|---|---|
+| `5684d72` | **New look and Home page.** Calm teal brand colour, a tooth logo instead of the Laravel one, and the clinic's own name. Shorter sidebar: Home, Calendar, Patients, Requests (with a count badge), Clinic, and Website as a collapsible group; unbuilt pages are hidden. **Home** is role-aware: greeting and date, Book appointment / New patient buttons, patient search, today's figures, a 7-day strip, today's schedule (whole clinic for reception and admin with Check in / Done / No show; "My day" for dentists), requests to call back, a dentist's planned treatments, and a **"Get your clinic ready"** checklist for admins until setup is done |
+| `a535c98` | **Real calendar.** A day view with a column per dentist and 15-minute rows. Non-working time is grey, closures are hatched with their reason, and a red line marks now. Appointments are blocks coloured by status; click one for details and actions. **Click any empty time to book it**: a side panel opens with the dentist, date and time filled in |
+| `2ea4512` | **Everyday screens.** Working hours on one compact line per day (it was broken: huge stacked fields). "Book appointment" on a patient opens booking with that patient chosen. Archive is now inside a "⋯" menu (no more big red button). Patient list shows initials and age, and the whole row is clickable. Procedure colours in the treatment table. Empty states have buttons (register the first patient, add starter procedures, add a dentist) |
+| `8ca2b26` | **Phones and public site.** The treatment table fits on a phone. The website has the logo, a welcoming hero with a "Visit us" card (phone, WhatsApp, hours, address), clickable cards, and initials for dentists without a photo; Arabic mirrors correctly |
+| `380372a` | **Help page** (sidebar → Help): short step-by-step guides for setting up, registering patients, booking and running the day, website requests, the patient record, charting and notes, and your account. Each person only sees guides for what they can do |
+
+**For you to check this morning**
+- Open http://20.216.17.199/clinic as admin. The Home page shows the setup checklist; the only step left on production should be "Enter your clinic name" (Website → Clinic details). Others will be ticked as you add staff, hours and patients.
+- Try clicking an empty time in **Calendar**, and opening a patient → "Book appointment".
+- Log in as a receptionist and as a dentist (once you've added them) to see their own Home pages.
+
+**Decisions to review**
+- Brand colour: teal `#0f766e`. To change it, edit `resources/css/theme.css` and `resources/css/app.css` (accent), or send me a colour or logo and I'll apply it.
+- "Clinic settings" and "Audit log" are hidden from the menu until they're built (the addresses still work).
+- The staff screens are English-only, as before; patient-facing pages are English and Arabic.
+
+**Not done / next**
+- HTTPS, email, upload limit and the off-server backup are with you (from yesterday's list).
+- Suggested next: billing (prices, quotes from treatment plans, invoices, payments), WhatsApp/SMS reminders, Arabic for the staff screens.
+
+---
+
 # Nightly report: 12–13 October 2026
 
 Production: http://20.216.17.199 (Web VM, `/var/www/dentist`). Every deploy below was preceded by a verified database backup (`~/backups/dentist-*.sql.gz`: gzip intact, all tables, "Dump completed"), and afterwards `/en` and `/ar` returned 200.
