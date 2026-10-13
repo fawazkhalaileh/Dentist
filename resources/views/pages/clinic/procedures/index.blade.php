@@ -127,6 +127,18 @@ new #[Title('Procedure catalogue')] class extends Component {
                         @endforeach
                     </flux:select>
                     <flux:input type="number" min="5" max="480" step="5" wire:model="form.default_duration_minutes" :label="__('Usual duration (minutes)')" />
+                    <div>
+                        <label for="procedure-color" class="mb-1 block text-sm font-medium">{{ __('Chart colour') }}</label>
+                        <div class="flex items-center gap-2">
+                            <input id="procedure-color" type="color" wire:model.live="form.color" value="{{ $form->color ?: (\App\Models\Procedure::CATEGORY_COLORS[$form->category ?: 'other'] ?? '#6b7280') }}" class="h-9 w-14 cursor-pointer rounded border border-zinc-300 dark:border-zinc-600">
+                            @if ($form->color)
+                                <flux:button size="xs" variant="ghost" wire:click="$set('form.color', '')">{{ __('Use category colour') }}</flux:button>
+                            @else
+                                <span class="text-xs text-zinc-500">{{ __('Category colour') }}</span>
+                            @endif
+                        </div>
+                        <flux:error name="form.color" />
+                    </div>
                 </div>
                 <flux:textarea wire:model="form.description" :label="__('Description')" rows="2" />
                 <flux:checkbox wire:model="form.is_active" :label="__('Active (can be chosen for new treatments)')" />
@@ -156,7 +168,9 @@ new #[Title('Procedure catalogue')] class extends Component {
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @foreach ($this->procedures as $procedure)
                         <tr wire:key="procedure-{{ $procedure->id }}" @class(['text-zinc-400' => ! $procedure->is_active])>
-                            <td class="px-4 py-3 font-mono" dir="ltr">{{ $procedure->code }}</td>
+                            <td class="px-4 py-3 font-mono" dir="ltr">
+                                <span aria-hidden="true" class="me-2 inline-block size-3 rounded-sm align-middle" style="background-color: {{ $procedure->displayColor() }}"></span>{{ $procedure->code }}
+                            </td>
                             <td class="px-4 py-3">
                                 {{ $procedure->name }}
                                 @if ($procedure->name_ar) <span class="block text-xs text-zinc-500" dir="rtl" lang="ar">{{ $procedure->name_ar }}</span> @endif

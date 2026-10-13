@@ -88,7 +88,9 @@ One-time server setup:
 - PHP for Apache: `upload_max_filesize` of at least 10M and `post_max_size` of at least 12M (website images may be up to 8 MB), and `memory_limit` of 256M for resizing them.
 - Mail: set `MAIL_*` in `.env` to a real SMTP service. With the default `log` mailer, password-reset and verification emails are only written to the log.
 
-Production never runs seeders, so it starts with no staff accounts. Create the first administrator on the server:
+Production never runs demo seeders. The procedure catalogue is the one safe exception: `php artisan db:seed --class=ProcedureSeeder --force` adds a 41-procedure general-dentistry catalogue (English, Arabic, chart colours), and running it again only adds what is missing. The same is available as "Add starter procedures" in the Procedure catalogue.
+
+Production starts with no staff accounts. Create the first administrator on the server:
 
 ```bash
 php artisan clinic:create-admin you@example.com --name="Your Name"   # asks for the password

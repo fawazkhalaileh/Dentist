@@ -17,6 +17,10 @@ use Livewire\Component;
 new #[Title('Medical and dental history')] class extends Component {
     public Patient $patient;
 
+    /** Inside the patient page: no page header. */
+    #[Locked]
+    public bool $embedded = false;
+
     /** Which review form is open: '', 'medical' or 'dental'. */
     #[Locked]
     public string $editing = '';
@@ -31,8 +35,9 @@ new #[Title('Medical and dental history')] class extends Component {
     /** @var array{chief_complaint: string, previous_treatments: string, notes: string} */
     public array $dental = ['chief_complaint' => '', 'previous_treatments' => '', 'notes' => ''];
 
-    public function mount(Patient $patient): void
+    public function mount(Patient $patient, bool $embedded = false): void
     {
+        $this->embedded = $embedded;
         $this->authorize('viewClinical', $patient);
         $this->patient = $patient;
 
@@ -174,12 +179,14 @@ new #[Title('Medical and dental history')] class extends Component {
     }
 }; ?>
 
-<section class="w-full max-w-5xl">
-    <x-ui.page-header :title="__('Medical and dental history')" :description="$patient->full_name.' · '.$patient->patient_number">
-        <x-slot:actions>
-            <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Back to patient') }}</flux:button>
-        </x-slot:actions>
-    </x-ui.page-header>
+<section @class(['w-full', 'max-w-5xl' => ! $embedded])>
+    @unless ($embedded)
+        <x-ui.page-header :title="__('Medical and dental history')" :description="$patient->full_name.' · '.$patient->patient_number">
+            <x-slot:actions>
+                <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Open patient record') }}</flux:button>
+            </x-slot:actions>
+        </x-ui.page-header>
+    @endunless
 
     @php $canWrite = auth()->user()->can('writeClinical', $patient); @endphp
 

@@ -24,6 +24,8 @@ class ProcedureForm extends Form
 
     public string $scope = 'tooth';
 
+    public string $color = '';
+
     public bool $is_active = true;
 
     public function load(?Procedure $procedure): void
@@ -39,6 +41,7 @@ class ProcedureForm extends Form
             $this->description = (string) $procedure->description;
             $this->default_duration_minutes = $procedure->default_duration_minutes;
             $this->scope = $procedure->scope;
+            $this->color = (string) $procedure->color;
             $this->is_active = $procedure->is_active;
         }
     }
@@ -56,6 +59,7 @@ class ProcedureForm extends Form
             'description' => ['nullable', 'string', 'max:2000'],
             'default_duration_minutes' => ['required', 'integer', 'min:5', 'max:480'],
             'scope' => ['required', Rule::in(Procedure::SCOPES)],
+            'color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'is_active' => ['boolean'],
         ];
     }
@@ -88,6 +92,7 @@ class ProcedureForm extends Form
             'description' => $nullable($this->description),
             'default_duration_minutes' => $this->default_duration_minutes,
             'scope' => $this->scope,
+            'color' => $this->color !== '' ? strtolower($this->color) : null,
             'is_active' => $this->is_active,
         ];
     }

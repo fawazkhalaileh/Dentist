@@ -6,8 +6,11 @@ use App\Actions\Procedures\AddStarterProcedures;
 use Illuminate\Database\Seeder;
 
 /**
- * Starter procedure catalogue for local development. In production an
- * administrator adds it from the procedure catalogue screen (same action).
+ * General-dentistry procedure catalogue (English and Arabic, with chart colours).
+ * Safe to run in any environment and repeatedly: it only adds missing codes and
+ * fills empty colours. In production:
+ *   php artisan db:seed --class=ProcedureSeeder --force
+ * or press "Add starter procedures" in the procedure catalogue (same action).
  */
 class ProcedureSeeder extends Seeder
 {

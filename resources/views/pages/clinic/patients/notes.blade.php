@@ -16,6 +16,10 @@ use Livewire\Component;
 new #[Title('Clinical notes')] class extends Component {
     public Patient $patient;
 
+    /** Inside the patient page: no page header. */
+    #[Locked]
+    public bool $embedded = false;
+
     public string $body = '';
 
     /** Note being corrected, if any. */
@@ -28,8 +32,9 @@ new #[Title('Clinical notes')] class extends Component {
     #[Locked]
     public array $expanded = [];
 
-    public function mount(Patient $patient): void
+    public function mount(Patient $patient, bool $embedded = false): void
     {
+        $this->embedded = $embedded;
         $this->authorize('viewClinical', $patient);
         $this->patient = $patient;
 
@@ -149,12 +154,14 @@ new #[Title('Clinical notes')] class extends Component {
     }
 }; ?>
 
-<section class="w-full max-w-4xl">
-    <x-ui.page-header :title="__('Clinical notes')" :description="$patient->full_name.' · '.$patient->patient_number">
-        <x-slot:actions>
-            <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Back to patient') }}</flux:button>
-        </x-slot:actions>
-    </x-ui.page-header>
+<section @class(['w-full', 'max-w-4xl' => ! $embedded])>
+    @unless ($embedded)
+        <x-ui.page-header :title="__('Clinical notes')" :description="$patient->full_name.' · '.$patient->patient_number">
+            <x-slot:actions>
+                <flux:button :href="route('clinic.patients.show', $patient)" wire:navigate>{{ __('Open patient record') }}</flux:button>
+            </x-slot:actions>
+        </x-ui.page-header>
+    @endunless
 
     @can('create', [\App\Models\ClinicalNote::class, $patient])
         <flux:card class="mb-6">
