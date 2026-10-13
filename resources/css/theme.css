@@ -8,8 +8,9 @@
 */
 
 :root {
-    --brand: #1f2937;            /* primary actions, links */
+    --brand: #0f766e;            /* primary actions, links: calm clinical teal */
     --brand-contrast: #ffffff;   /* text on --brand */
+    --brand-soft: #f0fdfa;       /* tinted panels and highlights */
     --surface: #ffffff;          /* page background */
     --surface-muted: #f5f5f5;    /* panels, table headers */
     --ink: #171717;              /* body text */
@@ -28,6 +29,7 @@
 @theme inline {
     --color-brand: var(--brand);
     --color-brand-contrast: var(--brand-contrast);
+    --color-brand-soft: var(--brand-soft);
     --color-surface: var(--surface);
     --color-surface-muted: var(--surface-muted);
     --color-ink: var(--ink);

@@ -8,9 +8,9 @@
             <div class="flex w-full max-w-sm flex-col gap-2">
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
                     <span class="flex h-9 w-9 mb-1 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
+                        <span class="flex size-12 items-center justify-center rounded-xl bg-brand text-brand-contrast"><x-app-logo-icon class="size-7" /></span>
                     </span>
-                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+                    <span class="sr-only">{{ \App\Support\ClinicDetails::name() }}</span>
                 </a>
                 <div class="flex flex-col gap-6">
                     {{ $slot }}
