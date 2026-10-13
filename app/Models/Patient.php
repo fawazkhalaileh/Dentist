@@ -91,6 +91,35 @@ class Patient extends Model
     }
 
     /**
+     * Search by patient number, name (either order), email or phone. Phone
+     * digits are compared without formatting or the leading 0, so 079...
+     * finds +962 79.... Wildcards in the input match literally.
+     *
+     * @param  Builder<Patient>  $query
+     */
+    public function scopeSearch(Builder $query, string $term): void
+    {
+        $term = trim($term);
+        if ($term === '') {
+            return;
+        }
+
+        $like = '%'.addcslashes($term, '%_\\').'%';
+        $digits = ltrim(preg_replace('/\D+/', '', $term) ?? '', '0');
+
+        $query->where(function (Builder $q) use ($like, $digits) {
+            $q->where('patient_number', 'like', $like)
+                ->orWhere('email', 'like', $like)
+                ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$like])
+                ->orWhereRaw("CONCAT(last_name, ' ', first_name) LIKE ?", [$like]);
+
+            if (strlen($digits) >= 3) {
+                $q->orWhereRaw("REGEXP_REPLACE(phone, '[^0-9]', '') LIKE ?", ['%'.$digits.'%']);
+            }
+        });
+    }
+
+    /**
      * Limit a query to patients on the dentist's care team.
      *
      * @param  Builder<Patient>  $query

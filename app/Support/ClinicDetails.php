@@ -71,6 +71,14 @@ final class ClinicDetails
             ?? (string) config('clinic.name');
     }
 
+    /**
+     * Whether staff have entered the clinic's own name (not just the server default).
+     */
+    public static function hasName(): bool
+    {
+        return self::get('name', Locales::default()) !== null;
+    }
+
     public static function get(string $field, ?string $locale = null): ?string
     {
         $value = self::all()[$field] ?? null;
