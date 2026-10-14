@@ -1,3 +1,21 @@
+# Session 3: 13–14 October 2026 (clinic details, billing)
+
+Everything below is live. Each deploy had a verified backup first, and `/en` and `/ar` returned 200 afterwards. Tests: 320 → 341, with Pint and PHPStan clean.
+
+| Merge / change | What |
+|---|---|
+| (production data) | **Clinic details from his public pages:** name **Dr. Mohammad Amara / الدكتور محمد عماره**, address *Al Mutanabbi Street, 4th Circle, Amman*, hours *Saturday–Thursday 10:00–23:00, Friday closed*. Sources: his Facebook page title and his WhatClinic listing. **7 services and the About page were added as drafts**: review and publish them under Website → Services and Website → Pages |
+| `fd9a262` | **Prices:** a usual price per procedure (catalogue), copied to new treatments and editable. The treatments tab shows prices and plan totals. Amounts are stored in fils (JD has 3 decimals); a comma, a point or Arabic digits are all accepted |
+| `3b4c8ff` | **Billing tab** on each patient (reception and admins): invoiced / paid / balance or credit; new invoice from completed treatments (pre-ticked) plus extra lines; record payment (cash, card, bank transfer/CliQ, insurance); void with a reason (nothing is ever deleted); printable A4 invoice; printable treatment estimate (dentists too) |
+
+**To try:** Procedures → set prices → open a patient → Chart & treatments → complete a treatment → Billing → New invoice → Record payment → Print.
+
+**Still needed from you:** phone/WhatsApp, logo and colours, photos, confirmation of the address and hours, whether Dr. Leena Hilal should be on the website, and publishing the drafts. Server items: HTTPS/domain, SMTP, upload limit.
+
+**Next on my list:** a payments summary on Home (today's takings), the audit log screen, then Arabic for the staff screens.
+
+---
+
 # Night 2: 13–14 October 2026 (ease of use)
 
 **Goal:** make the system look good and easy for a first-time user, and give every role a proper home page. Everything below is live (`380372a`). Each deploy had a verified backup first, and `/en` and `/ar` returned 200 afterwards. Tests: 308 → 320, with Pint and PHPStan clean on every merge. No incidents tonight.
