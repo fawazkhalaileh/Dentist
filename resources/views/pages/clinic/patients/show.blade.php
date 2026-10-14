@@ -59,11 +59,15 @@ new #[Title('Patient')] class extends Component {
             'notes' => [__('Notes'), 'viewClinical'],
             'documents' => [__('Documents'), 'viewClinical'],
             'appointments' => [__('Appointments'), 'view'],
+            'billing' => [__('Billing'), 'billing'],
         ];
 
         $tabs = [];
         foreach ($all as $key => [$label, $ability]) {
-            if ($this->user()->can($ability, $this->patient)) {
+            $allowed = $ability === 'billing'
+                ? $this->user()->can(\App\Enums\Permission::BillingManage->value) && $this->user()->can('view', $this->patient)
+                : $this->user()->can($ability, $this->patient);
+            if ($allowed) {
                 $tabs[$key] = $label;
             }
         }
@@ -425,6 +429,8 @@ new #[Title('Patient')] class extends Component {
             <livewire:pages::clinic.patients.documents :patient="$patient" :embedded="true" wire:key="tab-documents" />
         @elseif ($tab === 'appointments')
             <livewire:pages::clinic.patients.appointments :patient="$patient" :embedded="true" wire:key="tab-appointments" />
+        @elseif ($tab === 'billing')
+            <livewire:pages::clinic.patients.billing :patient="$patient" :embedded="true" wire:key="tab-billing" />
         @endif
     </div>
 </section>

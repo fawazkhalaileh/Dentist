@@ -167,6 +167,36 @@ class Patient extends Model
     }
 
     /**
+     * @return HasMany<Invoice, $this>
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Totals in fils over valid (not voided) invoices and payments.
+     * A positive balance is what the patient owes; negative is credit.
+     *
+     * @return array{invoiced: int, paid: int, balance: int}
+     */
+    public function billingSummary(): array
+    {
+        $invoiced = (int) $this->invoices()->valid()->sum('total');
+        $paid = (int) $this->payments()->valid()->sum('amount');
+
+        return ['invoiced' => $invoiced, 'paid' => $paid, 'balance' => $invoiced - $paid];
+    }
+
+    /**
      * The current medical history: the most recently recorded version.
      *
      * @return HasOne<MedicalHistory, $this>

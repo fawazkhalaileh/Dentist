@@ -125,6 +125,14 @@ class TreatmentItem extends Model
     }
 
     /**
+     * @return HasMany<InvoiceLine, $this>
+     */
+    public function invoiceLines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    /**
      * @return HasMany<TreatmentEvent, $this>
      */
     public function events(): HasMany
