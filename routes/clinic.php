@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Permission;
+use App\Http\Controllers\Clinic\BillingPrintController;
 use App\Http\Controllers\Clinic\DocumentDownloadController;
 use App\Models\Appointment;
 use App\Models\Patient;
@@ -49,6 +50,9 @@ Route::middleware(['auth', 'verified', 'active', $can(Permission::ClinicAccess),
                 ->middleware('can:viewClinical,patient')->name('notes');
             Route::livewire('documents', 'pages::clinic.patients.documents')
                 ->middleware('can:viewClinical,patient')->name('documents');
+            Route::get('invoices/{invoice}/print', [BillingPrintController::class, 'invoice'])
+                ->whereNumber('invoice')->name('invoices.print');
+            Route::get('estimate', [BillingPrintController::class, 'estimate'])->name('estimate');
             Route::get('documents/{document}', DocumentDownloadController::class)
                 ->whereNumber('document')
                 ->middleware('can:viewClinical,patient')->name('documents.download');

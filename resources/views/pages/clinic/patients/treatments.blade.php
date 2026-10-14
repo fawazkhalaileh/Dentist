@@ -309,6 +309,7 @@ new #[Title('Treatment plans')] class extends Component {
             <flux:button variant="primary" icon="plus" wire:click="openItemForm">{{ __('Add treatment') }}</flux:button>
             <flux:button icon="folder-plus" wire:click="openPlanForm">{{ __('New plan') }}</flux:button>
         @endif
+        <flux:button icon="printer" :href="route('clinic.patients.estimate', $patient)" target="_blank">{{ __('Print estimate') }}</flux:button>
         @if ($tooth)
             <flux:badge>{{ __('Tooth :number', ['number' => $tooth]) }} · {{ __(\App\Support\Fdi::name($tooth)) }}</flux:badge>
             <flux:button size="sm" variant="ghost" wire:click="showAllTeeth">{{ __('Show all teeth') }}</flux:button>

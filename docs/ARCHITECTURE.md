@@ -193,6 +193,16 @@ Time: the clinic works in `config('clinic.timezone')` (production `Asia/Amman`);
 - **My treatments:** procedure, tooth, surfaces, status and dates. Notes and cancelled items are not shown.
 - **My documents** is deliberately not open yet: the clinic should decide which documents patients may download.
 
+## Billing
+
+Money is stored as whole minor units (fils: 1 JD = 1000) in integer columns; `Support\Money` parses typed amounts (comma or point, Arabic digits) and formats them (`config('clinic.currency')`). Permission `billing.manage` (reception and admins); dentists see treatment prices and can print estimates, but not invoices or payments.
+- **Prices:** procedures have an optional usual price; a new treatment item copies it and staff can change it. Plan totals leave out cancelled items.
+- **Invoices** (`Actions\Billing\CreateInvoice`): issued once, with lines (from treatment items or free lines) and a stored total. The model refuses any change except voiding (reason required) and refuses deletion. A treatment item can be on only one valid invoice; the action locks the item rows to prevent double billing. Numbers are `INV-` plus the zero-padded id.
+- **Payments** (`Actions\Billing\RecordPayment`): cash, card, bank transfer / CliQ, insurance or other, optionally linked to one of the patient's valid invoices; never edited or deleted, only voided with a reason.
+- **Balance** = valid invoices − valid payments (`Patient::billingSummary()`); negative means credit.
+- **Printing:** `/clinic/patients/{patient}/invoices/{invoice}/print` (scoped to the patient, audited) and `/clinic/patients/{patient}/estimate[?plan=]` for planned treatment, on a plain A4 layout.
+- Invoice and payment notes are encrypted. Audit: `billing.invoice_created`, `billing.invoice_voided`, `billing.invoice_printed`, `billing.payment_recorded`, `billing.payment_voided` (amounts, no clinical text).
+
 ## Staff management
 
 Administrators (`staff.manage`) manage staff under `/clinic/staff`; screens extend `App\Livewire\StaffComponent`, which re-checks the permission on every request. `App\Actions\Staff\SaveStaffMember` creates and updates accounts:
