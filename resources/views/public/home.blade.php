@@ -7,6 +7,7 @@
     @endphp
     <section aria-labelledby="home-heading" class="grid gap-8 rounded-2xl bg-brand-soft p-6 md:grid-cols-[3fr_2fr] md:p-12">
         <div>
+            <img src="{{ asset('images/amara-dental-logo.webp') }}" alt="" width="984" height="958" class="mb-6 h-28 w-auto rounded-2xl md:h-36" />
             <h1 id="home-heading" class="text-3xl font-semibold md:text-5xl">{{ \App\Support\ClinicDetails::name() }}</h1>
             <p class="mt-4 text-lg text-ink-muted">{{ __('Dental care for the whole family.') }}</p>
             <p class="mt-2 text-ink-muted">{{ __('Request an appointment online and we will call you back to agree a time.') }}</p>

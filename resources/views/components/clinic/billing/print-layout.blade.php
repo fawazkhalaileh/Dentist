@@ -20,7 +20,7 @@
     <main class="mx-auto my-4 max-w-3xl bg-white p-10 shadow-sm print:my-0 print:p-0 print:shadow-none">
         <header class="mb-8 flex items-start justify-between gap-6 border-b border-zinc-200 pb-6">
             <div class="flex items-center gap-3">
-                <span class="flex size-12 items-center justify-center rounded-xl bg-brand text-brand-contrast print:border print:border-zinc-300 print:bg-white print:text-brand"><x-app-logo-icon class="size-7" /></span>
+                <x-app-logo-icon class="size-12 shrink-0 text-brand" />
                 <div>
                     <p class="text-lg font-semibold">{{ \App\Support\ClinicDetails::name() }}</p>
                     <p class="whitespace-pre-line text-sm text-zinc-600">{{ \App\Support\ClinicDetails::get('address') }}</p>

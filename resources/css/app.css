@@ -25,18 +25,18 @@
     --color-zinc-950: #0a0a0a;
 
     /* Flux accent follows the clinic brand (theme.css). */
-    --color-accent: #0f766e;
-    --color-accent-content: #0f766e;
+    --color-accent: #7c0424;
+    --color-accent-content: #7c0424;
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
     .dark {
-        --color-accent: #2dd4bf;
-        --color-accent-content: #5eead4;
-        --color-accent-foreground: #042f2e;
-        --brand: #14b8a6;
-        --brand-soft: #042f2e;
+        --color-accent: #fb7185;
+        --color-accent-content: #fda4af;
+        --color-accent-foreground: #4c0519;
+        --brand: #f87191;
+        --brand-soft: #2a0711;
     }
 }
 
