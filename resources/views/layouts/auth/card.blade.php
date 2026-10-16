@@ -8,7 +8,7 @@
             <div class="flex w-full max-w-md flex-col gap-6">
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
                     <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                        <span class="flex size-12 items-center justify-center rounded-xl bg-brand text-brand-contrast"><x-app-logo-icon class="size-7" /></span>
+                        <x-app-logo-icon class="size-14 text-brand" />
                     </span>
 
                     <span class="sr-only">{{ \App\Support\ClinicDetails::name() }}</span>

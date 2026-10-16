@@ -102,7 +102,7 @@
         <header class="border-b border-line">
             <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
                 <a href="{{ route('public.home') }}" class="flex items-center gap-2 text-lg font-semibold">
-                    <span class="flex size-8 items-center justify-center rounded-lg bg-brand text-brand-contrast"><x-app-logo-icon class="size-5" /></span>
+                    <x-app-logo-icon class="size-9 text-brand" />
                     {{ ClinicDetails::name() }}
                 </a>
 

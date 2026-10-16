@@ -1,4 +1,9 @@
-{{-- A molar: the clinic mark. Uses currentColor so it follows the surrounding text colour. --}}
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" {{ $attributes }}>
-    <path fill="currentColor" d="M7.4 2.5C4.8 2.5 3 4.6 3 7.4c0 2.2.8 3.7 1.4 5.3.6 1.6.9 3.4 1.3 5.6.4 2.1 1 3.7 2.3 3.7 1.4 0 1.7-1.6 2.1-3.6.3-1.6.7-3 1.9-3s1.6 1.4 1.9 3c.4 2 .7 3.6 2.1 3.6 1.3 0 1.9-1.6 2.3-3.7.4-2.2.7-4 1.3-5.6.6-1.6 1.4-3.1 1.4-5.3 0-2.8-1.8-4.9-4.4-4.9-1.8 0-2.9.9-4.6.9s-2.8-.9-4.6-.9Z" />
+{{-- The Amara Dental mark: a smile ending in a toothbrush. The circle takes the
+     current text colour (use text-brand); the smile is always white. --}}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true" {{ $attributes }}>
+    <circle cx="50" cy="50" r="50" fill="currentColor" />
+    <g fill="none" stroke="#fff" stroke-linecap="round">
+        <path d="M14.7 42.3C14.7 59.9 30.6 74.2 50 74.2S85.1 59.9 85.1 42.3" stroke-width="5.6" />
+        <path d="M74.6 40.4L82.6 44.5M73 43.7L82.3 48.4M71.3 47L81.6 52.2M69.7 50.3L80.6 55.8M68.3 53.6L79.3 59.2" stroke-width="2.3" />
+    </g>
 </svg>

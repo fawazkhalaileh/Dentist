@@ -51,6 +51,8 @@ final class Seo
             '@type' => 'Dentist',
             'name' => ClinicDetails::name(),
             'url' => route('public.home'),
+            'logo' => asset('images/amara-dental-logo.webp'),
+            'image' => asset('images/amara-dental-logo.webp'),
             'telephone' => ClinicDetails::get('phone'),
             'email' => ClinicDetails::get('email'),
             'address' => $address,
