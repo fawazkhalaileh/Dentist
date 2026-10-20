@@ -5,7 +5,7 @@
 
 <x-layouts::public :title="__('Meet :name', ['name' => $doctor])" :bleed="true"
     :description="__('Meet :name, the dentist at :clinic in Amman, and learn about the personal approach to your care.', ['name' => $doctor, 'clinic' => \App\Support\ClinicDetails::name()])"
-    :image="asset('images/site/doctor-1280.webp')">
+    :image="asset('images/site/doctor-1280.webp')" :schema="\App\Support\Seo::doctor()">
 
     <section aria-labelledby="doctor-heading" class="relative overflow-hidden">
         <div aria-hidden="true" class="absolute inset-x-0 top-0 h-[70%] bg-cream"></div>

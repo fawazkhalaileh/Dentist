@@ -150,4 +150,38 @@ class WebsiteDesignTest extends TestCase
             ->assertDontSee('/en/services/whitening', escape: false)
             ->assertDontSee('/en/blog/veneers-or-crowns', escape: false);
     }
+
+    public function test_robots_and_llms_files_describe_the_clinic_from_real_data_only(): void
+    {
+        \App\Support\ClinicDetails::put(['name' => ['en' => 'Smile Clinic', 'ar' => null], 'address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+
+        $this->get('/robots.txt')->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSee('Disallow: /clinic')
+            ->assertSee('Sitemap: '.route('sitemap'));
+
+        // No published services yet: the sample treatments must not be presented as real.
+        $this->get('/llms.txt')->assertOk()
+            ->assertSee('# Smile Clinic')
+            ->assertSee('Address: Main Street, Amman')
+            ->assertSee('Doctor: Dr. Mohammad Amara')
+            ->assertSee('finalising its treatment list')
+            ->assertDontSee('Teeth Whitening');
+
+        $this->makeService(['en' => 'Gum treatment']);
+        $this->get('/llms.txt')->assertSee('[Gum treatment]('.route('public.services.show', ['locale' => 'en', 'slug' => 'gum-treatment']).')');
+    }
+
+    public function test_structured_data_names_the_doctor_and_the_clinic_address(): void
+    {
+        \App\Support\ClinicDetails::put(['address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+
+        $this->get('/en')
+            ->assertSee('"address":{"@type":"PostalAddress","streetAddress":"Main Street, Amman","addressLocality":"Amman","addressCountry":"JO"}', escape: false)
+            ->assertSee('"employee":{"@type":"Person","name":"Dr. Mohammad Amara"', escape: false);
+
+        $this->get('/en/meet-dr-mohammad-amara')
+            ->assertSee('"@type":"Person","name":"Dr. Mohammad Amara","jobTitle":"Dentist"', escape: false)
+            ->assertSee('"worksFor":{"@type":"Dentist"', escape: false);
+    }
 }

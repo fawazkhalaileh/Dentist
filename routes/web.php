@@ -3,6 +3,7 @@
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\BookingController;
 use App\Http\Controllers\Public\ContactController;
+use App\Http\Controllers\Public\CrawlerController;
 use App\Http\Controllers\Public\DentistController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\PageController;
@@ -30,6 +31,8 @@ Route::get('/', function (Request $request) {
 })->name('home');
 
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('robots.txt', [CrawlerController::class, 'robots'])->name('robots');
+Route::get('llms.txt', [CrawlerController::class, 'llms'])->name('llms');
 
 Route::prefix('{locale}')
     ->where(['locale' => Locales::routePattern()])

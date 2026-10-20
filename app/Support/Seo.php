@@ -55,10 +55,32 @@ final class Seo
             'image' => asset('images/site/reception-1200.webp'),
             'telephone' => ClinicDetails::get('phone'),
             'email' => ClinicDetails::get('email'),
-            'address' => $address,
+            // Street address as the clinic typed it; the clinic is in Amman, Jordan.
+            'address' => $address ? ['@type' => 'PostalAddress', 'streetAddress' => $address, 'addressLocality' => 'Amman', 'addressCountry' => 'JO'] : null,
+            'medicalSpecialty' => 'Dentistry',
+            'availableLanguage' => ['Arabic', 'English'],
+            'employee' => self::doctor(withEmployer: false),
             'openingHours' => ClinicDetails::get('opening_hours'),
             'hasMap' => ClinicDetails::get('map_url'),
             'sameAs' => array_values(config('site.social', [])) ?: null,
+        ]);
+    }
+
+    /**
+     * schema.org Person for the clinic's dentist: name, photo and page only, no unverified credentials.
+     *
+     * @return array<string, mixed>
+     */
+    public static function doctor(bool $withEmployer = true): array
+    {
+        return array_filter([
+            '@context' => $withEmployer ? 'https://schema.org' : null,
+            '@type' => 'Person',
+            'name' => Site\SiteContent::doctorName(),
+            'jobTitle' => __('Dentist'),
+            'image' => asset('images/site/doctor-1280.webp'),
+            'url' => route('public.doctor'),
+            'worksFor' => $withEmployer ? ['@type' => 'Dentist', 'name' => ClinicDetails::name(), 'url' => route('public.home')] : null,
         ]);
     }
 
