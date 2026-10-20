@@ -65,7 +65,7 @@
 </article>
 
 @if ($related && $related->isNotEmpty())
-    <section aria-labelledby="related-articles" class="border-t border-line py-20 md:py-24">
+    <section aria-labelledby="related-articles" class="border-t border-line py-12 md:py-20">
         <div class="site-container">
             <h2 id="related-articles" class="text-4xl">{{ __('Keep reading') }}</h2>
             <ul class="mt-10 grid gap-x-8 gap-y-14 md:grid-cols-3">

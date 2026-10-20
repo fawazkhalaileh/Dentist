@@ -1,7 +1,7 @@
 <x-layouts::public :title="__('Testimonials')" :bleed="true" :description="__('What patients say about their visits to :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])">
     <x-site.page-hero :title="__('What our patients say')" :eyebrow="__('Patient stories')" />
 
-    <div class="site-container py-16 md:py-20">
+    <div class="site-container py-10 md:py-16">
         @if ($testimonials->isEmpty())
             <x-ui.empty-state :title="__('No testimonials published yet')" />
         @else

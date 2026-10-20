@@ -16,7 +16,7 @@
     <x-site.page-hero :title="__('Contact us')" :eyebrow="__('We are here to help')"
         :intro="__('Questions about a treatment, or ready to book? Get in touch and our team will get back to you.')" />
 
-    <section class="py-16 md:py-24">
+    <section class="py-10 md:py-16">
         <div class="site-container grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
             <section aria-labelledby="contact-details">
                 <h2 id="contact-details" class="text-4xl">{{ __('Visit or call') }}</h2>

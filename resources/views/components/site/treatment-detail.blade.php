@@ -34,7 +34,7 @@
     </div>
 </section>
 
-<div class="site-container grid gap-14 py-20 md:py-24 lg:grid-cols-[1fr_20rem] lg:gap-20">
+<div class="site-container grid gap-14 py-12 md:py-20 lg:grid-cols-[1fr_20rem] lg:gap-20">
     <div class="min-w-0 space-y-16">
         {{ $slot }}
     </div>
@@ -50,7 +50,7 @@
 </div>
 
 @if ($related && $related->isNotEmpty())
-    <section aria-labelledby="related-heading" class="border-t border-line py-20 md:py-24">
+    <section aria-labelledby="related-heading" class="border-t border-line py-12 md:py-20">
         <div class="site-container">
             <h2 id="related-heading" class="text-4xl">{{ __('Related treatments') }}</h2>
             <ul class="mt-10 grid gap-5 md:grid-cols-3">

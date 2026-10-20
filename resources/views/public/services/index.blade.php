@@ -9,7 +9,7 @@
         </div>
     </x-site.page-hero>
 
-    <section aria-labelledby="treatment-list" class="py-20 md:py-24">
+    <section aria-labelledby="treatment-list" class="py-12 md:py-20">
         <div class="site-container">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <h2 id="treatment-list" class="text-4xl">{{ __('Find the right care') }}</h2>
