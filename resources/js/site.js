@@ -102,3 +102,48 @@ document.querySelectorAll('[data-carousel]').forEach((root) => {
     root.querySelector('[data-carousel-prev]')?.addEventListener('click', () => step(-1));
     root.querySelector('[data-carousel-next]')?.addEventListener('click', () => step(1));
 });
+
+// Smile Gallery: treatment filter.
+document.querySelectorAll('[data-gallery-filters]').forEach((group) => {
+    const items = document.querySelectorAll('[data-gallery] > li');
+    group.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-filter]');
+        if (!button) return;
+        group.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        items.forEach((li) => { li.hidden = button.dataset.filter !== 'all' && li.dataset.category !== button.dataset.filter; });
+    });
+});
+
+// Smile Gallery: full-screen viewer with previous/next and arrow keys.
+const viewer = document.querySelector('[data-case-viewer]');
+if (viewer && typeof viewer.showModal === 'function') {
+    const cases = viewer.querySelectorAll('[data-case]');
+    const counter = viewer.querySelector('[data-case-counter]');
+    let current = 0;
+    const show = (index) => {
+        const visible = [...document.querySelectorAll('[data-gallery] > li')].map((li, i) => (li.hidden ? null : i)).filter((i) => i !== null);
+        if (!visible.length) return;
+        if (!visible.includes(index)) index = visible[0];
+        current = index;
+        cases.forEach((c, i) => { c.hidden = i !== index; });
+        counter.textContent = `${visible.indexOf(index) + 1} / ${visible.length}`;
+    };
+    const step = (dir) => {
+        const visible = [...document.querySelectorAll('[data-gallery] > li')].map((li, i) => (li.hidden ? null : i)).filter((i) => i !== null);
+        const pos = visible.indexOf(current);
+        show(visible[(pos + dir + visible.length) % visible.length]);
+    };
+    document.querySelectorAll('[data-open-case]').forEach((button) => {
+        button.addEventListener('click', () => { show(Number(button.dataset.openCase)); viewer.showModal(); });
+    });
+    const rtl = document.documentElement.dir === 'rtl';
+    viewer.querySelector('[data-case-prev]').addEventListener('click', () => step(-1));
+    viewer.querySelector('[data-case-next]').addEventListener('click', () => step(1));
+    viewer.addEventListener('keydown', (event) => {
+        if (event.target.matches('input[type="range"]')) return; // arrows move the comparison handle there
+        if (event.key === 'ArrowRight') step(rtl ? -1 : 1);
+        if (event.key === 'ArrowLeft') step(rtl ? 1 : -1);
+    });
+} else if (viewer) {
+    document.querySelectorAll('[data-open-case]').forEach((b) => { b.hidden = true; });
+}

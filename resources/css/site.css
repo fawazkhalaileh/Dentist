@@ -133,6 +133,36 @@
         background: rgb(255 255 255 / 0.6);
     }
 
+    /* Form fields on the public site. */
+    .site .field {
+        display: block;
+        width: 100%;
+        margin-top: 0.375rem;
+        border-radius: 0.875rem;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .site .field:focus {
+        outline: none;
+        border-color: var(--color-wine);
+        box-shadow: 0 0 0 3px rgb(124 4 36 / 0.15);
+    }
+    .site .field[aria-invalid='true'] { border-color: #b42318; }
+
+    /* Long-form text (articles, CMS pages) on the public site. */
+    .site .prose { font-size: 1.0625rem; line-height: 1.8; color: var(--ink-muted); }
+    .site .prose h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 500; line-height: 1.2; color: var(--ink); margin-top: 1.75em; }
+    .site .prose h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; color: var(--ink); }
+    .site .prose strong { color: var(--ink); }
+    .site .prose a { color: var(--color-wine); }
+    .site .prose li::marker { color: var(--color-wine); }
+
+    .site details > summary { list-style: none; }
+    .site details > summary::-webkit-details-marker { display: none; }
+
     .site-header[data-scrolled='true'] {
         box-shadow: 0 10px 30px -22px rgb(34 27 29 / 0.45);
         border-color: var(--line);

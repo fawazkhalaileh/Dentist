@@ -22,7 +22,7 @@ class PageController extends Controller
         /** @var PageTranslation|null $translation */
         $translation = $page?->translation();
 
-        return view('public.page', [
+        return view($key === 'about' ? 'public.about' : 'public.page', [
             'key' => $key,
             'translation' => $translation,
             'fallbackTitle' => match ($key) {

@@ -205,6 +205,6 @@ class ContentScreensTest extends TestCase
 
         $this->get('/en')->assertSee('<title>Smile Dental</title>', escape: false)->assertSee('"name":"Smile Dental"', escape: false);
         $this->get('/ar')->assertSee('<title>عيادة الابتسامة</title>', escape: false);
-        $this->get('/en/services')->assertSee('Our services | Smile Dental');
+        $this->get('/en/services')->assertSee('Treatments | Smile Dental');
     }
 }

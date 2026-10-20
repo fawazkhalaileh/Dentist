@@ -97,14 +97,17 @@ class PublicContentTest extends TestCase
 
     public function test_pages_show_published_content_or_an_explanation(): void
     {
-        $this->get(route('public.about', ['locale' => 'en']))->assertOk()->assertSee('This page is being prepared');
+        $this->get(route('public.legal.privacy', ['locale' => 'en']))->assertOk()->assertSee('This page is being prepared');
+        // About shows labelled placeholder copy until the clinic publishes its own story.
+        $this->get(route('public.about', ['locale' => 'en']))->assertOk()->assertSee('Placeholder copy, awaiting approval');
 
         app(SavePage::class)->handle(Page::firstOrNew(['key' => 'about']), [
             'status' => 'published',
             'translations' => ['en' => ['title' => 'Our story', 'body' => 'We opened in a synthetic year.', 'seo_title' => null, 'meta_description' => null]],
         ]);
 
-        $this->get(route('public.about', ['locale' => 'en']))->assertSee('Our story')->assertSee('synthetic year');
+        $this->get(route('public.about', ['locale' => 'en']))->assertSee('Our story')->assertSee('synthetic year')
+            ->assertDontSee('Placeholder copy, awaiting approval');
     }
 
     public function test_testimonials_and_faqs_are_filtered_by_locale_and_status(): void

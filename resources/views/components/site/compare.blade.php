@@ -13,9 +13,9 @@
 --}}
 <div data-compare dir="ltr" style="--split: 50%" {{ $attributes->class('group/compare relative isolate aspect-[4/3] select-none overflow-hidden rounded-3xl bg-cream') }}>
     @if ($before && $after)
-        <x-ui.picture :media="$after" alt="{{ __('After treatment') }}" :sizes="$sizes" class="absolute inset-0 size-full object-cover" />
+        <x-ui.picture :media="$after" alt="{{ __('After treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
         <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--split)) 0 0)">
-            <x-ui.picture :media="$before" alt="{{ __('Before treatment') }}" :sizes="$sizes" class="absolute inset-0 size-full object-cover" />
+            <x-ui.picture :media="$before" alt="{{ __('Before treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
         </div>
     @else
         <div class="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,#efe6da,#f8f3ec)]">
