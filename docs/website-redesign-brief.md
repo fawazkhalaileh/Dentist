@@ -5,8 +5,8 @@ The brief as given by the clinic owner on 2026-10-20, kept verbatim. It governs 
 ## Phase status
 
 - A Audit: done (assets reviewed 2026-10-20; no gallery items have consent recorded yet)
-- B Design foundation: built on `claude/website-redesign`, awaiting approval to ship
-- C Homepage (+ Meet Dr. Moi page): built on `claude/website-redesign`, awaiting approval to ship
+- B Design foundation: shipped 2026-10-20 (35b5fd2)
+- C Homepage (+ Meet Dr. Moi page): shipped 2026-10-20 (35b5fd2)
 - D Internal pages: not started
 - E Responsive: not started
 - F Verification: not started
