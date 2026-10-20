@@ -55,6 +55,25 @@ document.addEventListener('click', (event) => {
     });
 });
 
+// Keep keyboard focus inside an open full-screen menu.
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    const button = document.querySelector('[data-disclosure="modal"][aria-expanded="true"]');
+    const panel = button && document.getElementById(button.getAttribute('aria-controls'));
+    if (!panel) return;
+    const focusable = [...panel.querySelectorAll('a[href], button:not([disabled]), input, select, textarea')].filter((el) => el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+    }
+});
+
 document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     const open = document.querySelector('[data-disclosure][aria-expanded="true"]:not([data-disclosure="inline"])');

@@ -5,7 +5,7 @@
     $featured = $cases->first();
 @endphp
 
-<x-layouts::public :title="null" :bleed="true" :description="__('Personalised dental care in a welcoming, modern clinic in Amman. Book an appointment with :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])" :schema="$schema">
+<x-layouts::public :title="__('Dental clinic in Amman')" :bleed="true" :description="__('Personalised dental care in a welcoming, modern clinic in Amman. Book an appointment with :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])" :schema="$schema">
 
     {{-- 1. Hero --}}
     <section aria-labelledby="home-heading" class="relative overflow-hidden">
@@ -20,7 +20,7 @@
                 <p class="mt-8 max-w-xl text-lg leading-relaxed text-ink-muted md:text-xl">
                     {{ __('Personalised dental care in a welcoming, modern environment. Discover treatment designed around your comfort, confidence, and long-term oral health.') }}
                 </p>
-                <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+                <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <a href="{{ route('public.booking') }}" class="btn btn-primary">{{ __('Book an Appointment') }} <x-site.icon name="arrow" class="size-4 rtl:-scale-x-100" /></a>
                     <a href="{{ route('public.services.index') }}" class="btn btn-outline">{{ __('Explore Our Treatments') }}</a>
                 </div>
@@ -225,7 +225,7 @@
             @if ($testimonials->contains('sample', true))
                 <p class="mt-6"><span class="sample-badge">{{ __('Sample testimonials for design only, not real reviews') }}</span></p>
             @endif
-            <ul data-carousel-track class="-mx-5 mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-5 pb-4 [scrollbar-width:none] md:mx-0 md:px-0" aria-label="{{ __('Testimonials') }}">
+            <ul data-carousel-track tabindex="0" class="rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-wine -mx-5 mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-5 pb-4 [scrollbar-width:none] md:mx-0 md:px-0" aria-label="{{ __('Testimonials') }}">
                 @foreach ($testimonials as $testimonial)
                     <li class="w-[85%] shrink-0 snap-start sm:w-[60%] lg:w-[calc((100%-3rem)/3)]">
                         <figure class="flex h-full flex-col rounded-[2rem] bg-ivory p-8 md:p-10">

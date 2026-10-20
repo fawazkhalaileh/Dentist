@@ -13,7 +13,7 @@
     --color-ivory: #fbf8f3;
     --color-cream: #f4ede3;
     --color-sand: #e7ddd0;
-    --color-stone: #8a7f78;
+    --color-stone: #655b55; /* AA contrast on every light background used */
     --color-wine: #7c0424;
     --color-wine-deep: #4e0217;
     --color-blush: #f6e8eb;
@@ -42,8 +42,6 @@
         font-family: var(--font-display);
         letter-spacing: -0.01em;
     }
-    /* Arabic has no true italic: emphasise with colour only. */
-    .site:lang(ar) em, .site:lang(ar) .italic { font-style: normal; }
     .site:lang(ar) h1, .site:lang(ar) h2, .site:lang(ar) h3 {
         letter-spacing: 0;
         line-height: 1.45;
@@ -174,6 +172,12 @@
         .js [data-reveal].is-visible { opacity: 1; transform: none; }
     }
 }
+
+/* Arabic has no true italic: emphasise with colour only. Unlayered, so it wins over the italic utility. */
+.site:lang(ar) em, .site:lang(ar) .italic { font-style: normal; }
+
+/* Buttons keep their label on one line; groups of buttons wrap instead. */
+.site .btn { white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) {
     .site *, .site *::before, .site *::after {
