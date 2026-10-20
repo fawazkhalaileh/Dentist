@@ -53,10 +53,14 @@ class WebsiteDesignTest extends TestCase
 
     public function test_the_doctor_page_uses_the_real_photo_and_claims_no_credentials(): void
     {
-        $this->get('/en/meet-dr-moi')
+        $this->get('/en/meet-dr-moi')->assertRedirect('/en/meet-dr-mohammed-amara')->assertStatus(301);
+
+        $this->get('/ar/meet-dr-mohammed-amara')->assertOk()->assertSee('د. محمد عماره');
+
+        $this->get('/en/meet-dr-mohammed-amara')
             ->assertOk()
-            ->assertSee('Dr. Moi')
-            ->assertSee('images/site/dr-moi-1280.webp', escape: false)
+            ->assertSee('Dr. Mohammed Amara')
+            ->assertSee('images/site/doctor-1280.webp', escape: false)
             ->assertSee('Awaiting verified information')
             ->assertSee('"@type":"BreadcrumbList"', escape: false);
     }

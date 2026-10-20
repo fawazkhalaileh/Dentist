@@ -11,7 +11,9 @@
 
 return [
 
-    'doctor_name' => ['en' => 'Dr. Moi', 'ar' => 'د. موي'],
+    'doctor_name' => ['en' => 'Dr. Mohammed Amara', 'ar' => 'د. محمد عماره'],
+    // Shorter form for the navigation.
+    'doctor_short_name' => ['en' => 'Dr. Amara', 'ar' => 'د. عماره'],
 
     'social' => [
         'instagram' => 'https://www.instagram.com/dr.mohammad.amara/',
@@ -27,9 +29,9 @@ return [
             'widths' => [640, 1024, 1600], 'width' => 1600, 'height' => 1200,
             'alt' => ['en' => 'A bright treatment room at the clinic', 'ar' => 'غرفة علاج مشرقة في العيادة'],
         ],
-        'dr-moi' => [
+        'doctor' => [
             'widths' => [640, 1280], 'width' => 1280, 'height' => 960,
-            'alt' => ['en' => 'Dr. Moi smiling at the clinic reception', 'ar' => 'د. موي مبتسماً في استقبال العيادة'],
+            'alt' => ['en' => 'Dr. Mohammed Amara smiling at the clinic reception', 'ar' => 'د. محمد عماره مبتسماً في استقبال العيادة'],
         ],
     ],
 
