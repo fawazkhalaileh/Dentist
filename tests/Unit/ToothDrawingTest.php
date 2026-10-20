@@ -36,10 +36,18 @@ class ToothDrawingTest extends TestCase
 
     public function test_the_five_surfaces_cover_the_top_view_box(): void
     {
-        $top = ToothDrawing::top('molar');
-        $regions = ToothDrawing::regions($top['box'], $top['inner']);
+        $regions = ToothDrawing::regions([0, 0, 40, 40], ToothDrawing::innerArea('molar'));
 
         $this->assertSame(['top', 'bottom', 'left', 'right'], array_keys($regions));
-        $this->assertStringStartsWith('2.5,3.5 37.5,3.5', $regions['top']);
+        $this->assertStringStartsWith('0,0 40,0', $regions['top']);
+    }
+
+    public function test_childrens_teeth_reuse_the_matching_adult_render(): void
+    {
+        $this->assertSame(16, ToothDrawing::imageTooth(16));
+        $this->assertSame(11, ToothDrawing::imageTooth(51));
+        $this->assertSame(23, ToothDrawing::imageTooth(63));
+        $this->assertSame(36, ToothDrawing::imageTooth(74));
+        $this->assertSame(47, ToothDrawing::imageTooth(85));
     }
 }

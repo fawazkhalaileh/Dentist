@@ -232,28 +232,15 @@ new #[Title('Dental chart')] class extends Component {
         ];
         $opacity = fn ($mark) => match ($mark['status'] ?? null) { TreatmentStatus::Completed => 1, TreatmentStatus::InProgress => 0.6, TreatmentStatus::Planned => 0.3, default => 0 };
         $dash = fn ($mark) => ($mark['status'] ?? null) === TreatmentStatus::Planned ? '3 2' : 'none';
-        $types = ['incisor', 'canine', 'premolar', 'molar'];
     @endphp
 
     {{-- The chart is laid out as the dentist faces the patient, so it is not mirrored in right-to-left languages. --}}
     <div class="overflow-x-auto rounded-xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50 p-4 dark:border-zinc-700 dark:from-zinc-900 dark:to-zinc-900" dir="ltr">
         <svg viewBox="0 0 {{ $width }} {{ $height }}" class="mx-auto block w-full min-w-[720px] max-w-5xl" role="group" aria-label="{{ __('Dental chart, FDI numbering. Select a tooth to see its treatments.') }}">
             <defs>
-                <linearGradient id="enamel" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#e7e1d8" /><stop offset="0.35" stop-color="#ffffff" /><stop offset="0.7" stop-color="#f7f4ef" /><stop offset="1" stop-color="#ddd6cb" />
-                </linearGradient>
-                <linearGradient id="root" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#e2d3b8" /><stop offset="0.4" stop-color="#f6eedf" /><stop offset="1" stop-color="#dccaa9" />
-                </linearGradient>
-                <radialGradient id="enamel-top" cx="0.42" cy="0.38" r="0.7">
-                    <stop offset="0" stop-color="#ffffff" /><stop offset="0.7" stop-color="#f4f0ea" /><stop offset="1" stop-color="#e1dace" />
-                </radialGradient>
                 <linearGradient id="implant" x1="0" x2="1" y1="0" y2="0">
                     <stop offset="0" stop-color="#9aa1aa" /><stop offset="0.45" stop-color="#e5e7eb" /><stop offset="1" stop-color="#8b929b" />
                 </linearGradient>
-                @foreach ($types as $type)
-                    <clipPath id="occlusal-{{ $type }}"><path d="{{ ToothDrawing::top($type)['outline'] }}" /></clipPath>
-                @endforeach
             </defs>
 
             <line x1="{{ $width / 2 }}" y1="4" x2="{{ $width / 2 }}" y2="{{ $height - 4 }}" stroke="currentColor" stroke-opacity="0.15" stroke-dasharray="3 3" />
@@ -271,15 +258,14 @@ new #[Title('Dental chart')] class extends Component {
                         $s = $summary['surfaces'] ?? [];
                         $marks = $summary['marks'] ?? [];
                         $type = ToothDrawing::type($tooth);
-                        $side = ToothDrawing::side($type);
-                        $top = ToothDrawing::top($type);
-                        $regions = ToothDrawing::regions($top['box'], $top['inner']);
-                        [$i1, $j1, $i2, $j2] = $top['inner'];
+                        $inner = ToothDrawing::innerArea($type);
+                        $regions = ToothDrawing::regions([0, 0, 40, 40], $inner);
+                        [$i1, $j1, $i2, $j2] = $inner;
                         $extracted = ($marks['extraction']['status'] ?? null) === TreatmentStatus::Completed;
                         $implanted = ($marks['implant']['status'] ?? null) === TreatmentStatus::Completed;
-                        $sideTransform = $row === 'upper'
-                            ? "translate(0 {$l['side']}) translate(20 {$sh}) scale({$scale}) translate(-20 -{$sh})"
-                            : "translate(0 {$l['side']}) translate(20 0) scale({$scale} -{$scale}) translate(-20 -{$sh})";
+                        // Rendered images are already oriented (upper: roots up; lower: crown up); children's teeth shrink towards the bite.
+                        $anchor = $row === 'upper' ? $sh : 0;
+                        $sideTransform = "translate(0 {$l['side']}) translate(20 {$anchor}) scale({$scale}) translate(-20 -{$anchor})";
                         $topTransform = "translate(0 {$l['top']}) translate(20 20) scale({$scale}) translate(-20 -20)";
                         $isSelected = $selected === $tooth;
                     @endphp
@@ -299,35 +285,49 @@ new #[Title('Dental chart')] class extends Component {
                                   'fill-transparent stroke-transparent group-hover:fill-zinc-500/5 group-focus-visible:stroke-accent' => ! $isSelected,
                               ]) stroke-width="1.5" />
 
-                        {{-- Side view: roots and crown --}}
-                        <g transform="{{ $sideTransform }}" @if ($extracted) opacity="0.22" @endif>
-                            @foreach ($side['roots'] as $rootPath)
-                                <path d="{{ $rootPath }}" fill="url(#root)" stroke="#b9ab93" stroke-width="0.8" @if ($implanted) opacity="0.15" @endif />
-                            @endforeach
+                        {{-- Side view: a rendered image of the real tooth (crown and roots). --}}
+                        <g transform="{{ $sideTransform }}">
+                            {{-- Crown and root masks are only loaded for teeth that need them. --}}
+                            @if (isset($marks['crown']) || isset($marks['tint']) || isset($marks['canal']) || isset($marks['implant']))
+                                <defs>
+                                    <mask id="crown-{{ $tooth }}" maskUnits="userSpaceOnUse" x="0" y="0" width="{{ $tw }}" height="{{ $sh }}"><image href="{{ ToothDrawing::image($tooth, 'side-crown') }}" width="{{ $tw }}" height="{{ $sh }}" /></mask>
+                                    <mask id="root-{{ $tooth }}" maskUnits="userSpaceOnUse" x="0" y="0" width="{{ $tw }}" height="{{ $sh }}"><image href="{{ ToothDrawing::image($tooth, 'side-root') }}" width="{{ $tw }}" height="{{ $sh }}" /></mask>
+                                </defs>
+                            @endif
+                            <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" @if ($extracted) opacity="0.2" @endif />
                             @if (isset($marks['implant']))
-                                <g @if (! $implanted) opacity="0.85" @endif>
-                                    <path d="M15,47 L15,14 C15,10 25,10 25,14 L25,47 Z" fill="{{ $implanted ? 'url(#implant)' : 'none' }}" stroke="{{ $marks['implant']['color'] }}" stroke-width="1.2" stroke-dasharray="{{ $dash($marks['implant']) }}" />
-                                    @foreach ([18, 24, 30, 36, 42] as $ty)
-                                        <path d="M14,{{ $ty }} L26,{{ $ty - 2.5 }}" stroke="{{ $marks['implant']['color'] }}" stroke-width="0.9" stroke-opacity="{{ $implanted ? 0.7 : 0.6 }}" />
-                                    @endforeach
-                                </g>
-                            @endif
-                            <path d="{{ $side['crown'] }}" fill="url(#enamel)" stroke="#a8a29e" stroke-width="0.9" />
-                            <path d="{{ $side['cej'] }}" fill="none" stroke="#c9bfae" stroke-width="0.7" />
-                            {{-- Highlight: a soft sheen on the crown --}}
-                            <path d="{{ $side['crown'] }}" fill="#ffffff" fill-opacity="0.35" transform="translate(-3 1) scale(0.7 1)" style="transform-box: fill-box; transform-origin: center" pointer-events="none" />
-                            @if (isset($marks['tint']))
-                                <path d="{{ $side['crown'] }}" fill="{{ $marks['tint']['color'] }}" fill-opacity="{{ $opacity($marks['tint']) * 0.45 }}" stroke="{{ $marks['tint']['color'] }}" stroke-width="1.2" stroke-dasharray="{{ $dash($marks['tint']) }}" />
-                            @endif
-                            @if (isset($marks['crown']))
-                                <path d="{{ $side['crown'] }}" fill="{{ $marks['crown']['color'] }}" fill-opacity="{{ $opacity($marks['crown']) * 0.85 }}" stroke="{{ $marks['crown']['color'] }}" stroke-width="1.6" stroke-dasharray="{{ $dash($marks['crown']) }}" />
+                                {{-- Implant: once placed the root becomes a threaded metal post; while planned, a dashed post outline. --}}
+                                @php
+                                    $post = $row === 'upper' ? [10, 52] : [26, 68];
+                                    $threads = implode(' ', array_map(fn ($k) => 'M10,'.($post[0] + 4 + $k * ($post[1] - $post[0] - 6) / 7).' l20,-3', range(0, 7)));
+                                @endphp
+                                @if ($implanted)
+                                    <g mask="url(#root-{{ $tooth }})">
+                                        <rect width="{{ $tw }}" height="{{ $sh }}" fill="url(#implant)" />
+                                        <path d="{{ $threads }}" stroke="#6b7280" stroke-width="0.9" stroke-opacity="0.8" />
+                                        <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['implant']['color'] }}" fill-opacity="0.18" />
+                                    </g>
+                                @else
+                                    <path d="M15.5,{{ $post[0] }} L24.5,{{ $post[0] }} L23.5,{{ $post[1] }} L16.5,{{ $post[1] }} Z"
+                                          fill="{{ $marks['implant']['color'] }}" fill-opacity="{{ $opacity($marks['implant']) * 0.35 }}" stroke="{{ $marks['implant']['color'] }}" stroke-width="1.1" stroke-dasharray="{{ $dash($marks['implant']) }}" />
+                                @endif
                             @endif
                             @if (isset($marks['canal']))
-                                @foreach ($side['canals'] as $canal)
-                                    <path d="{{ $canal }}" fill="none" stroke="{{ $marks['canal']['color'] }}" stroke-width="2.6" stroke-linecap="round" stroke-opacity="{{ max(0.55, $opacity($marks['canal'])) }}" stroke-dasharray="{{ $dash($marks['canal']) }}" />
-                                @endforeach
+                                {{-- Root canal: the root is filled with the procedure colour. --}}
+                                <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['canal']['color'] }}" fill-opacity="{{ max(0.35, $opacity($marks['canal']) * 0.75) }}" mask="url(#root-{{ $tooth }})" />
+                            @endif
+                            @if (isset($marks['tint']))
+                                <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['tint']['color'] }}" fill-opacity="{{ $opacity($marks['tint']) * 0.5 }}" mask="url(#crown-{{ $tooth }})" />
+                            @endif
+                            @if (isset($marks['crown']))
+                                <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['crown']['color'] }}" fill-opacity="{{ $opacity($marks['crown']) * 0.8 }}" mask="url(#crown-{{ $tooth }})" />
                             @endif
                         </g>
+                        @php $pending = collect($marks)->first(fn ($m) => $m['status'] === TreatmentStatus::Planned); @endphp
+                        @if ($pending)
+                            {{-- Planned whole-tooth work: a dashed frame in the procedure colour, matching the legend. --}}
+                            <rect x="0.5" y="{{ $l['side'] + 1 }}" width="{{ $tw - 1 }}" height="{{ $sh - 2 }}" rx="7" fill="none" stroke="{{ $pending['color'] }}" stroke-width="1.2" stroke-dasharray="3 2" stroke-opacity="0.9" />
+                        @endif
                         @if (isset($marks['extraction']))
                             @php $cross = "M6,".($l['side'] + 10).' L34,'.($l['side'] + 68).' M34,'.($l['side'] + 10).' L6,'.($l['side'] + 68); @endphp
                             {{-- A light halo keeps the cross visible on dark backgrounds and dark procedure colours. --}}
@@ -335,39 +335,29 @@ new #[Title('Dental chart')] class extends Component {
                             <path d="{{ $cross }}" stroke="{{ $marks['extraction']['color'] }}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="{{ $dash($marks['extraction']) }}" stroke-opacity="{{ max(0.6, $opacity($marks['extraction'])) }}" />
                         @endif
 
-                        {{-- Top view: the five surfaces --}}
-                        <g transform="{{ $topTransform }}" @if ($extracted) opacity="0.22" @endif>
-                            <path d="{{ $top['outline'] }}" fill="url(#enamel-top)" />
-                            <g clip-path="url(#occlusal-{{ $type }})">
+                        {{-- Top view: the rendered biting surface, with the five surfaces laid over its real outline. --}}
+                        <g transform="{{ $topTransform }}" @if ($extracted) opacity="0.2" @endif>
+                            <defs>
+                                <mask id="outline-{{ $tooth }}" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40"><image href="{{ ToothDrawing::image($tooth, 'top') }}" width="40" height="40" /></mask>
+                            </defs>
+                            <image href="{{ ToothDrawing::image($tooth, 'top') }}" width="40" height="40" />
+                            <g mask="url(#outline-{{ $tooth }})">
                                 @foreach ($regions as $region => $points)
                                     @php $mark = $s[$sides[$region]] ?? null; @endphp
-                                    <polygon points="{{ $points }}" fill="{{ $mark['color'] ?? 'transparent' }}" fill-opacity="{{ $opacity($mark) }}" stroke="#cfc8bd" stroke-width="0.6" />
+                                    <polygon points="{{ $points }}" fill="{{ $mark['color'] ?? 'transparent' }}" fill-opacity="{{ $opacity($mark) * 0.85 }}" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.6" />
+                                    @if ($mark)
+                                        <polygon points="{{ $points }}" fill="none" stroke="{{ $mark['color'] }}" stroke-width="1.1" stroke-dasharray="{{ $dash($mark) }}" />
+                                    @endif
                                 @endforeach
                                 @php $mark = $s[$sides['center']] ?? null; @endphp
-                                <rect x="{{ $i1 }}" y="{{ $j1 }}" width="{{ $i2 - $i1 }}" height="{{ $j2 - $j1 }}" rx="{{ $type === 'incisor' ? 1.5 : 3 }}" fill="{{ $mark['color'] ?? 'transparent' }}" fill-opacity="{{ $opacity($mark) }}" stroke="#cfc8bd" stroke-width="0.6" />
-                                @if ($top['groove'] && ! $mark)
-                                    <path d="{{ $top['groove'] }}" fill="none" stroke="#c9c1b4" stroke-width="0.8" stroke-linecap="round" />
-                                @endif
+                                <rect x="{{ $i1 }}" y="{{ $j1 }}" width="{{ $i2 - $i1 }}" height="{{ $j2 - $j1 }}" rx="{{ $type === 'incisor' ? 1.5 : 3 }}" fill="{{ $mark['color'] ?? 'transparent' }}" fill-opacity="{{ $opacity($mark) * 0.85 }}" stroke="{{ $mark['color'] ?? '#ffffff' }}" stroke-opacity="{{ $mark ? 1 : 0.55 }}" stroke-width="{{ $mark ? 1.1 : 0.6 }}" stroke-dasharray="{{ $dash($mark) }}" />
                                 @if (isset($marks['crown']))
-                                    <path d="{{ $top['outline'] }}" fill="{{ $marks['crown']['color'] }}" fill-opacity="{{ $opacity($marks['crown']) * 0.55 }}" />
+                                    <rect width="40" height="40" fill="{{ $marks['crown']['color'] }}" fill-opacity="{{ $opacity($marks['crown']) * 0.6 }}" />
                                 @endif
                                 @if (isset($marks['tint']))
-                                    <path d="{{ $top['outline'] }}" fill="{{ $marks['tint']['color'] }}" fill-opacity="{{ $opacity($marks['tint']) * 0.3 }}" />
+                                    <rect width="40" height="40" fill="{{ $marks['tint']['color'] }}" fill-opacity="{{ $opacity($marks['tint']) * 0.35 }}" />
                                 @endif
                             </g>
-                            @php $edge = $marks['crown'] ?? $marks['tint'] ?? null; @endphp
-                            <path d="{{ $top['outline'] }}" fill="none" stroke="{{ $edge['color'] ?? '#a8a29e' }}" stroke-width="{{ $edge ? 1.6 : 0.9 }}" stroke-dasharray="{{ $dash($edge) }}" />
-                            {{-- Surface marks get a coloured edge so planned work stays visible --}}
-                            @foreach ($regions as $region => $points)
-                                @php $mark = $s[$sides[$region]] ?? null; @endphp
-                                @if ($mark)
-                                    <polygon points="{{ $points }}" fill="none" stroke="{{ $mark['color'] }}" stroke-width="1" stroke-dasharray="{{ $dash($mark) }}" clip-path="url(#occlusal-{{ $type }})" />
-                                @endif
-                            @endforeach
-                            @php $mark = $s[$sides['center']] ?? null; @endphp
-                            @if ($mark)
-                                <rect x="{{ $i1 }}" y="{{ $j1 }}" width="{{ $i2 - $i1 }}" height="{{ $j2 - $j1 }}" rx="{{ $type === 'incisor' ? 1.5 : 3 }}" fill="none" stroke="{{ $mark['color'] }}" stroke-width="1" stroke-dasharray="{{ $dash($mark) }}" />
-                            @endif
                         </g>
                         @if (isset($marks['extraction']))
                             <path d="M8,{{ $l['top'] + 6 }} L32,{{ $l['top'] + 34 }} M32,{{ $l['top'] + 6 }} L8,{{ $l['top'] + 34 }}" stroke="#ffffff" stroke-opacity="0.75" stroke-width="4.5" stroke-linecap="round" />
@@ -381,6 +371,10 @@ new #[Title('Dental chart')] class extends Component {
             @endforeach
         </svg>
     </div>
+
+    <p class="mt-1 text-end text-[10px] text-zinc-400">
+        {{ __('Tooth images: BodyParts3D, © Life Science Integrated Database Center') }}, <a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en" target="_blank" rel="noopener" class="underline">CC BY-SA 2.1 JP</a>
+    </p>
 
     @if ($this->legend !== [])
         <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-label="{{ __('Procedure colours') }}">
