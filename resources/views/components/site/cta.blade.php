@@ -7,7 +7,7 @@
         <div class="relative mx-auto max-w-2xl">
             <h2 id="cta-heading" class="text-4xl leading-tight md:text-6xl">{{ __('Ready to Feel Confident About Your Smile?') }}</h2>
             <p class="mx-auto mt-6 max-w-xl text-lg text-ivory/80">{{ __('Take the first step towards personalised dental care. Contact our team to discuss your needs.') }}</p>
-            <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+            <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
                 <a href="{{ route('public.booking') }}" class="btn btn-light">{{ __('Book Your Visit') }}</a>
                 <a href="{{ route('public.contact') }}" class="btn btn-ghost-light">{{ __('Contact Us') }}</a>
             </div>

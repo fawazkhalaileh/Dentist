@@ -1,0 +1,46 @@
+/*
+| Stylesheet for the public website only. The clinic dashboard keeps app.css
+| (with Flux); keeping them apart makes the website's CSS much smaller.
+*/
+@import 'tailwindcss' source(none);
+@import './theme.css';
+@import './site.css';
+
+@source '../views/layouts/public.blade.php';
+@source '../views/public';
+@source '../views/components/site';
+@source '../views/components/public';
+@source '../views/components/ui';
+@source '../../app/Support/Site';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+/* Rendered Markdown (x-ui.prose). Logical properties so lists and quotes mirror in RTL. */
+@layer components {
+    .prose { line-height: 1.7; }
+    .prose > * + * { margin-top: 1em; }
+    .prose h2 { font-size: 1.375rem; font-weight: 600; margin-top: 1.5em; }
+    .prose h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1.25em; }
+    .prose ul { list-style: disc; padding-inline-start: 1.5em; }
+    .prose ol { list-style: decimal; padding-inline-start: 1.5em; }
+    .prose li + li { margin-top: 0.25em; }
+    .prose a { text-decoration: underline; text-underline-offset: 3px; }
+    .prose blockquote { border-inline-start: 3px solid var(--line); padding-inline-start: 1em; color: var(--ink-muted); }
+    .prose strong { font-weight: 600; }
+    .prose hr { border-color: var(--line); }
+}
+
+[x-cloak] { display: none !important; }

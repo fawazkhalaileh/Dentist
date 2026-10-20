@@ -237,11 +237,22 @@ Rules the code enforces:
 - **Images** (`Actions\Media\StoreMedia`): JPG/PNG/WebP up to 8 MB, at least 200×200. EXIF orientation is applied and the image is re-encoded as WebP (1600px full and 480px thumbnail), which strips EXIF/GPS metadata. The original upload is not kept. Files live on the `public` disk (`php artisan storage:link`) and are rendered with `srcset` by `<x-ui.picture>`.
 - **Contact form:** validation messages in both languages, a hidden honeypot field, and rate limits of 3 per minute and 20 per day per IP. The message body is encrypted at rest. It may contain health information, so only content staff can read it.
 
+## Public website design
+
+The design follows `docs/website-redesign-brief.md`; the outcome is summarised in `docs/WEBSITE-REDESIGN-REPORT.md`.
+
+- **Styles:** the website has its own stylesheet, `resources/css/public.css` (Tailwind, `theme.css`, `site.css`), so it never loads the clinic dashboard's Flux CSS. `site.css` holds the palette (ivory, cream, burgundy `wine`), the `.btn`, `.eyebrow`, `.field`, `.sample-badge` and prose styles, all scoped to `<body class="site">`. Script: `resources/js/site.js` (no framework): sticky header, menus with focus handling, scroll reveal, before/after slider, testimonial carousel, gallery filter and full-screen viewer.
+- **Fonts** (`@fontsource` packages, built offline): Cormorant Garamond for headings, Instrument Sans for text; on `/ar`, Noto Naskh Arabic and IBM Plex Sans Arabic. The public layout loads only the fonts its language needs (`@fonts([...])`); the clinic loads Instrument Sans only.
+- **Logo and photos:** `public/images/brand` holds the official logo with only its background removed (header lockup, light footer version, favicons); it is never redrawn. `public/images/site` holds the clinic and doctor photos in several widths, listed in `config/site.php` and rendered with `<x-site.photo>`. Patient before/after photos are never stored there: they only appear through published, consented gallery items.
+- **Components** (`resources/views/components/site`): `logo`, `photo`, `icon`, `page-hero`, `breadcrumbs` (with `BreadcrumbList` JSON-LD), `heading`, `treatment-card`, `treatment-detail`, `post-card`, `article`, `compare` (before/after slider on a native range input), `faq-list`, `cta`.
+- **Real content first, samples second** (`App\Support\Site\SiteContent`): each section shows published CMS records. Only when nothing of that kind is published in the current language does it fall back to `SampleContent`, `SampleTreatmentDetails` or `SampleArticles`. Samples are never written to the database, always carry a visible "Sample" label, are `noindex` and are left out of the sitemap. Publishing the first real service (or post) removes all sample treatments (or articles) and their URLs (404).
+- **Doctor:** `config/site.php` holds the display name (Dr. Mohammed Amara / د. محمد عماره, "Dr. Amara" in the menu). The page `/{locale}/meet-dr-mohammed-amara` uses placeholder biography text and lists no credentials until verified ones are supplied.
+
 ## SEO
 
 - Each public page sets title, meta description, canonical URL, `hreflang` alternates (with `x-default`) and Open Graph tags through `layouts/public.blade.php`. Pages, posts and services have per-language SEO title and meta description fields.
 - `/sitemap.xml` lists every published page in each language it exists in, with alternates.
-- JSON-LD: `Dentist` (home, contact) built from the contact details, and `FAQPage` (FAQ page, service pages with FAQs).
+- JSON-LD: `Dentist` (home, contact) built from the contact details plus the logo, a clinic photo and the social profiles (`sameAs`); `FAQPage` (FAQ page, service pages with FAQs); `BlogPosting` (published articles); `BreadcrumbList` on inner pages. Sample treatment and article pages send `noindex`.
 
 ## Localisation
 

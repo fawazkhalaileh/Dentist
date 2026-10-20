@@ -135,4 +135,18 @@ class WebsiteDesignTest extends TestCase
         $this->get('/en/contact')->assertOk()->assertSee('action="'.route('public.contact.store', ['locale' => 'en']).'"', escape: false)->assertSee('name="website"', escape: false);
         $this->get('/en/book')->assertOk()->assertSee('action="'.route('public.booking.store', ['locale' => 'en']).'"', escape: false)->assertSee('What happens next?');
     }
+
+    public function test_search_engines_get_clinic_data_and_no_sample_pages_in_the_sitemap(): void
+    {
+        $this->get('/en')
+            ->assertSee('<title>Dental clinic in Amman | ', escape: false)
+            ->assertSee('"@type":"Dentist"', escape: false)
+            ->assertSee('images/brand/logo-brand-og.png', escape: false)
+            ->assertSee('"sameAs":["https://www.instagram.com/dr.mohammad.amara/', escape: false);
+
+        $this->get('/sitemap.xml')->assertOk()
+            ->assertSee('/en/meet-dr-mohammed-amara', escape: false)
+            ->assertDontSee('/en/services/whitening', escape: false)
+            ->assertDontSee('/en/blog/veneers-or-crowns', escape: false);
+    }
 }

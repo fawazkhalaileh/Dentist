@@ -51,13 +51,14 @@ final class Seo
             '@type' => 'Dentist',
             'name' => ClinicDetails::name(),
             'url' => route('public.home'),
-            'logo' => asset('images/amara-dental-logo.webp'),
-            'image' => asset('images/amara-dental-logo.webp'),
+            'logo' => asset('images/brand/logo-brand-og.png'),
+            'image' => asset('images/site/reception-1200.webp'),
             'telephone' => ClinicDetails::get('phone'),
             'email' => ClinicDetails::get('email'),
             'address' => $address,
             'openingHours' => ClinicDetails::get('opening_hours'),
             'hasMap' => ClinicDetails::get('map_url'),
+            'sameAs' => array_values(config('site.social', [])) ?: null,
         ]);
     }
 

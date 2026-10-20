@@ -107,7 +107,7 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @fonts($fonts)
-        @vite(['resources/css/app.css', 'resources/js/site.js'])
+        @vite(['resources/css/public.css', 'resources/js/site.js'])
     </head>
     <body class="site flex min-h-screen flex-col bg-surface text-ink antialiased">
         <x-ui.skip-link />
