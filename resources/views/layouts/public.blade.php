@@ -49,7 +49,7 @@
         ['label' => 'Blog', 'route' => 'public.blog.index', 'active' => ['public.blog.*']],
         ['label' => 'Contact', 'route' => 'public.contact', 'active' => ['public.contact']],
     ];
-    $doctor = \App\Support\Site\SiteContent::doctorName();
+    $doctor = \App\Support\Site\SiteContent::doctorShortName();
     $treatmentLinks = \App\Support\Site\SiteContent::treatments(8);
 
     $pageTitle = filled($title) ? $title.' | '.ClinicDetails::name() : ClinicDetails::name();

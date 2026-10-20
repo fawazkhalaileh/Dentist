@@ -146,7 +146,12 @@ final class SiteContent
 
     public static function doctorName(): string
     {
-        return (string) config('site.doctor_name.'.self::locale(), 'Dr. Moi');
+        return (string) config('site.doctor_name.'.self::locale(), 'Dr. Mohammed Amara');
+    }
+
+    public static function doctorShortName(): string
+    {
+        return (string) config('site.doctor_short_name.'.self::locale(), 'Dr. Amara');
     }
 
     /**

@@ -76,7 +76,7 @@ final class SampleContent
             ['key' => 'whitening-what-to-know', 'category' => 'cosmetic', 'image' => 'reception', 'minutes' => 5, 'date' => '2026-09-29',
                 'en' => ['title' => 'Teeth whitening: what to know before you start', 'excerpt' => 'Who whitening suits, how professional whitening differs from shop products and how to keep results longer.', 'category' => 'Cosmetic'],
                 'ar' => ['title' => 'تبييض الأسنان: ما يجب معرفته قبل البدء', 'excerpt' => 'لمن يناسب التبييض، وكيف يختلف التبييض الاحترافي عن المنتجات التجارية، وكيف تحافظ على النتيجة.', 'category' => 'التجميل']],
-            ['key' => 'veneers-or-crowns', 'category' => 'cosmetic', 'image' => 'dr-moi', 'minutes' => 6, 'date' => '2026-09-22',
+            ['key' => 'veneers-or-crowns', 'category' => 'cosmetic', 'image' => 'doctor', 'minutes' => 6, 'date' => '2026-09-22',
                 'en' => ['title' => 'Veneers or crowns: what is the difference?', 'excerpt' => 'Both can transform a smile, but they solve different problems. A plain-language guide to choosing.', 'category' => 'Cosmetic'],
                 'ar' => ['title' => 'القشور أم التيجان: ما الفرق؟', 'excerpt' => 'كلاهما يغيّر الابتسامة، لكن لكلٍّ منهما استخدام مختلف. دليل مبسّط للاختيار.', 'category' => 'التجميل']],
             ['key' => 'implants-explained', 'category' => 'restorative', 'image' => 'treatment-room', 'minutes' => 6, 'date' => '2026-09-15',
@@ -85,7 +85,7 @@ final class SampleContent
             ['key' => 'sensitive-teeth', 'category' => 'prevention', 'image' => 'reception', 'minutes' => 3, 'date' => '2026-09-08',
                 'en' => ['title' => 'Sensitive teeth: common causes and simple fixes', 'excerpt' => 'A sharp twinge with cold drinks is common. Here is why it happens and when to see your dentist.', 'category' => 'Prevention'],
                 'ar' => ['title' => 'حساسية الأسنان: الأسباب الشائعة والحلول البسيطة', 'excerpt' => 'الألم الخفيف مع المشروبات الباردة شائع. إليك أسبابه ومتى يجب زيارة الطبيب.', 'category' => 'الوقاية']],
-            ['key' => 'first-visit-nerves', 'category' => 'patient-guide', 'image' => 'dr-moi', 'minutes' => 4, 'date' => '2026-09-01',
+            ['key' => 'first-visit-nerves', 'category' => 'patient-guide', 'image' => 'doctor', 'minutes' => 4, 'date' => '2026-09-01',
                 'en' => ['title' => 'Nervous about the dentist? How we make visits easier', 'excerpt' => 'Practical ways to feel calmer in the chair, and what to tell your dentist so they can help.', 'category' => 'Patient guide'],
                 'ar' => ['title' => 'تشعر بالقلق من زيارة طبيب الأسنان؟ هكذا نجعلها أسهل', 'excerpt' => 'طرق عملية لتشعر بالهدوء على كرسي العلاج، وما الذي تخبر به طبيبك ليساعدك.', 'category' => 'دليل المراجع']],
         ];

@@ -5,7 +5,7 @@
 
 <x-layouts::public :title="__('Meet :name', ['name' => $doctor])" :bleed="true"
     :description="__('Meet :name, the dentist at :clinic in Amman, and learn about the personal approach to your care.', ['name' => $doctor, 'clinic' => \App\Support\ClinicDetails::name()])"
-    :image="asset('images/site/dr-moi-1280.webp')">
+    :image="asset('images/site/doctor-1280.webp')">
 
     <section aria-labelledby="doctor-heading" class="relative overflow-hidden">
         <div aria-hidden="true" class="absolute inset-x-0 top-0 h-[70%] bg-cream"></div>
@@ -14,7 +14,7 @@
             <div class="mt-10 grid items-end gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
                 <div class="pb-4 lg:pb-16">
                     <p class="eyebrow">{{ __('Meet your dentist') }}</p>
-                    <h1 id="doctor-heading" class="mt-6 text-6xl leading-none md:text-8xl">{{ $doctor }}</h1>
+                    <h1 id="doctor-heading" class="mt-6 text-5xl leading-none sm:text-6xl lg:text-7xl xl:text-8xl">{{ $doctor }}</h1>
                     <p class="mt-8 max-w-xl text-xl leading-relaxed text-ink-muted">
                         {{ __('Every smile is different, and so is every patient. :name believes good dentistry starts with a proper conversation: understanding how you feel, what you hope for and what worries you.', ['name' => $doctor]) }}
                     </p>
@@ -23,7 +23,7 @@
                         <span class="sample-badge">{{ __('Placeholder biography') }}</span>
                     </div>
                 </div>
-                <x-site.photo name="dr-moi" :eager="true" sizes="(min-width: 1024px) 45vw, 100vw" class="aspect-[4/5] w-full rounded-t-[14rem] rounded-b-[2rem] object-cover object-[58%_40%] shadow-[0_40px_80px_-40px_rgb(34_27_29/0.5)]" />
+                <x-site.photo name="doctor" :eager="true" sizes="(min-width: 1024px) 45vw, 100vw" class="aspect-[4/5] w-full rounded-t-[14rem] rounded-b-[2rem] object-cover object-[58%_40%] shadow-[0_40px_80px_-40px_rgb(34_27_29/0.5)]" />
             </div>
         </div>
     </section>

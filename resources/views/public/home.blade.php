@@ -76,7 +76,7 @@
         </div>
     </section>
 
-    {{-- 3. Meet Dr. Moi --}}
+    {{-- 3. Meet the doctor --}}
     <section aria-labelledby="doctor-heading" class="overflow-hidden bg-cream py-20 md:py-28">
         <div class="site-container grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
             <div data-reveal>
@@ -94,7 +94,7 @@
             </div>
             <div class="relative" data-reveal>
                 <div aria-hidden="true" class="absolute -inset-4 -z-0 translate-x-6 translate-y-6 rounded-[2.5rem] border border-wine/20 rtl:-translate-x-6"></div>
-                <x-site.photo name="dr-moi" sizes="(min-width: 1024px) 50vw, 100vw" class="relative aspect-[4/3] w-full rounded-[2rem] object-cover object-[58%_40%]" />
+                <x-site.photo name="doctor" sizes="(min-width: 1024px) 50vw, 100vw" class="relative aspect-[4/3] w-full rounded-[2rem] object-cover object-[58%_40%]" />
             </div>
         </div>
     </section>
@@ -194,7 +194,7 @@
                 </figure>
                 <div class="grid gap-5 sm:grid-cols-2 md:col-span-7">
                     <figure data-reveal>
-                        <x-site.photo name="dr-moi" sizes="(min-width: 768px) 28vw, 100vw" class="aspect-[4/3] size-full rounded-[2rem] object-cover object-[58%_40%]" />
+                        <x-site.photo name="doctor" sizes="(min-width: 768px) 28vw, 100vw" class="aspect-[4/3] size-full rounded-[2rem] object-cover object-[58%_40%]" />
                     </figure>
                     <div class="flex flex-col justify-between rounded-[2rem] bg-blush p-8" data-reveal>
                         <x-site.icon name="pin" class="size-8 text-wine" />
