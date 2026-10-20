@@ -7,7 +7,7 @@ The public website at http://20.216.17.199 was redesigned in four releases on 20
 | 1 | Design foundation, header, menus, footer, homepage, Meet the Doctor page | `35b5fd2` |
 | 1a | Doctor's name changed to Dr. Mohammed Amara | `6c10c50` |
 | 2 | About, Treatments (overview and detail pages), Smile Gallery, Blog (list and articles), Contact, Booking, FAQ, Privacy, Terms, Testimonials, Dentists | `7d6135c` |
-| 3 | Accessibility, responsiveness, speed and search-engine fixes (this report) | branch `claude/website-polish` |
+| 3 | Accessibility, responsiveness, speed and search-engine fixes (this report) | `631f592` |
 
 ## Pages redesigned
 
@@ -73,7 +73,7 @@ Logo, responsive photo, icon set, page banner, breadcrumbs, section heading, tre
 
 ## Integration notes
 
-- Browser caching rules for build files and images are in `public/.htaccess`. They need Apache's `headers` module, which is switched on during the release 3 deploy.
+- Browser caching rules for build files (1 year) and images (30 days) are in `public/.htaccess`. Apache's `headers` module was enabled on the server on 20 October 2026 to apply them.
 - Arabic interface text is a careful first draft. A native speaker should review it before a wider launch.
 
 ## Recommendations

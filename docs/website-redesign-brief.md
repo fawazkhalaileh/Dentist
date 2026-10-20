@@ -8,7 +8,7 @@ The brief as given by the clinic owner on 2026-10-20, kept verbatim. It governs 
 - B Design foundation: shipped 2026-10-20 (35b5fd2)
 - C Homepage (+ Meet Dr. Moi page): shipped 2026-10-20 (35b5fd2)
 - D Internal pages: shipped 2026-10-20 (7d6135c)
-- E Responsive: done on `claude/website-polish`, awaiting approval to ship
+- E Responsive: shipped 2026-10-20 (631f592)
 - F Verification: done; see `docs/WEBSITE-REDESIGN-REPORT.md`
 
 ## Brief
