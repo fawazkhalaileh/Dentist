@@ -38,6 +38,7 @@ Route::prefix('{locale}')
         Route::get('/', HomeController::class)->name('home');
 
         Route::get('about', PageController::class)->defaults('page', 'about')->name('about');
+        Route::view('meet-dr-moi', 'public.doctor')->name('doctor');
         Route::get('privacy', PageController::class)->defaults('page', 'privacy')->name('legal.privacy');
         Route::get('terms', PageController::class)->defaults('page', 'terms')->name('legal.terms');
 

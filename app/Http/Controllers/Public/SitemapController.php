@@ -19,7 +19,7 @@ class SitemapController extends Controller
 {
     /** Fixed pages that exist in every locale. */
     private const STATIC_ROUTES = [
-        'public.home', 'public.about', 'public.dentists.index', 'public.services.index',
+        'public.home', 'public.about', 'public.doctor', 'public.dentists.index', 'public.services.index',
         'public.blog.index', 'public.gallery', 'public.testimonials', 'public.faq',
         'public.contact', 'public.legal.privacy', 'public.legal.terms',
     ];
