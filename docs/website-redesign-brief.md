@@ -7,7 +7,7 @@ The brief as given by the clinic owner on 2026-10-20, kept verbatim. It governs 
 - A Audit: done (assets reviewed 2026-10-20; no gallery items have consent recorded yet)
 - B Design foundation: shipped 2026-10-20 (35b5fd2)
 - C Homepage (+ Meet Dr. Moi page): shipped 2026-10-20 (35b5fd2)
-- D Internal pages: built on `claude/website-pages` (About, Treatments + detail template, Smile Gallery, Blog + articles, Contact, Booking, FAQ), awaiting approval to ship
+- D Internal pages: shipped 2026-10-20 (7d6135c)
 - E Responsive: not started
 - F Verification: not started
 
