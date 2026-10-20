@@ -11,7 +11,7 @@
 
 return [
 
-    'doctor_name' => ['en' => 'Dr. Mohammed Amara', 'ar' => 'د. محمد عماره'],
+    'doctor_name' => ['en' => 'Dr. Mohammad Amara', 'ar' => 'د. محمد عماره'],
     // Shorter form for the navigation.
     'doctor_short_name' => ['en' => 'Dr. Amara', 'ar' => 'د. عماره'],
 
@@ -31,7 +31,7 @@ return [
         ],
         'doctor' => [
             'widths' => [640, 1280], 'width' => 1280, 'height' => 960,
-            'alt' => ['en' => 'Dr. Mohammed Amara smiling at the clinic reception', 'ar' => 'د. محمد عماره مبتسماً في استقبال العيادة'],
+            'alt' => ['en' => 'Dr. Mohammad Amara smiling at the clinic reception', 'ar' => 'د. محمد عماره مبتسماً في استقبال العيادة'],
         ],
     ],
 
