@@ -38,9 +38,10 @@ Route::prefix('{locale}')
         Route::get('/', HomeController::class)->name('home');
 
         Route::get('about', PageController::class)->defaults('page', 'about')->name('about');
-        Route::view('meet-dr-mohammed-amara', 'public.doctor')->name('doctor');
-        // Earlier address of the doctor page, kept so shared links still work.
+        Route::view('meet-dr-mohammad-amara', 'public.doctor')->name('doctor');
+        // Earlier addresses of the doctor page, kept so shared links still work.
         Route::get('meet-dr-moi', fn () => redirect()->route('public.doctor', ['locale' => app()->getLocale()], 301));
+        Route::get('meet-dr-mohammed-amara', fn () => redirect()->route('public.doctor', ['locale' => app()->getLocale()], 301));
         Route::get('privacy', PageController::class)->defaults('page', 'privacy')->name('legal.privacy');
         Route::get('terms', PageController::class)->defaults('page', 'terms')->name('legal.terms');
 

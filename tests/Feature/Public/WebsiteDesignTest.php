@@ -53,13 +53,14 @@ class WebsiteDesignTest extends TestCase
 
     public function test_the_doctor_page_uses_the_real_photo_and_claims_no_credentials(): void
     {
-        $this->get('/en/meet-dr-moi')->assertRedirect('/en/meet-dr-mohammed-amara')->assertStatus(301);
+        $this->get('/en/meet-dr-moi')->assertRedirect('/en/meet-dr-mohammad-amara')->assertStatus(301);
+        $this->get('/ar/meet-dr-mohammed-amara')->assertRedirect('/ar/meet-dr-mohammad-amara')->assertStatus(301);
 
-        $this->get('/ar/meet-dr-mohammed-amara')->assertOk()->assertSee('د. محمد عماره');
+        $this->get('/ar/meet-dr-mohammad-amara')->assertOk()->assertSee('د. محمد عماره');
 
-        $this->get('/en/meet-dr-mohammed-amara')
+        $this->get('/en/meet-dr-mohammad-amara')
             ->assertOk()
-            ->assertSee('Dr. Mohammed Amara')
+            ->assertSee('Dr. Mohammad Amara')
             ->assertSee('images/site/doctor-1280.webp', escape: false)
             ->assertSee('Awaiting verified information')
             ->assertSee('"@type":"BreadcrumbList"', escape: false);
@@ -145,7 +146,7 @@ class WebsiteDesignTest extends TestCase
             ->assertSee('"sameAs":["https://www.instagram.com/dr.mohammad.amara/', escape: false);
 
         $this->get('/sitemap.xml')->assertOk()
-            ->assertSee('/en/meet-dr-mohammed-amara', escape: false)
+            ->assertSee('/en/meet-dr-mohammad-amara', escape: false)
             ->assertDontSee('/en/services/whitening', escape: false)
             ->assertDontSee('/en/blog/veneers-or-crowns', escape: false);
     }

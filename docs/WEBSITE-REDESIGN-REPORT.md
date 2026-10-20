@@ -5,13 +5,13 @@ The public website at http://20.216.17.199 was redesigned in four releases on 20
 | Release | What went live | Commit |
 |---|---|---|
 | 1 | Design foundation, header, menus, footer, homepage, Meet the Doctor page | `35b5fd2` |
-| 1a | Doctor's name changed to Dr. Mohammed Amara | `6c10c50` |
+| 1a | Doctor's name set (now spelled Dr. Mohammad Amara everywhere, matching the clinic name and Instagram) | `6c10c50` |
 | 2 | About, Treatments (overview and detail pages), Smile Gallery, Blog (list and articles), Contact, Booking, FAQ, Privacy, Terms, Testimonials, Dentists | `7d6135c` |
 | 3 | Accessibility, responsiveness, speed and search-engine fixes (this report) | `631f592` |
 
 ## Pages redesigned
 
-Home, About Us, Meet Dr. Mohammed Amara, Treatments, every treatment page, Smile Gallery, Blog, blog categories and search, every article, Contact, Book an Appointment, FAQ, Testimonials, Dentists, Privacy and Terms. All of them work in English and Arabic (right-to-left).
+Home, About Us, Meet Dr. Mohammad Amara, Treatments, every treatment page, Smile Gallery, Blog, blog categories and search, every article, Contact, Book an Appointment, FAQ, Testimonials, Dentists, Privacy and Terms. All of them work in English and Arabic (right-to-left).
 
 ## Assets used
 
@@ -20,7 +20,7 @@ Home, About Us, Meet Dr. Mohammed Amara, Treatments, every treatment page, Smile
 | Official "amara DENTAL" logo (media 14) | Header (mark beside the wordmark), light footer version, favicons, social preview and structured data. Only the white background was removed; nothing was redrawn or distorted. |
 | Reception photo (media 7) | Homepage hero, About, clinic gallery, appointment banner, social preview |
 | Treatment room photo (media 5) | Homepage, Treatments, treatment pages, About, blog images, treatments menu |
-| Dr. Mohammed Amara at reception (media 10) | Homepage doctor section, Meet the Doctor page, About |
+| Dr. Mohammad Amara at reception (media 10) | Homepage doctor section, Meet the Doctor page, About |
 | Before/after photos (media 3, 4, 6, 8, 9, 11, 12, 13, 15 to 22) | **Not shown yet:** no patient consent is recorded. Neutral placeholders are shown instead. |
 
 ## Components added
