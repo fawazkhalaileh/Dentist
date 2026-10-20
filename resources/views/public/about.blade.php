@@ -9,11 +9,11 @@
     <x-site.page-hero :title="$translation?->title ?? __('About Us')" :eyebrow="__('Our clinic')" photo="reception"
         :intro="__('A calm, modern clinic in Amman where every visit starts with listening.')" />
 
-    <section aria-labelledby="story-heading" class="py-20 md:py-28">
+    <section aria-labelledby="story-heading" class="py-12 md:py-20">
         <div class="site-container grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:gap-24">
             <div>
                 <x-site.heading :eyebrow="__('Our story')" :title="__('Care that feels personal')" id="story-heading" />
-                <figure class="mt-10 hidden lg:block">
+                <figure class="mt-8 hidden lg:block">
                     <x-site.photo name="treatment-room" sizes="35vw" class="aspect-[4/5] w-full rounded-[2rem] object-cover" />
                 </figure>
             </div>
@@ -32,7 +32,7 @@
         </div>
     </section>
 
-    <section aria-labelledby="values-heading" class="bg-cream py-20 md:py-28">
+    <section aria-labelledby="values-heading" class="bg-cream py-12 md:py-20">
         <div class="site-container">
             <x-site.heading :eyebrow="__('What we stand for')" :title="__('Our values')" id="values-heading" align="center" />
             <ul class="mt-14 grid gap-6 md:grid-cols-3">
@@ -51,13 +51,13 @@
         </div>
     </section>
 
-    <section aria-labelledby="space-heading" class="py-20 md:py-28">
+    <section aria-labelledby="space-heading" class="py-12 md:py-20">
         <div class="site-container">
             <x-site.heading :eyebrow="__('Inside our clinic')" :title="__('A space designed to put you at ease')" id="space-heading" />
-            <div class="mt-12 grid gap-5 md:grid-cols-3">
-                <x-site.photo name="reception" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-[2rem] object-cover" data-reveal />
-                <x-site.photo name="treatment-room" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-[2rem] object-cover" data-reveal />
-                <x-site.photo name="doctor" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-[2rem] object-cover object-[58%_40%]" data-reveal />
+            <div class="mt-8 grid grid-cols-3 gap-3 md:mt-12 md:gap-5">
+                <x-site.photo name="reception" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-2xl object-cover md:rounded-[2rem]" data-reveal />
+                <x-site.photo name="treatment-room" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-2xl object-cover md:rounded-[2rem]" data-reveal />
+                <x-site.photo name="doctor" sizes="(min-width: 768px) 33vw, 100vw" class="aspect-[3/4] w-full rounded-2xl object-cover object-[58%_40%] md:rounded-[2rem]" data-reveal />
             </div>
         </div>
     </section>

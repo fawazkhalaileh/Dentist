@@ -8,7 +8,7 @@
     <x-site.page-hero :title="__('Smile Gallery')" :eyebrow="__('Smile transformations')"
         :intro="__('Real results from real patients, shared only with their written permission. Drag the handle on any photo to compare before and after.')" />
 
-    <section aria-labelledby="cases-heading" class="py-14 md:py-20">
+    <section aria-labelledby="cases-heading" class="py-10 md:py-16">
         <div class="site-container">
             <h2 id="cases-heading" class="sr-only">{{ __('Before and after cases') }}</h2>
 

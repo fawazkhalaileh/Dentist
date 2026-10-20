@@ -1,7 +1,7 @@
 <x-layouts::public :title="__('Meet the dentists')" :bleed="true" :description="__('The dental team at :clinic.', ['clinic' => \App\Support\ClinicDetails::name()])">
     <x-site.page-hero :title="__('Meet the dentists')" :eyebrow="__('Our team')" />
 
-    <div class="site-container py-16 md:py-20">
+    <div class="site-container py-10 md:py-16">
         @if ($dentists->isEmpty())
             <div class="grid items-center gap-10 overflow-hidden rounded-[2rem] bg-night text-ivory md:grid-cols-2">
                 <x-site.photo name="doctor" sizes="(min-width: 768px) 50vw, 100vw" class="aspect-[4/3] size-full object-cover object-[58%_40%]" />

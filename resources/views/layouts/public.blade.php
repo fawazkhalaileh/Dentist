@@ -245,11 +245,11 @@
         </main>
 
         <footer class="bg-night text-ivory/75">
-            <div class="site-container grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr] lg:py-20">
+            <div class="site-container grid gap-8 py-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr] lg:py-16">
                 <div>
-                    <x-site.logo variant="light" layout="stacked" class="w-28" />
-                    <p class="mt-6 max-w-xs text-sm leading-relaxed">{{ __('Calm, considered dental care in Amman, for healthy, confident smiles.') }}</p>
-                    <ul class="mt-6 flex gap-3" aria-label="{{ __('Social media') }}">
+                    <x-site.logo variant="light" layout="stacked" class="w-20 md:w-28" />
+                    <p class="mt-4 max-w-xs text-sm leading-relaxed md:mt-6">{{ __('Calm, considered dental care in Amman, for healthy, confident smiles.') }}</p>
+                    <ul class="mt-4 flex gap-3 md:mt-6" aria-label="{{ __('Social media') }}">
                         @foreach (config('site.social') as $network => $url)
                             <li>
                                 <a href="{{ $url }}" rel="noopener" target="_blank" class="flex size-10 items-center justify-center rounded-full border border-ivory/20 transition hover:border-ivory hover:text-ivory">
@@ -263,7 +263,7 @@
 
                 <nav aria-label="{{ __('Footer navigation') }}">
                     <p class="font-display text-xl text-ivory">{{ __('Explore') }}</p>
-                    <ul class="mt-5 space-y-3 text-sm">
+                    <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm md:mt-5 md:grid-cols-1 md:gap-y-3">
                         @foreach ($nav as $item)
                             <li><a href="{{ route($item['route']) }}" class="hover:text-ivory">{{ __($item['label'], ['name' => $doctor]) }}</a></li>
                         @endforeach
@@ -271,7 +271,7 @@
                     </ul>
                 </nav>
 
-                <div>
+                <div class="hidden md:block">
                     <p class="font-display text-xl text-ivory">{{ __('Treatments') }}</p>
                     <ul class="mt-5 space-y-3 text-sm">
                         @foreach ($treatmentLinks->take(6) as $treatment)
@@ -282,7 +282,7 @@
 
                 <div>
                     <p class="font-display text-xl text-ivory">{{ __('Visit us') }}</p>
-                    <ul class="mt-5 space-y-4 text-sm">
+                    <ul class="mt-4 space-y-3 text-sm md:mt-5 md:space-y-4">
                         <li class="flex gap-3">
                             <x-site.icon name="pin" class="mt-0.5 size-5 shrink-0 text-ivory" />
                             <span>

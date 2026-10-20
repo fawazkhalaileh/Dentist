@@ -38,7 +38,7 @@
         </form>
     </x-site.page-hero>
 
-    <div class="site-container py-14 md:py-20">
+    <div class="site-container py-10 md:py-16">
         <div class="flex flex-wrap items-center justify-between gap-4">
             @if ($filters->isNotEmpty())
                 <nav aria-label="{{ __('Blog categories') }}">
@@ -93,9 +93,9 @@
                 </article>
             @endif
 
-            <ul class="mt-14 grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+            <ul class="mt-10 grid gap-x-8 gap-y-6 md:mt-14 md:grid-cols-2 md:gap-y-14 lg:grid-cols-3">
                 @foreach ($rest as $card)
-                    <li data-reveal><x-site.post-card :post="$card" /></li>
+                    <li data-reveal><x-site.post-card :post="$card" :row="true" /></li>
                 @endforeach
             </ul>
 

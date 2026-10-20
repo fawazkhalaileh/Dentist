@@ -28,7 +28,7 @@
         </div>
     </section>
 
-    <section aria-labelledby="approach-heading" class="py-20 md:py-28">
+    <section aria-labelledby="approach-heading" class="py-12 md:py-20">
         <div class="site-container grid gap-14 lg:grid-cols-[1fr_1.4fr] lg:gap-24">
             <div>
                 <x-site.heading :eyebrow="__('Philosophy')" :title="__('A gentle, honest approach')" id="approach-heading" />
@@ -50,7 +50,7 @@
         </div>
     </section>
 
-    <section aria-labelledby="background-heading" class="bg-cream py-20 md:py-28">
+    <section aria-labelledby="background-heading" class="bg-cream py-12 md:py-20">
         <div class="site-container grid gap-6 md:grid-cols-2">
             <div class="rounded-[2rem] bg-ivory p-8 md:p-12">
                 <h2 id="background-heading" class="text-3xl">{{ __('Professional background') }}</h2>
@@ -66,7 +66,7 @@
     </section>
 
     @if ($dentists->isNotEmpty())
-        <section aria-labelledby="team-heading" class="py-20 md:py-28">
+        <section aria-labelledby="team-heading" class="py-12 md:py-20">
             <div class="site-container">
                 <x-site.heading :eyebrow="__('Our team')" :title="__('Meet the dentists')" id="team-heading" />
                 <ul class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

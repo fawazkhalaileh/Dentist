@@ -12,7 +12,7 @@
     <x-site.page-hero :title="__('Book an Appointment')" :eyebrow="__('Request an appointment')"
         :intro="__('Choose what suits you and we will call you back to agree a time that works.')" />
 
-    <div class="site-container grid gap-10 py-16 md:py-20 lg:grid-cols-[2fr_1fr] lg:gap-14">
+    <div class="site-container grid gap-10 py-10 md:py-16 lg:grid-cols-[2fr_1fr] lg:gap-14">
         <section aria-labelledby="booking-form-heading" class="rounded-[2rem] bg-white p-7 shadow-[0_30px_70px_-45px_rgb(34_27_29/0.45)] md:p-10">
             <h2 id="booking-form-heading" class="sr-only">{{ __('Appointment request form') }}</h2>
             <p class="text-ink-muted">{{ __('Tell us when suits you. This is a request, not a confirmed booking: the clinic will call you to agree a time.') }}</p>
