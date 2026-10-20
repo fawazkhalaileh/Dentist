@@ -19,6 +19,7 @@ class PublicPagesTest extends TestCase
     {
         return [
             'home' => ['public.home'],
+            'doctor' => ['public.doctor'],
             'about' => ['public.about'],
             'dentists' => ['public.dentists.index'],
             'services' => ['public.services.index'],
@@ -49,7 +50,7 @@ class PublicPagesTest extends TestCase
     {
         $this->get(route('public.contact', ['locale' => 'ar']))
             ->assertSee('أرسل لنا رسالة')
-            ->assertSee('اطلب موعداً');
+            ->assertSee('احجز موعداً');
     }
 
     public function test_pages_link_to_their_other_language_version(): void
