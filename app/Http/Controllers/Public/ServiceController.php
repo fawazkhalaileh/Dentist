@@ -8,6 +8,7 @@ use App\Models\ServiceFaq;
 use App\Models\ServiceTranslation;
 use App\Models\StaffProfile;
 use App\Support\Seo;
+use App\Support\Site\SiteContent;
 use Illuminate\Support\Facades\App;
 use Illuminate\View\View;
 
@@ -16,8 +17,7 @@ class ServiceController extends Controller
     public function index(): View
     {
         return view('public.services.index', [
-            'services' => Service::published()->translatedIn()->with(['translations', 'featuredMedia'])
-                ->orderBy('sort_order')->get(),
+            'treatments' => SiteContent::treatments(),
         ]);
     }
 
@@ -25,7 +25,18 @@ class ServiceController extends Controller
     {
         $locale = App::getLocale();
 
-        $translation = ServiceTranslation::where('locale', $locale)->where('slug', $slug)->firstOrFail();
+        $translation = ServiceTranslation::where('locale', $locale)->where('slug', $slug)->first();
+
+        if ($translation === null) {
+            // Until the clinic publishes its own services, the sample treatments have general information pages.
+            $sample = SiteContent::usingSampleTreatments() ? SiteContent::sampleTreatment($slug) : null;
+            abort_if($sample === null, 404);
+
+            return view('public.services.sample', [
+                'treatment' => $sample,
+                'related' => SiteContent::treatments()->reject(fn (array $t) => $t['title'] === $sample['title'])->take(3),
+            ]);
+        }
 
         /** @var Service $service */
         $service = Service::published()->with(['translations', 'featuredMedia'])->findOrFail($translation->service_id);
@@ -42,6 +53,7 @@ class ServiceController extends Controller
             'sections' => $service->sections()->where('locale', $locale)->get(),
             'faqs' => $faqs,
             'dentists' => $dentists,
+            'related' => SiteContent::treatments()->reject(fn (array $t) => $t['title'] === $translation->title)->take(3),
             'alternates' => Seo::alternates($service->translations, 'public.services.show'),
             'schema' => Seo::faqPage(array_values($faqs->map(fn (ServiceFaq $f) => ['question' => $f->question, 'answer' => $f->answer])->all())),
         ]);

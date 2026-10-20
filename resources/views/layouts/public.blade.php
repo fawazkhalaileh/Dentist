@@ -9,6 +9,8 @@
     'schema' => null,
     // Full-width page: sections manage their own containers (homepage and redesigned pages).
     'bleed' => false,
+    // Sample pages ask search engines not to index them.
+    'noindex' => false,
 ])
 
 @use('App\Support\Locales')
@@ -74,6 +76,9 @@
             <meta name="description" content="{{ $description }}" />
         @endif
         <link rel="canonical" href="{{ $canonical }}" />
+        @if ($noindex)
+            <meta name="robots" content="noindex, follow" />
+        @endif
         @foreach ($alternates as $l => $url)
             <link rel="alternate" hreflang="{{ $l }}" href="{{ $url }}" />
         @endforeach

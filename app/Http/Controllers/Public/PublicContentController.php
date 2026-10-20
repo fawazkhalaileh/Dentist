@@ -20,7 +20,7 @@ class PublicContentController extends Controller
         return view('public.gallery', [
             // published() already implies consent (enforced when saving); the extra check is defence in depth.
             'items' => GalleryItem::published()->whereNotNull('consent_confirmed_at')->translatedIn()
-                ->with(['translations', 'beforeMedia', 'afterMedia'])->orderBy('sort_order')->get(),
+                ->with(['translations', 'beforeMedia', 'afterMedia', 'service.translations'])->orderBy('sort_order')->get(),
         ]);
     }
 

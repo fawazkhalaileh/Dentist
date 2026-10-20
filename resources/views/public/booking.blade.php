@@ -3,26 +3,27 @@
 
 @php
     $phone = ClinicDetails::get('phone');
-    $field = 'mt-1 block w-full rounded-md border border-line bg-surface px-3 py-2';
+    $field = 'field';
     $chosenService = old('service', $selectedService);
     $chosenDentist = old('dentist', $selectedDentist);
 @endphp
 
-<x-layouts::public :title="__('Request an appointment')" :description="__('Ask :clinic for an appointment online. We call you back to agree a time.', ['clinic' => ClinicDetails::name()])">
-    <x-ui.page-header :title="__('Request an appointment')" />
+<x-layouts::public :title="__('Request an appointment')" :bleed="true" :description="__('Ask :clinic for an appointment online. We call you back to agree a time.', ['clinic' => ClinicDetails::name()])">
+    <x-site.page-hero :title="__('Book an Appointment')" :eyebrow="__('Request an appointment')"
+        :intro="__('Choose what suits you and we will call you back to agree a time that works.')" />
 
-    <div class="grid gap-10 md:grid-cols-[2fr_1fr]">
-        <section aria-labelledby="booking-form-heading">
+    <div class="site-container grid gap-10 py-16 md:py-20 lg:grid-cols-[2fr_1fr] lg:gap-14">
+        <section aria-labelledby="booking-form-heading" class="rounded-[2rem] bg-white p-7 shadow-[0_30px_70px_-45px_rgb(34_27_29/0.45)] md:p-10">
             <h2 id="booking-form-heading" class="sr-only">{{ __('Appointment request form') }}</h2>
             <p class="text-ink-muted">{{ __('Tell us when suits you. This is a request, not a confirmed booking: the clinic will call you to agree a time.') }}</p>
 
             @if (session('status') === 'booking-requested')
-                <div role="status" class="mt-4 rounded-md border border-status-planned p-4 text-sm" data-test="booking-requested">
+                <div role="status" class="mt-4 rounded-2xl border border-status-planned bg-status-planned/5 p-4 text-sm" data-test="booking-requested">
                     {{ __('Thank you. Your request has been sent. The clinic will call you to confirm a time.') }}
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('public.booking.store') }}" class="mt-6 space-y-4" novalidate>
+            <form method="POST" action="{{ route('public.booking.store') }}" class="mt-8 space-y-5" novalidate>
                 @csrf
 
                 {{-- Honeypot: hidden from people and assistive technology --}}
@@ -92,7 +93,7 @@
                         <div class="mt-2 flex flex-wrap gap-x-4 gap-y-2">
                             @foreach (AppointmentRequest::PREFERRED_TIMES as $time)
                                 <label class="flex items-center gap-2 text-sm">
-                                    <input type="radio" name="preferred_time" value="{{ $time }}" @checked(old('preferred_time', 'any') === $time)>
+                                    <input type="radio" name="preferred_time" value="{{ $time }}" class="size-4 accent-wine" @checked(old('preferred_time', 'any') === $time)>
                                     {{ AppointmentRequest::preferredTimeLabel($time) }}
                                 </label>
                             @endforeach
@@ -110,16 +111,26 @@
 
                 <p class="text-xs text-ink-muted">{{ __('We use these details only to arrange your appointment.') }} <a href="{{ route('public.legal.privacy') }}" class="underline">{{ __('Privacy policy') }}</a></p>
 
-                <button type="submit" class="rounded-md bg-brand px-5 py-2.5 font-medium text-brand-contrast">{{ __('Send request') }}</button>
+                <button type="submit" class="btn btn-primary w-full sm:w-auto">{{ __('Send request') }}</button>
             </form>
         </section>
 
-        <aside class="space-y-3 text-sm">
-            <h2 class="font-semibold">{{ __('Prefer to call?') }}</h2>
-            @if ($phone)
-                <p><a href="tel:{{ preg_replace('/[^\d+]/', '', $phone) }}" class="text-lg underline" dir="ltr">{{ $phone }}</a></p>
-            @endif
-            <p class="text-ink-muted">{{ __('For severe pain, swelling or bleeding, call the clinic. In an emergency, call emergency services.') }}</p>
+        <aside class="space-y-5 lg:sticky lg:top-28 lg:self-start">
+            <div class="rounded-[2rem] bg-cream p-7">
+                <h2 class="text-3xl">{{ __('What happens next?') }}</h2>
+                <ol class="mt-5 space-y-4 text-sm leading-relaxed text-ink-muted">
+                    <li class="flex gap-3"><span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-wine text-xs text-ivory">1</span>{{ __('We receive your request.') }}</li>
+                    <li class="flex gap-3"><span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-wine text-xs text-ivory">2</span>{{ __('Our team calls you to agree a time.') }}</li>
+                    <li class="flex gap-3"><span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-wine text-xs text-ivory">3</span>{{ __('Your appointment is confirmed.') }}</li>
+                </ol>
+            </div>
+            <div class="rounded-[2rem] border border-line p-7 text-sm">
+                <h2 class="text-2xl">{{ __('Prefer to call?') }}</h2>
+                @if ($phone)
+                    <p class="mt-3"><a href="tel:{{ preg_replace('/[^\d+]/', '', $phone) }}" class="text-lg text-wine underline underline-offset-4" dir="ltr">{{ $phone }}</a></p>
+                @endif
+                <p class="mt-3 text-ink-muted">{{ __('For severe pain, swelling or bleeding, call the clinic. In an emergency, call emergency services.') }}</p>
+            </div>
         </aside>
     </div>
 </x-layouts::public>

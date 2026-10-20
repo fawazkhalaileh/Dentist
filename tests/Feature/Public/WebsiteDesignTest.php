@@ -76,4 +76,63 @@ class WebsiteDesignTest extends TestCase
         $response->assertSee('images/brand/mark-brand.webp', escape: false)
             ->assertSee('instagram.com/dr.mohammad.amara', escape: false);
     }
+
+    public function test_sample_treatments_have_unindexed_information_pages_until_services_are_published(): void
+    {
+        $this->get('/en/services')->assertOk()->assertSee('/en/services/whitening', escape: false);
+
+        $this->get('/en/services/whitening')
+            ->assertOk()
+            ->assertSee('Teeth Whitening')
+            ->assertSee('What is involved')
+            ->assertSee('Sample treatment page, to be confirmed by the clinic')
+            ->assertSee('<meta name="robots" content="noindex, follow" />', escape: false);
+        $this->get('/ar/services/implants')->assertOk()->assertSee('زراعة الأسنان');
+        $this->get('/en/services/not-a-treatment')->assertNotFound();
+
+        $this->makeService(['en' => 'Gum treatment']);
+        $this->get('/en/services/whitening')->assertNotFound();
+    }
+
+    public function test_sample_articles_can_be_read_filtered_and_searched_until_posts_are_published(): void
+    {
+        $this->get('/en/blog')->assertOk()->assertSee('Sample articles with demo dates, to be replaced by the clinic');
+        $this->get('/en/blog/veneers-or-crowns')
+            ->assertOk()
+            ->assertSee('Veneers or crowns: what is the difference?')
+            ->assertSee('Sample article')
+            ->assertSee('<meta name="robots" content="noindex, follow" />', escape: false);
+        $this->get('/ar/blog/sensitive-teeth')->assertOk()->assertSee('حساسية الأسنان');
+
+        $this->get('/en/blog/category/cosmetic')->assertOk()->assertSee('Teeth whitening: what to know')->assertDontSee('Dental implants explained');
+        $this->get('/en/blog?q=implant')->assertOk()->assertSee('Dental implants explained')->assertDontSee('Sensitive teeth: common causes');
+
+        $this->makePost(['en' => 'Real clinic news']);
+        $this->get('/en/blog/veneers-or-crowns')->assertNotFound();
+        $this->get('/en/blog')->assertSee('Real clinic news')->assertDontSee('Sample article');
+    }
+
+    public function test_published_articles_can_be_searched(): void
+    {
+        $this->makePost(['en' => 'Caring for braces']);
+        $this->makePost(['en' => 'Healthy gums']);
+
+        $this->get('/en/blog?q=braces')->assertOk()->assertSee('Caring for braces')->assertDontSee('Healthy gums');
+        $this->get('/en/blog?q=%25')->assertOk()->assertDontSee('Caring for braces');
+    }
+
+    public function test_the_gallery_shows_placeholders_without_consented_cases(): void
+    {
+        $this->get('/en/gallery')
+            ->assertOk()
+            ->assertSee('Placeholder until consent is confirmed')
+            ->assertDontSee('/storage/media/', escape: false);
+    }
+
+    public function test_the_about_contact_and_booking_pages_keep_their_forms_and_content(): void
+    {
+        $this->get('/en/about')->assertOk()->assertSee('Our values')->assertSee('images/site/reception-1200.webp', escape: false);
+        $this->get('/en/contact')->assertOk()->assertSee('action="'.route('public.contact.store', ['locale' => 'en']).'"', escape: false)->assertSee('name="website"', escape: false);
+        $this->get('/en/book')->assertOk()->assertSee('action="'.route('public.booking.store', ['locale' => 'en']).'"', escape: false)->assertSee('What happens next?');
+    }
 }

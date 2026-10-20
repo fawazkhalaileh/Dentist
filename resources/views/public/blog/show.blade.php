@@ -1,4 +1,15 @@
-@php $category = $post->category?->translation(); @endphp
+@php
+    $category = $post->category?->translation();
+    $cards = $related->map(function ($p) {
+        $t = $p->translation();
+        return [
+            'title' => $t->title, 'excerpt' => $t->excerpt, 'url' => route('public.blog.show', ['slug' => $t->slug]),
+            'category' => $p->category?->translation()?->name, 'date' => $p->published_at,
+            'media' => $p->featuredMedia, 'photo' => null, 'sample' => false,
+        ];
+    });
+    $words = str_word_count(strip_tags($translation->body)) ?: (int) (mb_strlen($translation->body) / 6);
+@endphp
 
 <x-layouts::public
     :title="$translation->seo_title ?: $translation->title"
@@ -7,28 +18,12 @@
     :image="$post->featuredMedia?->url()"
     type="article"
     :schema="$schema"
+    :bleed="true"
 >
-    <nav aria-label="{{ __('Breadcrumb') }}" class="mb-4 text-sm text-ink-muted">
-        <a href="{{ route('public.blog.index') }}" class="hover:underline">{{ __('Blog') }}</a>
-        @if ($category)
-            <span aria-hidden="true"> / </span>
-            <a href="{{ route('public.blog.category', ['slug' => $category->slug]) }}" class="hover:underline">{{ $category->name }}</a>
-        @endif
-    </nav>
-
-    <article class="max-w-3xl">
-        <header>
-            <h1 class="text-3xl font-semibold">{{ $translation->title }}</h1>
-            <p class="mt-2 text-sm text-ink-muted">
-                <time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->translatedFormat('j F Y') }}</time>
-                · {{ $post->author->name }}
-            </p>
-        </header>
-
-        @if ($post->featuredMedia)
-            <x-ui.picture :media="$post->featuredMedia" :alt="$translation->title" eager sizes="(min-width: 768px) 768px, 100vw" class="mt-6 w-full rounded-lg" />
-        @endif
-
-        <x-ui.prose :markdown="$translation->body" class="mt-8" />
-    </article>
+    <x-site.article :title="$translation->title" :excerpt="$translation->excerpt" :category="$category?->name"
+        :category-url="$category ? route('public.blog.category', ['slug' => $category->slug]) : null"
+        :date="$post->published_at" :author="$post->author->name" :minutes="max(1, (int) round($words / 200))"
+        :media="$post->featuredMedia" :related="$cards">
+        <x-ui.prose :markdown="$translation->body" />
+    </x-site.article>
 </x-layouts::public>
