@@ -345,9 +345,9 @@ new #[Title('Home')] class extends Component {
                @class(['rounded-lg border px-0.5 py-2 text-center hover:border-brand',
                        'border-brand bg-brand-soft' => $i === 0,
                        'border-zinc-200 dark:border-zinc-700' => $i !== 0])>
-                <span class="block text-xs text-zinc-500">{{ $i === 0 ? __('Today') : $d->translatedFormat('D') }}</span>
+                <span @class(['block text-xs dark:text-zinc-400', 'text-zinc-600' => $i === 0, 'text-zinc-500' => $i !== 0])>{{ $i === 0 ? __('Today') : $d->translatedFormat('D') }}</span>
                 <span class="block text-lg font-semibold">{{ $d->format('j') }}</span>
-                <span @class(['block text-xs', 'text-brand font-medium' => $day['count'] > 0, 'text-zinc-400' => $day['count'] === 0])>
+                <span @class(['block text-xs', 'text-brand font-medium' => $day['count'] > 0, 'text-zinc-600 dark:text-zinc-400' => $day['count'] === 0 && $i === 0, 'text-zinc-500 dark:text-zinc-400' => $day['count'] === 0 && $i !== 0])>
                     <span class="sm:hidden">{{ $day['count'] }}</span>
                     <span class="hidden sm:inline">{{ trans_choice(':count appt|:count appts', $day['count']) }}</span>
                 </span>

@@ -171,7 +171,7 @@ new #[Title('Procedure catalogue')] class extends Component {
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @foreach ($this->procedures as $procedure)
-                        <tr wire:key="procedure-{{ $procedure->id }}" @class(['text-zinc-400' => ! $procedure->is_active])>
+                        <tr wire:key="procedure-{{ $procedure->id }}" @class(['text-zinc-500 dark:text-zinc-400' => ! $procedure->is_active])>
                             <td class="px-4 py-3 font-mono" dir="ltr">
                                 <span aria-hidden="true" class="me-2 inline-block size-3 rounded-sm align-middle" style="background-color: {{ $procedure->displayColor() }}"></span>{{ $procedure->code }}
                             </td>
