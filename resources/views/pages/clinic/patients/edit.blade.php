@@ -141,7 +141,7 @@ new #[Title('Patient details')] class extends Component {
         </flux:card>
 
         <flux:card class="space-y-4">
-            <flux:heading size="lg">{{ __('Contact') }}</flux:heading>
+            <flux:heading size="lg">{{ __('Contact details') }}</flux:heading>
             <div class="grid gap-4 sm:grid-cols-2">
                 <flux:input wire:model.blur="form.phone" type="tel" :label="__('Phone')" dir="ltr" />
                 <flux:input wire:model.blur="form.email" type="email" :label="__('Email')" dir="ltr" />

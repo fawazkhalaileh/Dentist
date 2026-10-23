@@ -8,13 +8,14 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ \App\Support\Locales::dir() }}">
     <head>
-        @include('partials.head', ['title' => $title])
+        @include('partials.head', ['title' => filled($title) ? __($title) : $title])
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    <body data-clinic class="min-h-screen bg-white dark:bg-zinc-800">
         <x-ui.skip-link />
 
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.header>
+            {{-- A named region keeps the clinic name inside a landmark for screen readers (the phone top bar is the banner). --}}
+            <flux:sidebar.header role="region" aria-label="{{ __('Clinic') }}">
                 <x-app-logo :sidebar="true" href="{{ route('clinic.dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
@@ -92,7 +93,7 @@
             </flux:dropdown>
         </flux:header>
 
-        <flux:main id="main-content" tabindex="-1">
+        <flux:main role="main" id="main-content" tabindex="-1">
             {{ $slot }}
         </flux:main>
 

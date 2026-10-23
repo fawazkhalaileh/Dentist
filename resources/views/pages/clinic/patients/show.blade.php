@@ -369,7 +369,7 @@ new #[Title('Patient')] class extends Component {
                 </flux:card>
 
                 <flux:card class="space-y-3">
-                    <flux:heading size="lg">{{ __('Contact') }}</flux:heading>
+                    <flux:heading size="lg">{{ __('Contact details') }}</flux:heading>
                     <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
                         <dt class="text-zinc-500">{{ __('Phone') }}</dt>
                         <dd>@if ($patient->phone)<a href="tel:{{ preg_replace('/[^0-9+]/', '', $patient->phone) }}" class="underline" dir="ltr">{{ $patient->phone }}</a>@else<span class="text-zinc-500">-</span>@endif</dd>

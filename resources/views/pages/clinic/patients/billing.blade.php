@@ -336,7 +336,7 @@ new #[Title('Billing')] class extends Component {
     </div>
 
     {{-- Invoices --}}
-    <h3 class="mb-2 text-lg font-semibold">{{ __('Invoices') }}</h3>
+    <h2 class="mb-2 text-lg font-semibold">{{ __('Invoices') }}</h2>
     @if ($this->invoices->isEmpty())
         <p class="mb-6 text-sm text-zinc-500">{{ __('No invoices yet.') }}</p>
     @else
@@ -355,7 +355,7 @@ new #[Title('Billing')] class extends Component {
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @foreach ($this->invoices as $invoice)
                         @php $paid = $invoice->payments->whereNull('voided_at')->sum('amount'); @endphp
-                        <tr wire:key="inv-{{ $invoice->id }}" @class(['text-zinc-400' => $invoice->isVoid()])>
+                        <tr wire:key="inv-{{ $invoice->id }}" @class(['text-zinc-500 dark:text-zinc-400' => $invoice->isVoid()])>
                             <td class="px-4 py-2 font-medium" dir="ltr">{{ $invoice->number }}</td>
                             <td class="px-4 py-2">{{ $invoice->issued_on->format('Y-m-d') }}</td>
                             <td @class(['px-4 py-2 text-end', 'line-through' => $invoice->isVoid()]) dir="ltr">{{ $money($invoice->total) }}</td>
@@ -402,7 +402,7 @@ new #[Title('Billing')] class extends Component {
     @endif
 
     {{-- Payments --}}
-    <h3 class="mb-2 text-lg font-semibold">{{ __('Payments') }}</h3>
+    <h2 class="mb-2 text-lg font-semibold">{{ __('Payments') }}</h2>
     @if ($this->payments->isEmpty())
         <p class="text-sm text-zinc-500">{{ __('No payments yet.') }}</p>
     @else
@@ -420,7 +420,7 @@ new #[Title('Billing')] class extends Component {
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @foreach ($this->payments as $payment)
-                        <tr wire:key="pay-{{ $payment->id }}" @class(['text-zinc-400' => $payment->isVoid()])>
+                        <tr wire:key="pay-{{ $payment->id }}" @class(['text-zinc-500 dark:text-zinc-400' => $payment->isVoid()])>
                             <td class="px-4 py-2">{{ $payment->paid_on->format('Y-m-d') }}</td>
                             <td @class(['px-4 py-2 text-end font-medium', 'line-through' => $payment->isVoid()]) dir="ltr">{{ $money($payment->amount) }}</td>
                             <td class="px-4 py-2">{{ $payment->method->label() }}@if ($payment->reference) <span class="block text-xs text-zinc-500" dir="ltr">{{ $payment->reference }}</span>@endif</td>

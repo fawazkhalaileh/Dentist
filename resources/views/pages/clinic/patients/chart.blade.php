@@ -372,7 +372,7 @@ new #[Title('Dental chart')] class extends Component {
         </svg>
     </div>
 
-    <p class="mt-1 text-end text-[10px] text-zinc-400">
+    <p class="mt-1 text-end text-[11px] text-zinc-500 dark:text-zinc-400">
         {{ __('Tooth images: BodyParts3D, © Life Science Integrated Database Center') }}, <a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en" target="_blank" rel="noopener" class="underline">CC BY-SA 2.1 JP</a>
     </p>
 

@@ -138,6 +138,11 @@ new #[Title('Treatment plans')] class extends Component {
     {
         // Suggest the procedure's usual price; staff can change it.
         $this->item['price'] = \App\Support\Money::plain($this->selectedProcedure?->price);
+
+        // Surfaces only apply to surface procedures; don't keep hidden selections for others.
+        if ($this->selectedProcedure?->scope !== 'surface') {
+            $this->item['surfaces'] = [];
+        }
     }
 
     public function updatedItemToothNumber(): void
@@ -449,7 +454,7 @@ new #[Title('Treatment plans')] class extends Component {
                                         </td>
                                         <td class="hidden px-4 py-2 md:table-cell">{{ $treatment->dentist?->name }}</td>
                                         <td class="px-4 py-2"><x-ui.status-badge :status="$treatment->status" /></td>
-                                        <td @class(['px-4 py-2 text-end whitespace-nowrap', 'text-zinc-400 line-through' => $treatment->status === \App\Enums\TreatmentStatus::Cancelled]) dir="ltr">{{ $treatment->price !== null ? \App\Support\Money::format($treatment->price) : '–' }}</td>
+                                        <td @class(['px-4 py-2 text-end whitespace-nowrap', 'text-zinc-500 dark:text-zinc-400 line-through' => $treatment->status === \App\Enums\TreatmentStatus::Cancelled]) dir="ltr">{{ $treatment->price !== null ? \App\Support\Money::format($treatment->price) : '–' }}</td>
                                         <td class="px-4 py-2 text-end">
                                             <div class="flex flex-wrap justify-end gap-1">
                                                 @can('changeStatus', $treatment)

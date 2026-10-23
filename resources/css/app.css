@@ -85,3 +85,20 @@ select:focus[data-flux-control] {
 }
 
 [x-cloak] { display: none !important; }
+
+/* Clinic-only contrast corrections for Flux text; retain its dark-mode colours. */
+body[data-clinic]:not(.dark, .dark *) {
+    & [data-flux-input-group-prefix].text-zinc-400,
+    & [data-flux-input-group-suffix].text-zinc-400,
+    & .leading-none.text-zinc-400.px-3 {
+        color: var(--color-zinc-600);
+    }
+
+    & [data-flux-badge].text-amber-700 {
+        color: var(--color-amber-800);
+    }
+
+    & [data-flux-badge].text-amber-700 button {
+        color: var(--color-amber-800) !important;
+    }
+}

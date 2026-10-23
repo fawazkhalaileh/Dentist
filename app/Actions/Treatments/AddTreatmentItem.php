@@ -27,9 +27,9 @@ class AddTreatmentItem
         $tooth = $data['tooth_number'];
 
         // Invariants the form validates too; re-checked here for any other caller.
-        abort_if($procedure->scope !== 'mouth' && $tooth === null, 422, 'This procedure needs a tooth.');
+        abort_if($procedure->scope !== 'mouth' && $tooth === null, 422, __('This procedure needs a tooth.'));
         abort_if($tooth !== null && ! Fdi::isValid($tooth), 422);
-        abort_if($procedure->scope === 'surface' && $data['surfaces'] === [], 422, 'Choose at least one surface.');
+        abort_if($procedure->scope === 'surface' && $data['surfaces'] === [], 422, __('Choose at least one surface.'));
         $allowed = $tooth !== null ? array_map(fn ($s) => $s->value, Fdi::surfaces($tooth)) : [];
         abort_if(array_diff($data['surfaces'], $allowed) !== [], 422);
 

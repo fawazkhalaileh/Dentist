@@ -20,7 +20,7 @@ class StoreDocument
     {
         $disk = (string) config('clinic.storage.clinical_disk');
         $path = $file->store("patients/{$patient->id}", $disk);
-        abort_if($path === false, 500, 'The file could not be stored.');
+        abort_if($path === false, 500, __('The file could not be stored.'));
 
         try {
             return DB::transaction(function () use ($patient, $file, $category, $actor, $disk, $path) {
