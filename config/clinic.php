@@ -49,7 +49,8 @@ return [
     'security' => [
         // Staff (admin, dentist, receptionist) must confirm two-factor
         // authentication before using the clinic dashboard.
-        'require_staff_mfa' => (bool) env('CLINIC_REQUIRE_STAFF_MFA', true),
+        // Only applies while two-factor sign-in is enabled (CLINIC_TWO_FACTOR).
+        'require_staff_mfa' => (bool) env('CLINIC_TWO_FACTOR', true) && (bool) env('CLINIC_REQUIRE_STAFF_MFA', true),
     ],
 
     'storage' => [
