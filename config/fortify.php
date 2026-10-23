@@ -160,18 +160,21 @@ return [
     |
     */
 
-    'features' => [
+    'features' => array_values(array_filter([
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
-        Features::twoFactorAuthentication([
+        // Two-factor sign-in can be switched off per environment (CLINIC_TWO_FACTOR=false):
+        // then there is no code step at login and no 2FA settings. Existing setups are kept,
+        // so switching it back on restores them.
+        env('CLINIC_TWO_FACTOR', true) ? Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
             // 'window' => 0
-        ]),
+        ]) : null,
         Features::passkeys([
             'confirmPassword' => true,
         ]),
-    ],
+    ])),
 
 ];
