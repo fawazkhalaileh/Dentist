@@ -138,6 +138,11 @@ new #[Title('Treatment plans')] class extends Component {
     {
         // Suggest the procedure's usual price; staff can change it.
         $this->item['price'] = \App\Support\Money::plain($this->selectedProcedure?->price);
+
+        // Surfaces only apply to surface procedures; don't keep hidden selections for others.
+        if ($this->selectedProcedure?->scope !== 'surface') {
+            $this->item['surfaces'] = [];
+        }
     }
 
     public function updatedItemToothNumber(): void
