@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ \App\Support\Locales::dir() }}">
     <head>
-        @include('partials.head', ['title' => $title])
+        @include('partials.head', ['title' => filled($title) ? __($title) : $title])
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <x-ui.skip-link />
