@@ -26,6 +26,8 @@ class PatientDirectoryTest extends TestCase
     public function test_search_finds_patients_by_name_number_phone_and_email(): void
     {
         $sara = Patient::factory()->create(['first_name' => 'Sara', 'last_name' => 'Nasser', 'phone' => '+962 79 123 4567', 'email' => 'sara@example.test']);
+        // Keep the number search independent of auto-increment IDs that may match phone digits.
+        $sara->forceFill(['patient_number' => 'P-SEARCH-ONLY'])->save();
         Patient::factory()->create(['first_name' => 'Omar', 'last_name' => 'Khalil', 'phone' => '+962 77 000 1111', 'email' => 'omar@example.test']);
 
         foreach (['Sara Nasser', 'Nasser Sara', 'nass', $sara->patient_number, '0791234567', '79 123', 'sara@example'] as $term) {
