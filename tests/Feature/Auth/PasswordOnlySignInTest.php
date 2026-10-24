@@ -54,4 +54,15 @@ class PasswordOnlySignInTest extends TestCase
             ->assertOk()
             ->assertDontSee('Enable two-factor authentication');
     }
+
+    public function test_help_describes_password_only_setup_when_two_factor_is_disabled(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('clinic.help'))
+            ->assertOk()
+            ->assertSee('They choose a password.')
+            ->assertSee('change your password and language.')
+            ->assertDontSee('two-factor')
+            ->assertDontSee('authenticator');
+    }
 }
