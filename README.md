@@ -78,6 +78,8 @@ This runs Pint (code style), PHPStan/Larastan (level 7) and the PHPUnit suite ag
 
 ## Deploying
 
+**Setting up a new server or moving to one:** see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the full step-by-step guide: requirements, services, `.env` settings, moving the data across, backups and HTTPS.
+
 Every deploy runs `php artisan migrate --force`, which also creates or updates the roles and permissions, so production never needs a seeder.
 A deploy pulls `main`, installs Composer and npm dependencies, builds assets, migrates and rebuilds the config, route and view caches.
 Back up the database first (`mysqldump dentist | gzip > ~/backups/dentist-$(date +%F-%H%M).sql.gz`; credentials come from `~/.my.cnf`).
@@ -85,7 +87,7 @@ Back up the database first (`mysqldump dentist | gzip > ~/backups/dentist-$(date
 One-time server setup:
 - `php artisan storage:link` (serves uploaded website images).
 - `storage/` and `bootstrap/cache/` owned by the deploy user with group `www-data`, group-writable, with default ACLs for both users. Log files are created `0664` (`config/logging.php`), so deploys and Apache can both write them.
-- PHP for Apache: `upload_max_filesize` of at least 10M and `post_max_size` of at least 12M (website images may be up to 8 MB), and `memory_limit` of 256M for resizing them.
+- PHP for Apache (`/etc/php/8.4/apache2/conf.d/99-dentist.ini`): `upload_max_filesize = 12M`, `post_max_size = 16M`, `memory_limit = 256M` (documents may be up to 10 MB, website images up to 8 MB, and large photos are resized).
 - Mail: set `MAIL_*` in `.env` to a real SMTP service. With the default `log` mailer, password-reset and verification emails are only written to the log.
 
 Production never runs demo seeders. The procedure catalogue is the one safe exception: `php artisan db:seed --class=ProcedureSeeder --force` adds a 41-procedure general-dentistry catalogue (English, Arabic, chart colours), and running it again only adds what is missing. The same is available as "Add starter procedures" in the Procedure catalogue.
@@ -96,7 +98,7 @@ Production starts with no staff accounts. Create the first administrator on the 
 php artisan clinic:create-admin you@example.com --name="Your Name"   # asks for the password
 ```
 
-The administrator sets up two-factor authentication at first sign-in, then adds dentists and receptionists under **Dentists and staff** and sends each a setup link.
+When two-factor sign-in is on (`CLINIC_TWO_FACTOR=true`), the administrator sets it up at first sign-in. Production currently runs password-only (`CLINIC_TWO_FACTOR=false`). The administrator then adds dentists and receptionists under **Dentists and staff** and sends each a setup link.
 
 ## Production notes (Phase 6 checklist)
 
