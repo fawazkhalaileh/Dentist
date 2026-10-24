@@ -5,6 +5,7 @@ use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Fortify\Features;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -27,7 +28,9 @@ new #[Title('Help')] class extends Component {
             $guides[] = ['icon' => 'sparkles', 'title' => __('Setting up the clinic (administrators)'), 'steps' => [
                 __('Website → Clinic details: enter the clinic name in English and Arabic, phone, address and opening hours.'),
                 __('Procedures: press “Add starter procedures”, then adjust names, durations and chart colours.'),
-                __('Dentists and staff: add each person, then press “Create setup link” and send it to them. They choose a password and set up two-factor authentication.'),
+                Features::canManageTwoFactorAuthentication()
+                    ? __('Dentists and staff: add each person, then press “Create setup link” and send it to them. They choose a password and set up two-factor authentication.')
+                    : __('Dentists and staff: add each person, then press “Create setup link” and send it to them. They choose a password.'),
                 __('Working hours: choose a dentist, set their weekly hours and breaks, and add closures such as public holidays.'),
             ]];
         }
@@ -75,9 +78,15 @@ new #[Title('Help')] class extends Component {
             ]];
         }
 
+        $accountSteps = Features::canManageTwoFactorAuthentication()
+            ? [
+                __('Your name at the bottom of the menu → Settings: change your password, language and two-factor authentication.'),
+                __('Lost your phone with the authenticator? Ask an administrator to reset your two-factor authentication.'),
+            ]
+            : [__('Your name at the bottom of the menu → Settings: change your password and language.')];
+
         $guides[] = ['icon' => 'shield-check', 'title' => __('Your account'), 'steps' => [
-            __('Your name at the bottom of the menu → Settings: change your password, language and two-factor authentication.'),
-            __('Lost your phone with the authenticator? Ask an administrator to reset your two-factor authentication.'),
+            ...$accountSteps,
             __('Every opening of a patient record is logged, so only open records you need.'),
         ]];
 
