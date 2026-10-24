@@ -1162,5 +1162,7 @@
     "Lower left first molar": "الضرس الأول السفلي الأيسر",
     "Lower left second molar": "الضرس الثاني السفلي الأيسر",
     "Lower left third molar": "الضرس الثالث السفلي الأيسر",
-    "The file could not be stored.": "تعذّر حفظ الملف."
+    "The file could not be stored.": "تعذّر حفظ الملف.",
+    "Dentists and staff: add each person, then press “Create setup link” and send it to them. They choose a password.": "أطباء الأسنان والموظفون: أضف كل شخص، ثم اضغط «إنشاء رابط الإعداد» وأرسله إليه. يختار كلمة مرور.",
+    "Your name at the bottom of the menu → Settings: change your password and language.": "اسمك أسفل القائمة ← الإعدادات: غيّر كلمة المرور واللغة."
 }
