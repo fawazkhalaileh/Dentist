@@ -67,7 +67,7 @@ final class Seo
     }
 
     /**
-     * schema.org Person for the clinic's dentist: name, photo and page only, no unverified credentials.
+     * schema.org Person with the clinic owner's approved biography and credentials.
      *
      * @return array<string, mixed>
      */
@@ -80,6 +80,14 @@ final class Seo
             'jobTitle' => __('Dentist'),
             'image' => asset('images/site/doctor-1280.webp'),
             'url' => route('public.doctor'),
+            'description' => __('Dr. Mohammad Amara is the founder of Amara Dental, a contemporary dental practice in the heart of Amman, Jordan. A graduate of Jordan University of Science and Technology, he holds a Bachelor of Dental Surgery (BDS), complemented by ADA-certified advanced training in Implantology through ESOI and Advanced Endodontics.'),
+            'alumniOf' => ['@type' => 'CollegeOrUniversity', 'name' => __('Jordan University of Science and Technology')],
+            'knowsLanguage' => ['ar', 'en'],
+            'hasCredential' => [
+                '@type' => 'EducationalOccupationalCredential',
+                'name' => __('Bachelor of Dental Surgery (BDS)'),
+                'credentialCategory' => 'degree',
+            ],
             'worksFor' => $withEmployer ? ['@type' => 'Dentist', 'name' => ClinicDetails::name(), 'url' => route('public.home')] : null,
         ]);
     }

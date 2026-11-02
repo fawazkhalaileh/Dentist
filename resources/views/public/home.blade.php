@@ -82,11 +82,10 @@
             <x-site.photo name="doctor" sizes="(min-width: 768px) 45vw, 100vw" class="aspect-[16/10] w-full rounded-[2rem] object-cover object-[58%_40%] md:aspect-[4/3]" />
             <div>
                 <x-site.heading :eyebrow="__('Meet your dentist')" :title="$doctor" id="doctor-heading">
-                    {{ __('Every smile is different, and so is every patient. :name believes good dentistry starts with a proper conversation: understanding how you feel, what you hope for and what worries you.', ['name' => $doctor]) }}
+                    {{ __('Dr. Mohammad Amara is the founder of Amara Dental, a contemporary dental practice in the heart of Amman, Jordan. A graduate of Jordan University of Science and Technology, he holds a Bachelor of Dental Surgery (BDS), complemented by ADA-certified advanced training in Implantology through ESOI and Advanced Endodontics.') }}
                 </x-site.heading>
                 <div class="mt-7 flex flex-wrap items-center gap-4">
                     <a href="{{ route('public.doctor') }}" class="btn btn-primary">{{ __('Meet the Doctor') }}</a>
-                    <span class="sample-badge">{{ __('Placeholder biography') }}</span>
                 </div>
             </div>
         </div>
