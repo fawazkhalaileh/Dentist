@@ -100,7 +100,7 @@ class WebsiteDesignTest extends TestCase
             ->assertOk()
             ->assertSee('Teeth Whitening')
             ->assertSee('What is involved')
-            ->assertSee('Sample treatment page, to be confirmed by the clinic')
+            ->assertDontSee('Sample treatment page, to be confirmed by the clinic')
             ->assertSee('<meta name="robots" content="noindex, follow" />', escape: false);
         $this->get('/ar/services/implants')->assertOk()->assertSee('زراعة الأسنان');
         $this->get('/en/services/not-a-treatment')->assertNotFound();

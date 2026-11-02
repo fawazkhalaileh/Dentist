@@ -71,6 +71,18 @@ class CrawlerController extends Controller
         }
 
         $out[] = '';
+        $out[] = '## Prices (JD, starting from)';
+        $out[] = '';
+        foreach (config('site.prices') as $group) {
+            foreach ($group['items'] as $item) {
+                $price = $item['amount'] === null
+                    ? 'Price depends on your treatment plan'
+                    : ($item['from'] ? 'from ' : '').$item['amount'].' JD';
+                $out[] = '- '.$item['label']['en'].': '.$price.(isset($item['note']) ? ' ('.$item['note']['en'].')' : '');
+            }
+        }
+        $out[] = 'Prices are a guide. Your exact price is confirmed after an examination.';
+        $out[] = '';
         $out[] = '## Pages';
         $out[] = '';
         foreach ([

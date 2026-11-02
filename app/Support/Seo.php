@@ -58,6 +58,8 @@ final class Seo
             // Street address as the clinic typed it; the clinic is in Amman, Jordan.
             'address' => $address ? ['@type' => 'PostalAddress', 'streetAddress' => $address, 'addressLocality' => 'Amman', 'addressCountry' => 'JO'] : null,
             'medicalSpecialty' => 'Dentistry',
+            'priceRange' => 'JD 30 – 1,500',
+            'currenciesAccepted' => 'JOD',
             'availableLanguage' => ['Arabic', 'English'],
             'employee' => self::doctor(withEmployer: false),
             'openingHours' => ClinicDetails::get('opening_hours'),
