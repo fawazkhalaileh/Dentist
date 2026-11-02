@@ -30,6 +30,39 @@
         </div>
     </section>
 
+    <section aria-labelledby="prices-heading" class="border-t border-line bg-cream py-12">
+        <div class="site-container">
+            <h2 id="prices-heading" class="text-4xl">{{ __('Prices') }}</h2>
+            <div class="mt-8 grid gap-x-12 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
+                @foreach (config('site.prices') as $group)
+                    <div>
+                        <h3 class="text-2xl text-wine">{{ $group['label'][app()->getLocale()] }}</h3>
+                        <dl class="mt-3 divide-y divide-line">
+                            @foreach ($group['items'] as $item)
+                                <div class="flex items-baseline justify-between gap-4 py-3">
+                                    <dt class="min-w-0 text-sm">
+                                        {{ $item['label'][app()->getLocale()] }}
+                                        @if (isset($item['note']))
+                                            <span class="mt-1 block text-xs text-ink-muted">{{ $item['note'][app()->getLocale()] }}</span>
+                                        @endif
+                                    </dt>
+                                    <dd class="shrink-0 text-right text-sm font-semibold tabular-nums {{ $item['amount'] === null ? 'max-w-36 whitespace-normal' : 'whitespace-nowrap' }}">
+                                        @if ($item['amount'] === null)
+                                            {{ __('Price depends on your treatment plan') }}
+                                        @else
+                                            <bdi>{{ $item['from'] ? __('From :price', ['price' => \App\Support\Site\Prices::amount($item['amount'])]) : \App\Support\Site\Prices::amount($item['amount']) }}</bdi>
+                                        @endif
+                                    </dd>
+                                </div>
+                            @endforeach
+                        </dl>
+                    </div>
+                @endforeach
+            </div>
+            <p class="mt-6 text-sm text-ink-muted">{{ __('Prices are a guide. Your exact price is confirmed after an examination.') }}</p>
+        </div>
+    </section>
+
     <section aria-labelledby="how-heading" class="bg-night py-20 text-ivory md:py-24">
         <div class="site-container">
             <x-site.heading :eyebrow="__('Your first visit')" :title="__('How treatment works with us')" id="how-heading" :light="true" />

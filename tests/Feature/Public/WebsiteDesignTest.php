@@ -5,6 +5,7 @@ namespace Tests\Feature\Public;
 use App\Models\BlogPost;
 use App\Models\Service;
 use App\Models\Testimonial;
+use App\Support\ClinicDetails;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesContent;
 use Tests\TestCase;
@@ -86,7 +87,7 @@ class WebsiteDesignTest extends TestCase
             ->assertOk()
             ->assertSee('Teeth Whitening')
             ->assertSee('What is involved')
-            ->assertSee('Sample treatment page, to be confirmed by the clinic')
+            ->assertDontSee('Sample treatment page, to be confirmed by the clinic')
             ->assertSee('<meta name="robots" content="noindex, follow" />', escape: false);
         $this->get('/ar/services/implants')->assertOk()->assertSee('زراعة الأسنان');
         $this->get('/en/services/not-a-treatment')->assertNotFound();
@@ -153,7 +154,7 @@ class WebsiteDesignTest extends TestCase
 
     public function test_robots_and_llms_files_describe_the_clinic_from_real_data_only(): void
     {
-        \App\Support\ClinicDetails::put(['name' => ['en' => 'Smile Clinic', 'ar' => null], 'address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+        ClinicDetails::put(['name' => ['en' => 'Smile Clinic', 'ar' => null], 'address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
 
         $this->get('/robots.txt')->assertOk()
             ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
@@ -174,7 +175,7 @@ class WebsiteDesignTest extends TestCase
 
     public function test_structured_data_names_the_doctor_and_the_clinic_address(): void
     {
-        \App\Support\ClinicDetails::put(['address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+        ClinicDetails::put(['address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
 
         $this->get('/en')
             ->assertSee('"address":{"@type":"PostalAddress","streetAddress":"Main Street, Amman","addressLocality":"Amman","addressCountry":"JO"}', escape: false)

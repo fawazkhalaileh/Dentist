@@ -4,6 +4,7 @@
     'icon' => 'tooth',
     'media' => null,
     'sample' => false,
+    'price' => null,
     'related' => null,
     'bookingUrl' => null,
 ])
@@ -18,6 +19,9 @@
             <h1 class="mt-6 max-w-3xl text-5xl leading-[1.02] md:text-7xl">{{ $title }}</h1>
             @if ($summary)
                 <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted md:text-xl">{{ $summary }}</p>
+            @endif
+            @if ($price)
+                <p class="mt-6 text-xl font-semibold tabular-nums text-wine">{{ $price }}</p>
             @endif
             <div class="mt-8 flex flex-wrap items-center gap-3">
                 <a href="{{ $bookingUrl ?? route('public.booking') }}" class="btn btn-primary">{{ __('Book a Consultation') }}</a>
@@ -41,6 +45,9 @@
     <aside class="lg:sticky lg:top-28 lg:self-start">
         <div class="rounded-[2rem] bg-wine p-8 text-ivory">
             <p class="font-display text-3xl leading-tight">{{ __('Questions about :treatment?', ['treatment' => $title]) }}</p>
+            @if ($price)
+                <p class="mt-5 text-xl font-semibold tabular-nums">{{ $price }}</p>
+            @endif
             <p class="mt-3 text-sm text-ivory/80">{{ __('Every mouth is different. A consultation is the best way to find out what suits you.') }}</p>
             <a href="{{ $bookingUrl ?? route('public.booking') }}" class="btn btn-light btn-sm mt-6 w-full">{{ __('Book a Consultation') }}</a>
             <a href="{{ route('public.contact') }}" class="btn btn-ghost-light btn-sm mt-3 w-full">{{ __('Contact Us') }}</a>
