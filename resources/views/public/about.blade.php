@@ -69,7 +69,7 @@
                 <div class="flex flex-col justify-center p-8 md:p-14">
                     <p class="eyebrow !text-ivory/70">{{ __('Meet your dentist') }}</p>
                     <h2 id="team-heading" class="mt-5 text-4xl md:text-5xl">{{ $doctor }}</h2>
-                    <p class="mt-5 leading-relaxed text-ivory/75">{{ __('Get to know the person behind your care before your first appointment.') }}</p>
+                    <p class="mt-5 leading-relaxed text-ivory/75">{{ __('Dr. Mohammad Amara is the founder of Amara Dental, a contemporary dental practice in the heart of Amman, Jordan. A graduate of Jordan University of Science and Technology, he holds a Bachelor of Dental Surgery (BDS), complemented by ADA-certified advanced training in Implantology through ESOI and Advanced Endodontics.') }}</p>
                     <a href="{{ route('public.doctor') }}" class="btn btn-light mt-8 self-start">{{ __('Meet the Doctor') }}</a>
                 </div>
             </div>
