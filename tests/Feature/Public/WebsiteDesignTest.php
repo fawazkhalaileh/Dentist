@@ -5,6 +5,8 @@ namespace Tests\Feature\Public;
 use App\Models\BlogPost;
 use App\Models\Service;
 use App\Models\Testimonial;
+use App\Support\ClinicDetails;
+use App\Support\Seo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesContent;
 use Tests\TestCase;
@@ -51,18 +53,30 @@ class WebsiteDesignTest extends TestCase
             ->assertSee('تبييض الأسنان');
     }
 
-    public function test_the_doctor_page_uses_the_real_photo_and_claims_no_credentials(): void
+    public function test_the_doctor_page_uses_the_real_photo_and_approved_credentials(): void
     {
         $this->get('/en/meet-dr-moi')->assertRedirect('/en/meet-dr-mohammad-amara')->assertStatus(301);
         $this->get('/ar/meet-dr-mohammed-amara')->assertRedirect('/ar/meet-dr-mohammad-amara')->assertStatus(301);
 
-        $this->get('/ar/meet-dr-mohammad-amara')->assertOk()->assertSee('د. محمد عماره');
+        $this->get('/ar/meet-dr-mohammad-amara')
+            ->assertOk()
+            ->assertSee('د. محمد عماره')
+            ->assertSee('بكالوريوس جراحة الأسنان (BDS)')
+            ->assertSee('جامعة العلوم والتكنولوجيا الأردنية')
+            ->assertSee('عيادة أمارا لطب الأسنان')
+            ->assertSee('ESOI')
+            ->assertSee('ADA')
+            ->assertDontSee('سيرة تعريفية مؤقتة');
 
         $this->get('/en/meet-dr-mohammad-amara')
             ->assertOk()
             ->assertSee('Dr. Mohammad Amara')
             ->assertSee('images/site/doctor-1280.webp', escape: false)
-            ->assertSee('Awaiting verified information')
+            ->assertSee('Bachelor of Dental Surgery (BDS)')
+            ->assertSee('Jordan University of Science and Technology')
+            ->assertSee('Precision. Artistry. Excellence in Dentistry.')
+            ->assertDontSee('Placeholder biography')
+            ->assertDontSee('Awaiting verified information')
             ->assertSee('"@type":"BreadcrumbList"', escape: false);
     }
 
@@ -86,7 +100,7 @@ class WebsiteDesignTest extends TestCase
             ->assertOk()
             ->assertSee('Teeth Whitening')
             ->assertSee('What is involved')
-            ->assertSee('Sample treatment page, to be confirmed by the clinic')
+            ->assertDontSee('Sample treatment page, to be confirmed by the clinic')
             ->assertSee('<meta name="robots" content="noindex, follow" />', escape: false);
         $this->get('/ar/services/implants')->assertOk()->assertSee('زراعة الأسنان');
         $this->get('/en/services/not-a-treatment')->assertNotFound();
@@ -153,7 +167,7 @@ class WebsiteDesignTest extends TestCase
 
     public function test_robots_and_llms_files_describe_the_clinic_from_real_data_only(): void
     {
-        \App\Support\ClinicDetails::put(['name' => ['en' => 'Smile Clinic', 'ar' => null], 'address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+        ClinicDetails::put(['name' => ['en' => 'Smile Clinic', 'ar' => null], 'address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
 
         $this->get('/robots.txt')->assertOk()
             ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
@@ -174,7 +188,7 @@ class WebsiteDesignTest extends TestCase
 
     public function test_structured_data_names_the_doctor_and_the_clinic_address(): void
     {
-        \App\Support\ClinicDetails::put(['address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
+        ClinicDetails::put(['address' => ['en' => 'Main Street, Amman', 'ar' => null]]);
 
         $this->get('/en')
             ->assertSee('"address":{"@type":"PostalAddress","streetAddress":"Main Street, Amman","addressLocality":"Amman","addressCountry":"JO"}', escape: false)
@@ -182,6 +196,20 @@ class WebsiteDesignTest extends TestCase
 
         $this->get('/en/meet-dr-mohammad-amara')
             ->assertSee('"@type":"Person","name":"Dr. Mohammad Amara","jobTitle":"Dentist"', escape: false)
-            ->assertSee('"worksFor":{"@type":"Dentist"', escape: false);
+            ->assertSee('"worksFor":{"@type":"Dentist"', escape: false)
+            ->assertSee('"alumniOf":{"@type":"CollegeOrUniversity","name":"Jordan University of Science and Technology"}', escape: false)
+            ->assertSee('"knowsLanguage":["ar","en"]', escape: false)
+            ->assertSee('"hasCredential":{"@type":"EducationalOccupationalCredential","name":"Bachelor of Dental Surgery (BDS)","credentialCategory":"degree"}', escape: false);
+
+        foreach (['en', 'ar'] as $locale) {
+            app()->setLocale($locale);
+            $schema = Seo::doctor();
+            $this->assertSame(__('Jordan University of Science and Technology'), $schema['alumniOf']['name']);
+            $this->assertSame(__('Bachelor of Dental Surgery (BDS)'), $schema['hasCredential']['name']);
+            $this->get('/'.$locale.'/meet-dr-mohammad-amara')->assertSee($schema['description']);
+            foreach (['/'.$locale, '/'.$locale.'/about'] as $path) {
+                $this->get($path)->assertOk()->assertSee($schema['description']);
+            }
+        }
     }
 }

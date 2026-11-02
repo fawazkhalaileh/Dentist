@@ -1,5 +1,6 @@
+@php($price = \App\Support\Site\Prices::startingFrom($treatment['key']))
 <x-layouts::public :title="$treatment['title']" :description="$treatment['summary']" :bleed="true" :noindex="true">
-    <x-site.treatment-detail :title="$treatment['title']" :summary="$treatment['summary']" :icon="$treatment['icon']" :sample="true" :related="$related">
+    <x-site.treatment-detail :title="$treatment['title']" :summary="$treatment['summary']" :icon="$treatment['icon']" :sample="$price === null" :price="$price" :related="$related">
         <section aria-labelledby="intro-heading">
             <h2 id="intro-heading" class="text-4xl">{{ __('About this treatment') }}</h2>
             <p class="mt-5 text-lg leading-relaxed text-ink-muted">{{ $treatment['intro'] }}</p>
