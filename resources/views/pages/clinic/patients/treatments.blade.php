@@ -450,7 +450,7 @@ new #[Title('Treatment plans')] class extends Component {
                                         </td>
                                         <td class="px-4 py-2">
                                             @if (\App\Support\ToothDrawing::marker($treatment->procedure) === 'implant')
-                                                <x-clinic.implant-symbol class="me-1.5 inline-block h-5 w-3 align-middle" :color="$treatment->procedure->displayColor()" :status="$treatment->status" />
+                                                <img src="{{ asset('images/teeth/implant-icon.webp') }}" class="me-1.5 inline-block size-[18px] align-middle" alt="" />
                                             @else
                                                 <span aria-hidden="true" class="me-1.5 inline-block size-2.5 rounded-sm align-middle" style="background-color: {{ $treatment->procedure->displayColor() }}"></span>
                                             @endif

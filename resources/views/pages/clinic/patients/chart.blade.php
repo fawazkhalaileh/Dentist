@@ -231,6 +231,7 @@ new #[Title('Dental chart')] class extends Component {
             'lower' => ['label' => 299, 'side' => 206, 'top' => 162, 'hit' => [156, 302]],
         ];
         $opacity = fn ($mark) => match ($mark['status'] ?? null) { TreatmentStatus::Completed => 1, TreatmentStatus::InProgress => 0.6, TreatmentStatus::Planned => 0.3, default => 0 };
+        $implantOpacity = fn ($mark) => match ($mark['status']) { TreatmentStatus::Completed => 1, TreatmentStatus::InProgress => 0.7, default => 0.35 };
         $dash = fn ($mark) => ($mark['status'] ?? null) === TreatmentStatus::Planned ? '3 2' : 'none';
     @endphp
 
@@ -287,12 +288,11 @@ new #[Title('Dental chart')] class extends Component {
                                     <mask id="root-{{ $tooth }}" maskUnits="userSpaceOnUse" x="0" y="0" width="{{ $tw }}" height="{{ $sh }}"><image href="{{ ToothDrawing::image($tooth, 'side-root') }}" width="{{ $tw }}" height="{{ $sh }}" /></mask>
                                 </defs>
                             @endif
-                            <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" @if ($extracted || isset($marks['implant'])) opacity="0.2" @endif />
                             @if (isset($marks['implant']))
+                                <image data-implant="{{ $tooth }}" data-implant-status="{{ $marks['implant']['status']->value }}" opacity="{{ $implantOpacity($marks['implant']) }}" href="{{ asset('images/teeth/implant-side-'.$row.'.webp') }}" width="{{ $tw }}" height="{{ $sh }}" />
                                 <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" mask="url(#crown-{{ $tooth }})" />
-                                <g data-implant="{{ $tooth }}" data-implant-status="{{ $marks['implant']['status']->value }}" @if ($row === 'upper') transform="translate(40 60) rotate(180)" @endif>
-                                    <x-clinic.implant-symbol x="10" y="{{ $row === 'upper' ? 0 : 24 }}" width="20" height="50" :color="$marks['implant']['color']" :status="$marks['implant']['status']" />
-                                </g>
+                            @else
+                                <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" @if ($extracted) opacity="0.2" @endif />
                             @endif
                             @if (isset($marks['canal']))
                                 {{-- Root canal: the root is filled with the procedure colour. --}}
@@ -342,10 +342,7 @@ new #[Title('Dental chart')] class extends Component {
                             </g>
                         </g>
                         @if (isset($marks['implant']))
-                            <g transform="translate(27 {{ $l['top'] }})" data-implant-badge="{{ $tooth }}">
-                                <circle cx="6" cy="6" r="7" fill="white" stroke="{{ $marks['implant']['color'] }}" stroke-width="0.8" />
-                                <x-clinic.implant-symbol x="2" y="0" width="8" height="12" :color="$marks['implant']['color']" :status="$marks['implant']['status']" />
-                            </g>
+                            <image data-implant-badge="{{ $tooth }}" x="28" y="{{ $l['top'] }}" width="11" height="11" href="{{ asset('images/teeth/implant-icon.webp') }}" opacity="{{ $implantOpacity($marks['implant']) }}" />
                         @endif
                         @if (isset($marks['extraction']))
                             <path d="M8,{{ $l['top'] + 6 }} L32,{{ $l['top'] + 34 }} M32,{{ $l['top'] + 6 }} L8,{{ $l['top'] + 34 }}" stroke="#ffffff" stroke-opacity="0.75" stroke-width="4.5" stroke-linecap="round" />
@@ -369,7 +366,7 @@ new #[Title('Dental chart')] class extends Component {
             @foreach ($this->legend as $name => $entry)
                 <li class="flex items-center gap-1.5">
                     @if ($entry['implant'])
-                        <x-clinic.implant-symbol class="h-5 w-3" :color="$entry['color']" />
+                        <img src="{{ asset('images/teeth/implant-icon.webp') }}" class="size-[18px]" alt="" />
                     @else
                         <span aria-hidden="true" class="inline-block size-3 rounded-sm" style="background-color: {{ $entry['color'] }}"></span>
                     @endif
