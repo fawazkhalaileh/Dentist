@@ -13,6 +13,7 @@ use App\Http\Controllers\Public\SitemapController;
 use App\Models\User;
 use App\Support\Locales;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,6 +74,34 @@ Route::prefix('{locale}')
 |--------------------------------------------------------------------------
 | Fortify sends users to /dashboard; this forwards them to their area.
 */
+
+// A password-setup link opened while signed in: explain, then sign out and continue to it.
+Route::middleware('auth')->group(function () {
+    $resetLink = function (Request $request): ?string {
+        $next = (string) $request->input('next', '');
+        $path = parse_url($next, PHP_URL_PATH);
+        $host = parse_url($next, PHP_URL_HOST);
+
+        // Only ever continue to a password-reset link on this site (no open redirect).
+        return is_string($path) && str_starts_with($path, '/reset-password/') && ($host === null || $host === $request->getHost()) ? $next : null;
+    };
+
+    Route::get('setup-link/signed-in', function (Request $request) use ($resetLink) {
+        $next = $resetLink($request) ?? abort(404);
+        parse_str((string) parse_url($next, PHP_URL_QUERY), $query);
+
+        return view('auth.setup-link-signed-in', ['next' => $next, 'email' => $query['email'] ?? null]);
+    })->name('setup-link.signed-in');
+
+    Route::post('setup-link/continue', function (Request $request) use ($resetLink) {
+        $next = $resetLink($request) ?? abort(404);
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->to($next);
+    })->name('setup-link.continue');
+});
 
 Route::middleware(['auth', 'verified', 'active'])->get('dashboard', function (Request $request) {
     /** @var User $user */

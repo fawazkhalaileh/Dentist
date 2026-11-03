@@ -96,7 +96,8 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            // Staff setup links are reset links sent by message, so they last a day by default.
+            'expire' => (int) env('AUTH_PASSWORD_RESET_EXPIRE', 1440),
             'throttle' => 60,
         ],
     ],

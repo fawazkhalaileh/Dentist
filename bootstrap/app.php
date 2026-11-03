@@ -19,6 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
         ]);
 
+        // Someone already signed in (often the administrator testing a setup link) who opens a
+        // password-reset link gets a page explaining how to continue, not a silent redirect.
+        $middleware->redirectUsersTo(fn (Request $request) => $request->routeIs('password.reset')
+            ? route('setup-link.signed-in', ['next' => $request->fullUrl()])
+            : route('dashboard'));
+
         $middleware->alias([
             'active' => EnsureUserIsActive::class,
             'staff.mfa' => EnsureStaffHasTwoFactor::class,

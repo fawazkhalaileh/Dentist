@@ -183,7 +183,7 @@ new #[Title('Staff member')] class extends StaffComponent {
             <flux:heading size="lg">{{ __('Sign-in') }}</flux:heading>
 
             <div class="space-y-2">
-                <flux:text>{{ __('A setup link lets them choose a new password. Send it to them directly, for example by message. It works once and expires after :minutes minutes.', ['minutes' => config('auth.passwords.users.expire')]) }}</flux:text>
+                <flux:text>{{ __('A setup link lets them choose a new password. Send it to them directly, for example by message. It works once and expires after :hours hours. Open it on their device or in a private window: if you are signed in, you will be asked to sign out first.', ['hours' => (int) ceil(config('auth.passwords.users.expire') / 60)]) }}</flux:text>
                 @if ($member->is_active)
                     <flux:button wire:click="createSetupLink" icon="link">{{ __('Create setup link') }}</flux:button>
                 @else

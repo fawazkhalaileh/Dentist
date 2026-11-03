@@ -1202,5 +1202,11 @@
     "Starting from :price": "ابتداءً من :price",
     "Price depends on your treatment plan": "يُحدَّد السعر حسب خطة علاجك",
     "Prices are a guide. Your exact price is confirmed after an examination.": "الأسعار استرشادية. تُحدَّد التكلفة الدقيقة بعد الفحص.",
-    "From :price": "ابتداءً من :price"
+    "From :price": "ابتداءً من :price",
+    "A setup link lets them choose a new password. Send it to them directly, for example by message. It works once and expires after :hours hours. Open it on their device or in a private window: if you are signed in, you will be asked to sign out first.": "يتيح رابط الإعداد اختيار كلمة مرور جديدة. أرسله إليهم مباشرة، مثلاً برسالة. يعمل مرة واحدة وتنتهي صلاحيته بعد :hours ساعة. افتحه على جهازهم أو في نافذة خاصة: إذا كنت مسجّل الدخول فسيُطلب منك تسجيل الخروج أولاً.",
+    "You are already signed in": "أنت مسجّل الدخول بالفعل",
+    "This link is for setting a password:account": "هذا الرابط مخصص لتعيين كلمة مرور:account",
+    "You are signed in as :name. To use this link here, sign out first. Tip: send setup links to the staff member, or open them in a private window.": "أنت مسجّل الدخول باسم :name. لاستخدام هذا الرابط هنا، سجّل الخروج أولاً. نصيحة: أرسل روابط الإعداد إلى الموظف، أو افتحها في نافذة خاصة.",
+    "Sign out and continue": "تسجيل الخروج والمتابعة",
+    "Stay signed in": "البقاء مسجّلاً"
 }
