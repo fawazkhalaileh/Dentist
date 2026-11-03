@@ -35,7 +35,10 @@ class ChartDrawingTest extends TestCase
             ->assertSee('images/teeth/16-top.webp', escape: false)
             ->assertSee('mask="url(#crown-16)"', escape: false)
             ->assertSee('mask="url(#root-21)"', escape: false)
-            ->assertSee('mask="url(#root-37)"', escape: false);
+            ->assertSee('data-implant="37" data-implant-status="completed"', escape: false)
+            ->assertSee('data-implant="47" data-implant-status="planned"', escape: false)
+            ->assertSee('data-implant-badge="37"', escape: false)
+            ->assertSee('data-implant-badge="47"', escape: false);
 
         Livewire::test('pages::clinic.patients.chart', ['patient' => $patient, 'embedded' => true])
             ->set('dentition', 'primary')
