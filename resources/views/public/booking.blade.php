@@ -124,13 +124,6 @@
                     <li class="flex gap-3"><span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-wine text-xs text-ivory">3</span>{{ __('Your appointment is confirmed.') }}</li>
                 </ol>
             </div>
-            <div class="rounded-[2rem] border border-line p-7 text-sm">
-                <h2 class="text-2xl">{{ __('Prefer to call?') }}</h2>
-                @if ($phone)
-                    <p class="mt-3"><a href="tel:{{ preg_replace('/[^\d+]/', '', $phone) }}" class="text-lg text-wine underline underline-offset-4" dir="ltr">{{ $phone }}</a></p>
-                @endif
-                <p class="mt-3 text-ink-muted">{{ __('For severe pain, swelling or bleeding, call the clinic. In an emergency, call emergency services.') }}</p>
-            </div>
         </aside>
     </div>
 </x-layouts::public>

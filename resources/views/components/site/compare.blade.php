@@ -13,10 +13,19 @@
 --}}
 <div data-compare dir="ltr" style="--split: 50%" {{ $attributes->class('group/compare relative isolate aspect-[4/3] select-none overflow-hidden rounded-3xl bg-cream') }}>
     @if ($before && $after)
-        <x-ui.picture :media="$after" alt="{{ __('After treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
-        <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--split)) 0 0)">
-            <x-ui.picture :media="$before" alt="{{ __('Before treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
-        </div>
+        {{-- Measured pairs are zoomed and shifted so both smiles line up (display only). --}}
+        @php $aligned = \App\Support\Site\SmileAlignment::styles($before, $after); @endphp
+        @if ($aligned)
+            <x-ui.picture :media="$after" alt="{{ __('After treatment') }}" :sizes="$sizes" class="absolute" style="{{ $aligned['after'] }}" />
+            <div class="absolute inset-0 overflow-hidden" style="clip-path: inset(0 calc(100% - var(--split)) 0 0)">
+                <x-ui.picture :media="$before" alt="{{ __('Before treatment') }}" :sizes="$sizes" class="absolute" style="{{ $aligned['before'] }}" />
+            </div>
+        @else
+            <x-ui.picture :media="$after" alt="{{ __('After treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
+            <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--split)) 0 0)">
+                <x-ui.picture :media="$before" alt="{{ __('Before treatment') }}" :sizes="$sizes" class="absolute inset-0 !h-full w-full object-cover" />
+            </div>
+        @endif
     @else
         <div class="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,#efe6da,#f8f3ec)]">
             <x-site.icon name="tooth" class="size-16 text-sand" />

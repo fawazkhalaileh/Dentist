@@ -15,6 +15,21 @@ return [
     // Shorter form for the navigation.
     'doctor_short_name' => ['en' => 'Dr. Amara', 'ar' => 'د. عماره'],
 
+    /*
+    | Lining up before/after photos in the comparison slider. Per media id: where the
+    | smile sits in that photo, as fractions of the image (cx, cy = centre of the teeth;
+    | w = mouth width, corner to corner). The slider zooms and shifts each photo on
+    | display so both smiles match; the photos themselves are never changed.
+    | Measured by hand for the cases published on 2026-11-03.
+    */
+    'smile_alignment' => [
+        20 => ['cx' => 0.500, 'cy' => 0.43, 'w' => 0.42], 21 => ['cx' => 0.505, 'cy' => 0.35, 'w' => 0.43],
+        13 => ['cx' => 0.515, 'cy' => 0.28, 'w' => 0.47], 12 => ['cx' => 0.500, 'cy' => 0.35, 'w' => 0.60],
+        16 => ['cx' => 0.500, 'cy' => 0.385, 'w' => 0.40], 15 => ['cx' => 0.510, 'cy' => 0.35, 'w' => 0.42],
+        18 => ['cx' => 0.500, 'cy' => 0.40, 'w' => 0.64], 17 => ['cx' => 0.515, 'cy' => 0.32, 'w' => 0.59],
+        4 => ['cx' => 0.485, 'cy' => 0.41, 'w' => 0.73], 3 => ['cx' => 0.490, 'cy' => 0.43, 'w' => 0.62],
+    ],
+
     'social' => [
         'instagram' => 'https://www.instagram.com/dr.mohammad.amara/',
         'facebook' => 'https://www.facebook.com/share/1FANuRu5nt/',

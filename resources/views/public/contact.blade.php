@@ -77,7 +77,6 @@
 
             <section aria-labelledby="contact-form-heading" class="rounded-[2rem] bg-white p-7 shadow-[0_30px_70px_-45px_rgb(34_27_29/0.45)] md:p-10">
                 <h2 id="contact-form-heading" class="text-4xl">{{ __('Send us a message') }}</h2>
-                <p class="mt-3 text-sm text-ink-muted">{{ __('For medical emergencies, please call the clinic or emergency services instead.') }}</p>
 
                 @if (session('status') === 'contact-sent')
                     <div role="status" class="mt-6 rounded-2xl border border-status-planned bg-status-planned/5 p-4 text-sm" data-test="contact-sent">
