@@ -436,7 +436,7 @@ new #[Title('Treatment plans')] class extends Component {
                                     <th scope="col" class="hidden px-4 py-2 text-start font-medium md:table-cell">{{ __('Dentist') }}</th>
                                     <th scope="col" class="px-4 py-2 text-start font-medium">{{ __('Status') }}</th>
                                     <th scope="col" class="px-4 py-2 text-end font-medium">{{ __('Price') }}</th>
-                                    <th scope="col" class="px-4 py-2"><span class="sr-only">{{ __('Actions') }}</span></th>
+                                    <th scope="col" class="relative px-4 py-2"><span class="sr-only">{{ __('Actions') }}</span></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -449,7 +449,12 @@ new #[Title('Treatment plans')] class extends Component {
                                             @endif
                                         </td>
                                         <td class="px-4 py-2">
-                                            <span aria-hidden="true" class="me-1.5 inline-block size-2.5 rounded-sm align-middle" style="background-color: {{ $treatment->procedure->displayColor() }}"></span>{{ $treatment->procedure->localizedName() }}
+                                            @if (\App\Support\ToothDrawing::marker($treatment->procedure) === 'implant')
+                                                <img src="{{ asset('images/teeth/implant-icon.webp') }}" class="me-1.5 inline-block size-[18px] align-middle" alt="" />
+                                            @else
+                                                <span aria-hidden="true" class="me-1.5 inline-block size-2.5 rounded-sm align-middle" style="background-color: {{ $treatment->procedure->displayColor() }}"></span>
+                                            @endif
+                                            {{ $treatment->procedure->localizedName() }}
                                             @if ($treatment->planned_for) <span class="block text-xs text-zinc-500">{{ __('Planned for :date', ['date' => $treatment->planned_for->format('Y-m-d')]) }}</span> @endif
                                         </td>
                                         <td class="hidden px-4 py-2 md:table-cell">{{ $treatment->dentist?->name }}</td>

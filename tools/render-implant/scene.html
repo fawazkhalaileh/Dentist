@@ -1,0 +1,36 @@
+<!doctype html><html><body style="margin:0"><script type="module">
+import * as T from './vendor/three.module.js';
+import {RoomEnvironment} from './vendor/RoomEnvironment.js';
+const renderer = new T.WebGLRenderer({alpha:true, antialias:true, preserveDrawingBuffer:true});
+renderer.setClearColor(0,0); renderer.setPixelRatio(4); renderer.setSize(160,312);
+renderer.toneMapping=T.ACESFilmicToneMapping; renderer.toneMappingExposure=1.25;
+document.body.appendChild(renderer.domElement);
+const scene=new T.Scene(); scene.environment=new T.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),0.04).texture;
+const metal=new T.MeshPhysicalMaterial({color:0xaaa69f,metalness:1,roughness:0.29});
+const implant=new T.Group(); scene.add(implant);
+function lathe(profile){ const mesh=new T.Mesh(new T.LatheGeometry(profile.map(p=>new T.Vector2(...p)),128),metal); implant.add(mesh); }
+// Millimetres: apex y=0, collar y=11, abutment ends at y=14.
+lathe([[0,0],[0.45,0.12],[0.9,0.45],[1.25,1],[1.48,2],[1.65,5],[1.75,9.8],[1.95,10],[1.95,10.85],[1.8,11],[0,11]]);
+lathe([[0,10.9],[1.5,10.9],[1.5,11.4],[1.22,11.65],[1.05,13.85],[0.9,14],[0,14]]);
+// A continuous triangular thread swept around the tapered fixture, with eased ends.
+const vertices=[], indices=[], turns=12, steps=turns*160;
+for(let i=0;i<=steps;i++){
+ const t=i/steps, a=t*turns*Math.PI*2, y=0.95+t*9.05;
+ const r=1.25+0.5*(y/10), h=0.36*Math.min(1,t*25,(1-t)*25);
+ for(const [dr,dy] of [[0,-0.22],[h,0],[0,0.22]]) vertices.push((r+dr)*Math.cos(a),y+dy,(r+dr)*Math.sin(a));
+ if(i<steps) for(let j=0;j<2;j++){let k=i*3+j;indices.push(k,k+1,k+3,k+1,k+4,k+3);}
+}
+const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.setIndex(indices);geo.computeVertexNormals();implant.add(new T.Mesh(geo,metal));
+const key=new T.DirectionalLight(0xfff5e8,4);key.position.set(-6,10,10);scene.add(key);
+const fill=new T.DirectionalLight(0xe2edff,2);fill.position.set(5,4,-4);scene.add(fill);
+const camera=new T.OrthographicCamera(-8.25,8.25,16.09,-16.09,0.1,100);camera.position.set(0,0,40);
+window.renderImplant=(view)=>{
+ implant.rotation.set(0,0,view==='upper'?Math.PI:0);
+ // Tooth cervical junction is 11 mm from the crown-facing edge of the frame.
+ implant.position.set(0,view==='upper'?6.4:-6.4,0);
+ camera.position.set(0,0,40);camera.lookAt(0,0,0);
+ renderer.setSize(160,312);camera.left=-8.25;camera.right=8.25;camera.top=16.09;camera.bottom=-16.09;
+ if(view==='icon'){implant.rotation.set(0,0,-0.32);implant.position.set(0,-7,0);camera.position.set(16,10,32);camera.lookAt(0,0,0);camera.left=-9;camera.right=9;camera.top=9;camera.bottom=-9;renderer.setSize(64,64);}
+ camera.updateProjectionMatrix();renderer.render(scene,camera);const output=document.createElement('canvas');output.width=view==='icon'?64:160;output.height=view==='icon'?64:312;output.getContext('2d').drawImage(renderer.domElement,0,0,output.width,output.height);return output.toDataURL('image/webp',0.98);
+};window.ready=true;
+</script></body></html>

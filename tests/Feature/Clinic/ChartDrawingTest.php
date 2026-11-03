@@ -23,7 +23,7 @@ class ChartDrawingTest extends TestCase
 
         foreach ([[16, 'CROWN', 'prosthodontic', TreatmentStatus::Completed], [21, 'RCT', 'endodontic', TreatmentStatus::InProgress],
             [48, 'EXT', 'surgical', TreatmentStatus::Completed], [37, 'IMPL', 'surgical', TreatmentStatus::Completed],
-            [47, 'IMPL', 'surgical', TreatmentStatus::Planned], [25, 'SEAL', 'preventive', TreatmentStatus::Planned]] as [$tooth, $code, $category, $status]) {
+            [47, 'IMPL', 'surgical', TreatmentStatus::Planned], [26, 'IMPL', 'surgical', TreatmentStatus::InProgress], [25, 'SEAL', 'preventive', TreatmentStatus::Planned]] as [$tooth, $code, $category, $status]) {
             TreatmentItem::factory()->create([
                 'patient_id' => $patient->id, 'dentist_id' => $dentist->id, 'tooth_number' => $tooth, 'status' => $status,
                 'procedure_id' => Procedure::firstOrCreate(['code' => $code], Procedure::factory()->raw(['code' => $code, 'category' => $category, 'scope' => 'tooth']))->id,
@@ -35,7 +35,12 @@ class ChartDrawingTest extends TestCase
             ->assertSee('images/teeth/16-top.webp', escape: false)
             ->assertSee('mask="url(#crown-16)"', escape: false)
             ->assertSee('mask="url(#root-21)"', escape: false)
-            ->assertSee('mask="url(#root-37)"', escape: false);
+            ->assertSee('data-implant="37" data-implant-status="completed" opacity="1"', escape: false)
+            ->assertSee('data-implant="47" data-implant-status="planned" opacity="0.35"', escape: false)
+            ->assertSee('data-implant="26" data-implant-status="in_progress" opacity="0.7"', escape: false)
+            ->assertSee('images/teeth/implant-side-upper.webp', escape: false)
+            ->assertSee('data-implant-badge="37"', escape: false)
+            ->assertSee('data-implant-badge="47"', escape: false);
 
         Livewire::test('pages::clinic.patients.chart', ['patient' => $patient, 'embedded' => true])
             ->set('dentition', 'primary')

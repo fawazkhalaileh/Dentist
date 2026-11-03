@@ -144,14 +144,14 @@ new #[Title('Dental chart')] class extends Component {
     /**
      * Procedures drawn on the chart, for the colour legend.
      *
-     * @return array<string, string> name => colour
+     * @return array<string, array{color: string, implant: bool}>
      */
     #[Computed]
     public function legend(): array
     {
         $legend = [];
         foreach ($this->items as $item) {
-            $legend[$item->procedure->localizedName()] = $item->procedure->displayColor();
+            $legend[$item->procedure->localizedName()] = ['color' => $item->procedure->displayColor(), 'implant' => ToothDrawing::marker($item->procedure) === 'implant'];
         }
         ksort($legend);
 
@@ -231,18 +231,13 @@ new #[Title('Dental chart')] class extends Component {
             'lower' => ['label' => 299, 'side' => 206, 'top' => 162, 'hit' => [156, 302]],
         ];
         $opacity = fn ($mark) => match ($mark['status'] ?? null) { TreatmentStatus::Completed => 1, TreatmentStatus::InProgress => 0.6, TreatmentStatus::Planned => 0.3, default => 0 };
+        $implantOpacity = fn ($mark) => match ($mark['status']) { TreatmentStatus::Completed => 1, TreatmentStatus::InProgress => 0.7, default => 0.35 };
         $dash = fn ($mark) => ($mark['status'] ?? null) === TreatmentStatus::Planned ? '3 2' : 'none';
     @endphp
 
     {{-- The chart is laid out as the dentist faces the patient, so it is not mirrored in right-to-left languages. --}}
     <div class="overflow-x-auto rounded-xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50 p-4 dark:border-zinc-700 dark:from-zinc-900 dark:to-zinc-900" dir="ltr">
         <svg viewBox="0 0 {{ $width }} {{ $height }}" class="mx-auto block w-full min-w-[720px] max-w-5xl" role="group" aria-label="{{ __('Dental chart, FDI numbering. Select a tooth to see its treatments.') }}">
-            <defs>
-                <linearGradient id="implant" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#9aa1aa" /><stop offset="0.45" stop-color="#e5e7eb" /><stop offset="1" stop-color="#8b929b" />
-                </linearGradient>
-            </defs>
-
             <line x1="{{ $width / 2 }}" y1="4" x2="{{ $width / 2 }}" y2="{{ $height - 4 }}" stroke="currentColor" stroke-opacity="0.15" stroke-dasharray="3 3" />
             <line x1="0" y1="151" x2="{{ $width }}" y2="151" stroke="currentColor" stroke-opacity="0.15" stroke-dasharray="3 3" />
             <text x="2" y="148" font-size="8" fill="currentColor" fill-opacity="0.5">{{ __('R') }}</text>
@@ -262,7 +257,6 @@ new #[Title('Dental chart')] class extends Component {
                         $regions = ToothDrawing::regions([0, 0, 40, 40], $inner);
                         [$i1, $j1, $i2, $j2] = $inner;
                         $extracted = ($marks['extraction']['status'] ?? null) === TreatmentStatus::Completed;
-                        $implanted = ($marks['implant']['status'] ?? null) === TreatmentStatus::Completed;
                         // Rendered images are already oriented (upper: roots up; lower: crown up); children's teeth shrink towards the bite.
                         $anchor = $row === 'upper' ? $sh : 0;
                         $sideTransform = "translate(0 {$l['side']}) translate(20 {$anchor}) scale({$scale}) translate(-20 -{$anchor})";
@@ -294,23 +288,11 @@ new #[Title('Dental chart')] class extends Component {
                                     <mask id="root-{{ $tooth }}" maskUnits="userSpaceOnUse" x="0" y="0" width="{{ $tw }}" height="{{ $sh }}"><image href="{{ ToothDrawing::image($tooth, 'side-root') }}" width="{{ $tw }}" height="{{ $sh }}" /></mask>
                                 </defs>
                             @endif
-                            <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" @if ($extracted) opacity="0.2" @endif />
                             @if (isset($marks['implant']))
-                                {{-- Implant: once placed the root becomes a threaded metal post; while planned, a dashed post outline. --}}
-                                @php
-                                    $post = $row === 'upper' ? [10, 52] : [26, 68];
-                                    $threads = implode(' ', array_map(fn ($k) => 'M10,'.($post[0] + 4 + $k * ($post[1] - $post[0] - 6) / 7).' l20,-3', range(0, 7)));
-                                @endphp
-                                @if ($implanted)
-                                    <g mask="url(#root-{{ $tooth }})">
-                                        <rect width="{{ $tw }}" height="{{ $sh }}" fill="url(#implant)" />
-                                        <path d="{{ $threads }}" stroke="#6b7280" stroke-width="0.9" stroke-opacity="0.8" />
-                                        <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['implant']['color'] }}" fill-opacity="0.18" />
-                                    </g>
-                                @else
-                                    <path d="M15.5,{{ $post[0] }} L24.5,{{ $post[0] }} L23.5,{{ $post[1] }} L16.5,{{ $post[1] }} Z"
-                                          fill="{{ $marks['implant']['color'] }}" fill-opacity="{{ $opacity($marks['implant']) * 0.35 }}" stroke="{{ $marks['implant']['color'] }}" stroke-width="1.1" stroke-dasharray="{{ $dash($marks['implant']) }}" />
-                                @endif
+                                <image data-implant="{{ $tooth }}" data-implant-status="{{ $marks['implant']['status']->value }}" opacity="{{ $implantOpacity($marks['implant']) }}" href="{{ asset('images/teeth/implant-side-'.$row.'.webp') }}" width="{{ $tw }}" height="{{ $sh }}" />
+                                <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" mask="url(#crown-{{ $tooth }})" />
+                            @else
+                                <image href="{{ ToothDrawing::image($tooth, 'side') }}" width="{{ $tw }}" height="{{ $sh }}" @if ($extracted) opacity="0.2" @endif />
                             @endif
                             @if (isset($marks['canal']))
                                 {{-- Root canal: the root is filled with the procedure colour. --}}
@@ -323,7 +305,7 @@ new #[Title('Dental chart')] class extends Component {
                                 <rect width="{{ $tw }}" height="{{ $sh }}" fill="{{ $marks['crown']['color'] }}" fill-opacity="{{ $opacity($marks['crown']) * 0.8 }}" mask="url(#crown-{{ $tooth }})" />
                             @endif
                         </g>
-                        @php $pending = collect($marks)->first(fn ($m) => $m['status'] === TreatmentStatus::Planned); @endphp
+                        @php $pending = collect($marks)->except('implant')->first(fn ($m) => $m['status'] === TreatmentStatus::Planned); @endphp
                         @if ($pending)
                             {{-- Planned whole-tooth work: a dashed frame in the procedure colour, matching the legend. --}}
                             <rect x="0.5" y="{{ $l['side'] + 1 }}" width="{{ $tw - 1 }}" height="{{ $sh - 2 }}" rx="7" fill="none" stroke="{{ $pending['color'] }}" stroke-width="1.2" stroke-dasharray="3 2" stroke-opacity="0.9" />
@@ -359,6 +341,9 @@ new #[Title('Dental chart')] class extends Component {
                                 @endif
                             </g>
                         </g>
+                        @if (isset($marks['implant']))
+                            <image data-implant-badge="{{ $tooth }}" x="28" y="{{ $l['top'] }}" width="11" height="11" href="{{ asset('images/teeth/implant-icon.webp') }}" opacity="{{ $implantOpacity($marks['implant']) }}" />
+                        @endif
                         @if (isset($marks['extraction']))
                             <path d="M8,{{ $l['top'] + 6 }} L32,{{ $l['top'] + 34 }} M32,{{ $l['top'] + 6 }} L8,{{ $l['top'] + 34 }}" stroke="#ffffff" stroke-opacity="0.75" stroke-width="4.5" stroke-linecap="round" />
                             <path d="M8,{{ $l['top'] + 6 }} L32,{{ $l['top'] + 34 }} M32,{{ $l['top'] + 6 }} L8,{{ $l['top'] + 34 }}" stroke="{{ $marks['extraction']['color'] }}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="{{ $dash($marks['extraction']) }}" stroke-opacity="{{ max(0.6, $opacity($marks['extraction'])) }}" />
@@ -378,8 +363,15 @@ new #[Title('Dental chart')] class extends Component {
 
     @if ($this->legend !== [])
         <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-label="{{ __('Procedure colours') }}">
-            @foreach ($this->legend as $name => $color)
-                <li class="flex items-center gap-1.5"><span aria-hidden="true" class="inline-block size-3 rounded-sm" style="background-color: {{ $color }}"></span>{{ $name }}</li>
+            @foreach ($this->legend as $name => $entry)
+                <li class="flex items-center gap-1.5">
+                    @if ($entry['implant'])
+                        <img src="{{ asset('images/teeth/implant-icon.webp') }}" class="size-[18px]" alt="" />
+                    @else
+                        <span aria-hidden="true" class="inline-block size-3 rounded-sm" style="background-color: {{ $entry['color'] }}"></span>
+                    @endif
+                    {{ $name }}
+                </li>
             @endforeach
         </ul>
     @endif
